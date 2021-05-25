@@ -19,9 +19,9 @@
 
                 <!-- Ready -->
                 <template v-else-if="isVisible">
-                    <slot name="header" :toggle="toggle" />
+                    <slot name="header" :toggle="toggle" :close="close" />
                     <div class="body" :style="columnStyle">
-                        <slot :toggle="toggle" />
+                        <slot :toggle="toggle" :close="close" />
                     </div>
                 </template>
             </div>

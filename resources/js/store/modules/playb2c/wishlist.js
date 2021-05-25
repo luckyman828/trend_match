@@ -11,12 +11,28 @@ export default {
             state.wishlist.reduce((acc, curr) => {
                 return (acc += curr.yourPrice.wholesale_price)
             }, 0),
-        getVariantIsInWishlist: state => variant => state.wishlist.find(wishlistItem => wishlistItem.id == variant.id),
+        getVariantIsInWishlist: state => variant => {
+            return !!state.wishlist.find(wishlistItem => wishlistItem.id == variant.id)
+        },
     },
 
     actions: {
         fetchWishlist({ state }, msg) {
             alert(msg)
+        },
+        toggleInWishlist({dispatch, getters}, variant) {
+            if (getters.getVariantIsInWishlist(variant)) {
+                dispatch('removeFromWishlist', variant)
+            } else {
+                dispatch('addToWishlist', variant)
+            }
+
+        },
+        addToWishlist({commit}, variant) {
+            commit('ADD_ITEM', variant)
+        },
+        removeFromWishlist({commit}, variant) {
+            commit('REMOVE_ITEM', variant)
         },
     },
 

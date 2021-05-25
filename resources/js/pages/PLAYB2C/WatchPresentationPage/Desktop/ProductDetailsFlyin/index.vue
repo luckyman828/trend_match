@@ -1,24 +1,19 @@
 <template>
-    <BaseDrawer position="bottom" :show="show" class="product-details-drawer" @close="$emit('close')">
-        <template v-slot:header v-if="product">
+    <BaseFlyin placement="left" :show="show" class="product-details-flyin bg-theme-white" @close="$emit('close')">
+        <template v-slot:header="slotProps" v-if="product">
             <div class="header-inner flex-list justify">
-                <div class="flex-list flex-v sm">
-                    <div class="brand">{{ product.brand }}</div>
-                    <h3 class="product-name">{{ product.name }}</h3>
+                <div class="flex-list flex-v space-min">
+                    <div class="ft-10 ft-md ft-uppercase color-ft-soft">{{ product.brand }}</div>
+                    <div class="ft-16 ft-bd">{{ product.name }}</div>
                 </div>
-                <div class="price">
-                    <div class="current-price">
-                        {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
-                    </div>
-                    <div class="old-price">
-                        {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
-                    </div>
-                </div>
+                <button class="close circle" @click="slotProps.close()">
+                    <i class="far fa-times"></i>
+                </button>
             </div>
         </template>
         <template v-slot:default v-if="product">
             <div class="body-inner form-wrapper">
-                <ImageRail :variant="currentVariant" style="margin-bottom: 12px" />
+                <MainImageSection :variant="currentVariant" class="form-element" />
 
                 <VariantRail
                     class="form-element"
@@ -27,16 +22,23 @@
                     @show-variant="$event => (currentVariant = $event)"
                 />
 
+                <div class="price flex-list center-v form-element">
+                    <div class="current-price ft-14 ft-bd">
+                        {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
+                    </div>
+                    <div class="old-price ft-12 color-ft-soft ft-strike">
+                        {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
+                    </div>
+                </div>
+
                 <div class="form-element list-item">
                     <label>Sizes</label>
                     <div class="size-list flex-list">
-                        <div class="square size" v-for="size in currentVariant.ean_sizes" :key="size.ean">
+                        <div class="true-square size" v-for="size in currentVariant.ean_sizes" :key="size.ean">
                             {{ size.size }}
                         </div>
                     </div>
                 </div>
-
-                <h3>Style info</h3>
 
                 <div class="form-element flex-list md">
                     <i class="fal fa-info-circle md"></i>
@@ -54,25 +56,34 @@
                     </div>
                 </div>
             </div>
-            <AddToBasketSelector :item.sync="currentVariant" :show="true" />
+            <AddToBasketSelector class="add-to-basket-bar" :variant="currentVariant" :show="true" />
         </template>
-    </BaseDrawer>
+    </BaseFlyin>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import ImageRail from './ImageRail'
+import MainImageSection from './MainImageSection'
 import VariantRail from './VariantRail'
 import AddToBasketSelector from '../AddToBasketSelector'
 
 export default {
-    name: 'productDetailsDrawer',
-    components: { ImageRail, VariantRail, AddToBasketSelector },
-    props: ['show', 'product'],
+    name: 'productDetailsFlyin',
+    components: { MainImageSection, VariantRail, AddToBasketSelector },
+    props: ['show'],
     data: function() {
         return {
             currentVariant: null,
         }
+    },
+    computed: {
+        ...mapGetters('playPresentation', {
+            sidebarItem: 'getSidebarItem',
+        }),
+        product() {
+            if (!this.sidebarItem) return
+            return this.sidebarItem.product
+        },
     },
     methods: {
         setCurrentVariant(variant) {
@@ -81,7 +92,11 @@ export default {
     },
     watch: {
         show(isVisible) {
-            if (isVisible) this.setCurrentVariant(this.product.variants[0])
+            if (isVisible) {
+                this.setCurrentVariant(
+                    this.sidebarItem.variant ? this.sidebarItem.variant : this.sidebarItem.product.variants[0]
+                )
+            }
         },
     },
 }
@@ -90,12 +105,16 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-.product-details-drawer {
+.product-details-flyin {
     line-height: 1.4;
-    .brand {
-        font-weight: 12px;
-        font-weight: 700;
-        color: $fontSoft;
+    &::v-deep {
+        .flyin {
+            min-width: 0;
+            width: 352px;
+        }
+    }
+    .header-inner {
+        padding: 8px 8px 0 16px;
     }
     .price {
         font-size: 14px;
@@ -108,11 +127,11 @@ export default {
         }
     }
     .body-inner {
-        padding: 0 16px 100px;
+        padding: 0 0 100px;
     }
 
     .form-element {
-        margin-bottom: 40px;
+        margin-bottom: 16px;
     }
     .size {
         background: $grey300;
@@ -155,6 +174,12 @@ export default {
         overflow: auto;
         padding-bottom: 8px;
         margin-bottom: 32px;
+    }
+    .add-to-basket-selector {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
     }
 }
 </style>

@@ -306,11 +306,12 @@ $themeLightBorderActive: $primary400;
 $themeGreyBg: $grey200;
 $themeGreyBgHover: $grey300;
 $themeGreyBgActive: $grey300;
+$themeGreyFontSoft: $grey650;
 $themeGreyBorder: $bluegrey300;
 $themeGreyBorderHover: $primary300;
 $themeGreyBorderActive: $primary400;
 
-// BG THEMES ($colorName, $bg, $bgHover, $bgActive, $border, $borderHover, $borderActive)
+// BG THEMES ($colorName, $bg, $bgHover, $bgActive, $border, $borderHover, $borderActive, $font, $fontSoft)
 $bg-themes: (
         'white',
         $themeWhiteBg,
@@ -318,7 +319,8 @@ $bg-themes: (
         $themeWhiteBgActive,
         $themeWhiteBorder,
         $themeWhiteBorderHover,
-        $themeWhiteBorderActive
+        $themeWhiteBorderActive,
+        $themeWhiteFontSoft
     ),
     (
         'light',
@@ -327,7 +329,9 @@ $bg-themes: (
         $themeLightBgActive,
         $themeLightBorder,
         $themeLightBorderHover,
-        $themeLightBorderActive
+        $themeLightBorderActive,
+        $dark100,
+        $themeLightFontSoft
     ),
     (
         'grey',
@@ -336,7 +340,9 @@ $bg-themes: (
         $themeGreyBgActive,
         $themeGreyBorder,
         $themeGreyBorderHover,
-        $themeGreyBorderActive
+        $themeGreyBorderActive,
+        $dark100,
+        $themeGreyFontSoft
     );
 
 // CARD SIZES ($sizeName, $padding; $borderRadius)

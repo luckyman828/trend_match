@@ -127,19 +127,28 @@ textarea {
     font-weight: 500;
 }
 .ft-10 {
-    font-size: 10px;
+    font-size: 10px !important;
 }
 .ft-12 {
-    font-size: 12px;
+    font-size: 12px !important;
 }
 .ft-14 {
-    font-size: 14px;
+    font-size: 14px !important;
 }
 .ft-16 {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 .ft-20 {
-    font-size: 20px;
+    font-size: 20px !important;
+}
+.ft-uppercase {
+    text-transform: uppercase;
+}
+.ft-lowercase {
+    text-transform: lowercase;
+}
+.ft-strike {
+    text-transform: line-through;
 }
 .lh-min {
     line-height: 1;
@@ -152,6 +161,13 @@ textarea {
 }
 
 // ---------- END FONTS
+
+// HELPERS
+.mg-bt-16 {
+    margin-bottom: 16px;
+}
+
+// END HELPERS
 
 .container {
     margin: auto;
@@ -397,6 +413,22 @@ input[type='submit'] {
     .no-hover {
         margin-left: 0 !important;
         margin-right: 0 !important;
+    }
+    &.float-icon-hover {
+        i {
+            transition: transform 0.1s ease-in, opacity 0.1s ease-in;
+        }
+        &:not(.active) {
+            i {
+                opacity: 0.5;
+            }
+        }
+        &:hover {
+            i {
+                opacity: 1;
+                transform: translateY(-2px);
+            }
+        }
     }
 
     // SIZES
@@ -691,6 +723,10 @@ input[type='submit'] {
             border-bottom: solid 1px;
         }
     }
+}
+.true-square,
+.circle {
+    flex-shrink: 0;
 }
 .pill,
 .circle {
@@ -1101,6 +1137,11 @@ i {
         min-width: 0;
         .tooltip-inner {
             border: none;
+        }
+    }
+    &.pad-xs {
+        .popover-inner {
+            padding: 8px;
         }
     }
     &.invisible {
@@ -1920,6 +1961,9 @@ input::placeholder {
         }
         &.theme-border {
             border: solid 1px nth($theme, 5);
+        }
+        .color-ft-soft {
+            color: nth($theme, 8);
         }
     }
 }

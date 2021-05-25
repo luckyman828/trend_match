@@ -1,22 +1,19 @@
 <template>
     <div class="preview-list flex-list flex-v bg-blur">
-        <ProductPreview v-for="product in timingProducts" :key="product.id" />
+        <VariantPreview v-for="variant in timing.variants" :variant="variant" :key="variant.id" />
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import ProductPreview from './ProductPreview'
+import VariantPreview from './VariantPreview'
 export default {
     name: 'preview-list',
-    components: { ProductPreview },
+    components: { VariantPreview },
     computed: {
         ...mapGetters('playPresentation', {
             timing: 'getCurrentTiming',
         }),
-        timingProducts() {
-            return this.timing ? [this.timing.product] : []
-        },
     },
 }
 </script>
@@ -27,7 +24,7 @@ export default {
     top: 8px;
     left: 16px;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 16px;
     width: 128px;
     transition: transform $videoPauseTransition;
     .desired-paused &,

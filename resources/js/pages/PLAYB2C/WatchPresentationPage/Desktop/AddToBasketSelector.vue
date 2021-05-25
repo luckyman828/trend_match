@@ -1,26 +1,23 @@
 <template>
-    <BaseFloatyBar
-        classes="add-to-basket-selector flex-list justify bg-blur"
-        :show="show"
-        :autoHide="autoHide"
-        @hide="onHide"
-    >
-        <AddToWishlistButton v-if="!hideWishlist" class="lg" />
+    <div class="add-to-basket-selector flex-list bg-blur">
+        <button class="white true-square add-to-wishlist" @click="toggleInWishlist(variant)">
+            <i class="fa-heart ft-16" :class="variantIsInWishlist ? 'primary fas' : 'far'"></i>
+        </button>
         <div class="flex-list justify equal-width flex-1">
-            <v-popover trigger="click" ref="sizePopover">
-                <button class="rounded lg white full-width">
+            <v-popover class="size-selector" trigger="click" ref="sizePopover">
+                <button class="white full-width">
                     <i class="far fa-ruler"></i>
                     <span v-if="selectedSize">Size: {{ selectedSize }}</span>
                     <span v-else>Choose size</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <BaseSelectButtons
-                    v-if="item"
+                    v-if="variant"
                     header="Choose size"
                     slot="popover"
                     type="radio"
                     :submitOnChange="true"
-                    :options="item.ean_sizes"
+                    :options="variant.ean_sizes"
                     optionNameKey="size"
                     optionValueKey="size"
                     v-model="selectedSize"
@@ -29,7 +26,7 @@
             </v-popover>
             <BaseButton
                 class="full-width"
-                buttonClass="dark rounded lg full-width"
+                buttonClass="dark full-width"
                 :disabled="!selectedSize"
                 @click="onAddToBasket"
             >
@@ -37,26 +34,36 @@
                 <span>Add to basket</span>
             </BaseButton>
         </div>
-    </BaseFloatyBar>
+    </div>
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from './AddToWishlistButton'
 
 export default {
     name: 'addToBasketSelector',
     components: { AddToWishlistButton },
-    props: ['item', 'show', 'hideWishlist', 'autoHide'],
+    props: ['variant', 'show', 'hideWishlist', 'autoHide'],
     data() {
         return {
             selectedSize: null,
         }
     },
+    computed: {
+        ...mapGetters('wishlist', {
+            getVariantIsInWishlist: 'getVariantIsInWishlist',
+        }),
+        variantIsInWishlist() {
+            if (!this.variant) return
+            return this.getVariantIsInWishlist(this.variant)
+        },
+    },
     methods: {
+        ...mapActions('wishlist', ['toggleInWishlist']),
         ...mapActions('basket', ['addToBasket']),
         onAddToBasket() {
-            this.addToBasket({ variant: this.item, size: this.selectedSize })
+            this.addToBasket({ variant: this.variant, size: this.selectedSize })
             this.onHide()
         },
         onHide() {
@@ -79,4 +86,16 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+.add-to-basket-selector {
+    padding: 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(8px) brightness(80%);
+    .size-selector {
+        &::v-deep {
+            .trigger {
+                width: 100%;
+            }
+        }
+    }
+}
 </style>

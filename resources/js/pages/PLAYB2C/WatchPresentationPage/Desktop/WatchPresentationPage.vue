@@ -41,11 +41,7 @@
                 </template>
             </PlayerControls>
 
-            <ProductDetailsDrawer
-                :show="!!sidebarProduct"
-                :product="sidebarProduct"
-                @close="SET_SIDEBAR_PRODUCT(null)"
-            />
+            <ProductDetailsFlyin :show="!!sidebarItem" @close="SET_SIDEBAR_ITEM(null)" />
             <SavedStylesDrawer
                 :show="!!showSavedProductsDrawer"
                 :view.sync="savedProductsView"
@@ -65,7 +61,7 @@ import VideoTitle from './VideoTitle'
 import PreviewList from './PreviewList'
 import AddToWishlistButton from './AddToWishlistButton'
 
-import ProductDetailsDrawer from './ProductDetailsDrawer/'
+import ProductDetailsFlyin from './ProductDetailsFlyin/'
 import SavedStylesDrawer from './SavedStylesDrawer/'
 
 export default {
@@ -76,7 +72,7 @@ export default {
         BeforeStartOverlay,
         VideoTitle,
         PreviewList,
-        ProductDetailsDrawer,
+        ProductDetailsFlyin,
         SavedStylesDrawer,
         AddToWishlistButton,
     },
@@ -93,7 +89,7 @@ export default {
         ...mapGetters('playPresentation', {
             video: 'getVideo',
             videoTimings: 'getTimings',
-            sidebarProduct: 'getSidebarProduct',
+            sidebarItem: 'getSidebarItem',
             currentTimingIndex: 'getCurrentTimingIndex',
             currentTiming: 'getCurrentTiming',
         }),
@@ -111,24 +107,9 @@ export default {
         ...mapGetters('basket', {
             basket: 'getBasket',
         }),
-        currentTimingIsInWishlist() {
-            return this.currentTiming && this.wishlist.find(product => product.id == this.currentTiming.product.id)
-        },
     },
     methods: {
-        ...mapMutations('player', ['SET_DESIRED_STATUS']),
-        ...mapMutations('playPresentation', ['SET_SIDEBAR_PRODUCT']),
-        onAddToWishlist() {
-            // Check if we should add or remove
-            if (this.currentTimingIsInWishlist) {
-                // Remove
-                const index = this.wishlist.findIndex(product => product.id == this.currentTiming.product.id)
-                this.wishlist.splice(index, 1)
-            } else {
-                // Add
-                this.wishlist.push(this.currentTiming.product)
-            }
-        },
+        ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
     },
 }
 </script>

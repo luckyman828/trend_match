@@ -8,10 +8,11 @@ export default {
         presentation: null,
         video: null,
         timings: [],
-        sidebarProduct: null,
         timingsReady: false,
-
+        sidebarItem: null,
+        
         // OLD
+        sidebarProduct: null,
         status: 'success',
         timingStatus: 'success',
         searchItemDragActive: false,
@@ -28,6 +29,7 @@ export default {
         getVideo: state => state.video,
         getTimings: state => state.timings,
         getSidebarProduct: state => state.sidebarProduct,
+        getSidebarItem: state => state.sidebarItem,
         getIsLive: state => false,
         getTimingsReady: state => state.timingsReady,
 
@@ -68,6 +70,9 @@ export default {
             const currentTiming = getters.getCurrentTiming
             if (!currentTiming) return
             return currentTiming.product
+        },
+        getCurrentVariant: (state, getters) => {
+            getters.getCurrentProduct.variants[0]
         },
 
         // OLD
@@ -277,6 +282,11 @@ export default {
                         return timing.products[0]
                     },
                 })
+                Object.defineProperty(timing, 'variants', {
+                    get() {
+                        return timing.products.map(product => product.variants[0])
+                    },
+                })
                 Object.defineProperty(timing, 'start', {
                     get() {
                         return timing.start_at_ms
@@ -378,14 +388,17 @@ export default {
         REMOVE_TIMING(state, index) {
             state.timings.splice(index, 1)
         },
-        SET_SIDEBAR_PRODUCT(state, product) {
-            state.sidebarProduct = product
+        SET_SIDEBAR_ITEM(state, item) {
+            state.sidebarItem = item
         },
         SET_TIMINGS_READY(state, payload) {
             state.timingsReady = payload
         },
-
+        
         // OLD
+        SET_SIDEBAR_PRODUCT(state, product) {
+            state.sidebarProduct = product
+        },
 
         SET_SEARCH_ITEM_DRAG_ACTIVE(state, bool) {
             state.searchItemDragActive = bool

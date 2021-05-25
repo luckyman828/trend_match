@@ -1382,6 +1382,7 @@ export default {
 
                 product.variants.forEach((variant, variantIndex) => {
                     Vue.set(variant, 'isInit', true)
+                    Vue.set(variant, 'product_id', product.id)
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
@@ -1403,6 +1404,7 @@ export default {
                             return product
                         },
                     })
+                    
                     Object.defineProperty(variant, 'yourPrice', {
                         get: function() {
                             return product.yourPrice

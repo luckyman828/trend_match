@@ -311,30 +311,30 @@ export default {
 </style>
 <style lang="scss">
 @import '~@/_variables.scss';
-@include desktop {
-    // ADD TO BASKET SELECTOR
-    .add-to-basket-selector {
-        border-radius: 32px !important;
-        padding: 32px !important;
-        height: auto !important;
-        &:not(.show) {
-            bottom: -160px !important;
-        }
-        .flex-list.equal-width {
-            margin-left: 16px;
-            .trigger {
-                width: 100%;
-                padding-right: 32px;
-            }
-        }
-        button {
-            height: 92px !important;
-            min-width: 92px !important;
-            font-size: 28px !important;
-            i {
-                font-size: 28px !important;
-            }
-        }
-    }
-}
+// @include desktop {
+//     // ADD TO BASKET SELECTOR
+//     .add-to-basket-selector {
+//         border-radius: 32px !important;
+//         padding: 32px !important;
+//         height: auto !important;
+//         &:not(.show) {
+//             bottom: -160px !important;
+//         }
+//         .flex-list.equal-width {
+//             margin-left: 16px;
+//             .trigger {
+//                 width: 100%;
+//                 padding-right: 32px;
+//             }
+//         }
+//         button {
+//             height: 92px !important;
+//             min-width: 92px !important;
+//             font-size: 28px !important;
+//             i {
+//                 font-size: 28px !important;
+//             }
+//         }
+//     }
+// }
 </style>
