@@ -61,9 +61,30 @@ export default {
             ])
             this.loadingData = false
         },
+
+        // // CODE TO RESPOND TO EVENTS FROM THE PARENT WINDOW
+        // postMessageHandler(event) {
+        //     console.log('VUE, message recieved', event)
+        //     // Test that the origin matches
+        //     if (!event.origin == 'https://kollektteststore.myshopify.com') return
+        //     const msgData = event.data
+        //     if (msgData.action == 'updateBasketItem') {
+        //         this.$store.commit('basket/UPDATE_BASKET_ITEM', msgData.item)
+        //     }
+        // },
+        // addPostMessageListeners() {
+        //     window.addEventListener('message', this.postMessageHandler)
+        // },
+        // removePostMessageListeners() {
+        //     window.removeEventListener('message', this.postMessageHandler)
+        // },
     },
     created() {
         this.fetchData()
+        // this.addPostMessageListeners()
+    },
+    destroyed() {
+        // this.removePostMessageListeners()
     },
 }
 </script>

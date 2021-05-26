@@ -43,14 +43,15 @@ document.addEventListener('click', function(e) {
 })
 
 // Interact with shopify
-window.addEventListener('message', event => {
-    console.log('window message received', event)
+window.addEventListener('message', async event => {
     const testOrigins = ['https://kollekt_feature.test', 'https://kollekt_release.test'] // REMOVE BEFORE GOING PRODUCTION!!
     const acceptedOrigins = ['https://app.kollekt.dk', 'https://branchtest.kollekt.dk', 'https://dev.kollekt.dk', 'https://staging.kollekt.dk']
     if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
     const msgData = event.data
+
+    // ADD TO BASKET
     if (msgData.action == 'addToBasket') {
-        shopifyAddToBasket(msgData.items)
-        
+        const basketItem = await shopifyAddToBasket(msgData.items)
+        iframeEl.contentWindow.postMessage({action: 'updateBasketItem', item: basketItem}, 'https://kollekt_feature.test')
     }
 })

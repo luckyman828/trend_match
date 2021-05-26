@@ -50,5 +50,8 @@ export default {
         SET_ITEM_QTY(state, { item, qty }) {
             item.qty = Math.max(qty, 0)
         },
+        UPDATE_BASKET_ITEM(state, item) {
+            
+        }
     },
 }

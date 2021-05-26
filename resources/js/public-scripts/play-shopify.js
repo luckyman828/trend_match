@@ -1,4 +1,5 @@
-export function addToBasket(items) {
+export async function addToBasket(items) {
+    let result
     const formData = {
         'items': items.map(item => {
             return {
@@ -7,11 +8,15 @@ export function addToBasket(items) {
         }})
     }
     
-    fetch('/cart/add.js', {
+    await fetch('/cart/add.js', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
+    }).then(async response => {
+        result = await response.json()
+        // console.log('add to basket result', await response.json())
     })
+    return result
 }
