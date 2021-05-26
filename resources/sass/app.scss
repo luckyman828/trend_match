@@ -1737,7 +1737,8 @@ input::placeholder {
 // FLEX-LIST
 .flex-list {
     display: flex;
-    &.flex-1 {
+    &.flex-1,
+    > .flex-1 {
         flex: 1;
     }
     &.full-w,
@@ -1748,7 +1749,8 @@ input::placeholder {
     &.full-height {
         height: 100%;
     }
-    &.fill {
+    &.fill,
+    > .fill {
         flex-grow: 1;
     }
     &.equal-width {

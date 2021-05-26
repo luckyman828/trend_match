@@ -8,7 +8,7 @@
             v-touch:moving="onTouchDragMove"
             v-touch:end="onDragEnd"
         />
-        <div class="timeline-wrapper">
+        <div class="timeline-wrapper" ref="timeline">
             <div class="rail" :style="railStyle">
                 <div class="knob"></div>
             </div>
@@ -57,8 +57,9 @@ export default {
         },
         railStyle() {
             if (!this.isMounted) return
-            const elRect = this.$el.getBoundingClientRect()
-            return `width: calc(${(elRect.width / 100) * this.watchedPercentage}px + 0px);`
+            // const elRect = this.$el.getBoundingClientRect()
+            // return `width: calc(${(elRect.width / 100) * this.watchedPercentage}px + 0px);`
+            return `width: ${this.watchedPercentage}%;`
         },
         productsReady() {
             return this.productsStatus == 'success'
@@ -112,12 +113,16 @@ export default {
             this.dragTime = null
         },
         getDragTime(mouseEvent) {
-            const playerRect = this.playerContainer.getBoundingClientRect()
+            const playerRect = this.$refs.timeline.getBoundingClientRect()
             const mouseX = mouseEvent.clientX - playerRect.left
-            // Add an offset to allow the user to reach the extremes of each side
-            const offSetX = ((mouseX - playerRect.width / 2) / playerRect.width / 2) * 200
 
-            const xPercentage = Math.max(Math.min((mouseX + offSetX) / playerRect.width, 1), 0)
+            // Add an offset to allow the user to reach the extremes of each side on mobile
+            let offsetX = 0
+            if (this.$store.getters['responsive/getIsMobile']) {
+                offsetX = ((mouseX - playerRect.width / 2) / playerRect.width / 2) * 200
+            }
+
+            const xPercentage = Math.max(Math.min((mouseX + offsetX) / playerRect.width, 1), 0)
             this.dragTime = this.duration * xPercentage
         },
         touchStartHandler(e) {
@@ -150,23 +155,6 @@ export default {
         width: 200%;
         transform: translate(-25%, -50%);
         z-index: 4;
-        &:hover {
-            @include desktop {
-                + .timeline-wrapper {
-                    transform: translateY(-2px);
-                    .rail {
-                        height: 12px;
-                    }
-                    .knob {
-                        height: 18px;
-                        width: 18px;
-                    }
-                    & + .timing-list {
-                        transform: translateY(-4px);
-                    }
-                }
-            }
-        }
     }
     @include mobile {
         bottom: 12px;
@@ -196,21 +184,6 @@ export default {
         .knob {
             transition: none;
             cursor: grabbing;
-        }
-    }
-    @include desktop {
-        &:hover {
-            .rail {
-                height: 12px;
-                transform: translateY(-2px);
-            }
-            .knob {
-                height: 18px;
-                width: 18px;
-            }
-            & + .timing-list {
-                transform: translateY(-4px);
-            }
         }
     }
     @include mobile {
