@@ -148,7 +148,8 @@ textarea {
     text-transform: lowercase;
 }
 .ft-strike {
-    text-transform: line-through;
+    text-decoration: line-through;
+    opacity: 0.5;
 }
 .lh-min {
     line-height: 1;
@@ -509,8 +510,8 @@ input[type='submit'] {
     }
 
     // COLORS
-    border-color: $bluegrey300;
-    background: $bluegrey300;
+    border-color: $bluegrey250;
+    background: $bluegrey250;
     color: $font;
     // color: $dark05;
     &:hover {
@@ -1964,7 +1965,8 @@ input::placeholder {
         &.theme-border {
             border: solid 1px nth($theme, 5);
         }
-        .color-ft-soft {
+        .color-ft-soft,
+        .ft-color-soft {
             color: nth($theme, 8);
         }
     }

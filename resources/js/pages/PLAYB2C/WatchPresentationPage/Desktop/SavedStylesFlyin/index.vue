@@ -100,7 +100,15 @@ export default {
     },
     watch: {
         show(isVisible) {
-            if (isVisible) this.wishlistSnapshot = [...this.wishlist]
+            if (isVisible) this.saveWishlistSnapshot()
+        },
+        view() {
+            this.saveWishlistSnapshot()
+        },
+    },
+    methods: {
+        saveWishlistSnapshot() {
+            this.wishlistSnapshot = [...this.wishlist]
         },
     },
 }
@@ -113,10 +121,15 @@ export default {
         .flyin {
             min-width: 0;
             width: 352px;
+            .body {
+                padding: 4px 0;
+            }
         }
     }
     .header-inner {
         padding: 8px;
+        background: white;
+        box-shadow: $shadowXs;
     }
     .add-to-basket-selector {
         position: absolute;

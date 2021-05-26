@@ -11,7 +11,7 @@
                     class="wishlist-count pill white w-xxs"
                     @click="
                         showSavedProductsDrawer = true
-                        savedProductsView = 'wishlist'
+                        savedProductsView = 'Wishlist'
                     "
                 >
                     <i class="far fa-heart"></i>
@@ -21,7 +21,7 @@
                     class="basket-count pill white w-xxs"
                     @click="
                         showSavedProductsDrawer = true
-                        savedProductsView = 'basket'
+                        savedProductsView = 'Basket'
                     "
                 >
                     <i class="far fa-shopping-bag"></i>

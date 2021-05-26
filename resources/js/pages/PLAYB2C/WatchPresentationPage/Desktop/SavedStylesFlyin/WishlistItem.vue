@@ -1,52 +1,60 @@
 <template>
-    <div class="wishlist-item flex-list md">
+    <div class="wishlist-item flex-list space-min bg-theme-white">
         <BaseImageSizer fit="cover" class="image">
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
+
         <div class="flex-list flex-v justify details">
-            <!-- Top row -->
-            <div class="flex-list justify">
-                <div class="flex-list flex-v min">
-                    <div class="brand">
+            <!-- TOP -->
+
+            <div class="name-section flex-list flex-v space-sm">
+                <div class="flex-v lh-xs">
+                    <div class="brand ft-10 ft-md ft-color-soft ft-uppercase">
                         {{ variant.product.brand }}
                     </div>
-                    <div class="product-name">{{ variant.name }}</div>
-                    <div class="price flex-list md">
-                        <div class="current-price">
-                            {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
-                        </div>
-                        <div class="old-price">
-                            {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                        </div>
+                    <div class="product-name ft-bd ft-14">
+                        <span>{{ variant.product.name }}</span>
                     </div>
                 </div>
-                <div class="action-list flex-list center-v">
-                    <AddToWishlistButton class="true-square white" :variants="[variant]" />
-                    <div class="button invisible ghost-hover true-square">
-                        <i class="fas fa-ellipsis-h"></i>
+                <div class="price flex-list center-v">
+                    <div class="current-price ft-bd ft-14">
+                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
+                    </div>
+                    <div class="old-price ft-strike ft-12 ft-md">
+                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
                     </div>
                 </div>
             </div>
-            <!-- Bottom row -->
-            <div class="flex-list justify flex-end-v">
-                <div class="ui-square">
-                    <div class="flex-list flex-v xs">
-                        <label>Color</label>
-                        <div class="ft-bd">{{ variant.name }}</div>
+
+            <!-- BOTTOM -->
+            <div class="flex-list flex-v space-sm">
+                <div class="ft-12 ft-color-soft ft-md">Color</div>
+                <div class="color-wrapper">
+                    <div class="square color">
+                        <span class="ft-bd">{{ variant.name }}</span>
                     </div>
                 </div>
-                <button
-                    class="primary pill ghost-hover"
-                    :class="variantAddedToBasket ? '' : 'invisible'"
-                    @click="$emit('add-to-basket', variant)"
-                >
-                    <i class="far fa-shopping-bag">
-                        <i v-if="variantAddedToBasket" class="far fa-check pos-right pos-bottom"></i>
-                    </i>
-                    <span v-if="variantAddedToBasket">Added</span>
-                    <span v-else>Add</span>
-                </button>
             </div>
+
+            <!-- ACTIONS  -->
+            <div class="action-list flex-list center-v">
+                <AddToWishlistButton class="true-square white" :variants="[variant]" />
+                <div class="button invisible ghost-hover circle">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+            </div>
+            <button
+                class="primary pill ghost-hover add-to-basket"
+                :class="variantAddedToBasket ? '' : 'invisible'"
+                @click="$emit('add-to-basket', variant)"
+            >
+                <i class="far fa-shopping-bag">
+                    <i v-if="variantAddedToBasket" class="far fa-check pos-right pos-bottom"></i>
+                </i>
+                <span v-if="variantAddedToBasket">Added</span>
+                <span v-else>Add</span>
+            </button>
+            <!-- END ACTIONS  -->
         </div>
     </div>
 </template>
@@ -74,31 +82,39 @@ export default {
 @import '~@/_variables.scss';
 
 .wishlist-item {
-    padding: 6px 18px;
-    border-top: $borderElSoft;
-    border-bottom: $borderElSoft;
+    background: white;
+    box-shadow: $shadowXs;
     .image {
-        width: 80px;
+        width: 100px;
     }
     .details {
+        overflow: hidden;
         flex: 1;
-    }
-    .brand {
-        font-size: 10px;
-        font-weight: 700;
-        color: $fontSoft;
+        padding: 8px;
+        position: relative;
+        .name-section {
+            overflow: hidden;
+            padding-right: 80px;
+        }
+        .action-list {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+        .add-to-basket {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+        }
+        // .color {
+        //     font-weight: ;
+        // }
     }
     .product-name {
-        font-size: 12px;
-        font-weight: 700;
-    }
-    .price {
-        font-weight: 700;
-        font-size: 12px;
-    }
-    .old-price {
-        text-decoration: line-through;
-        opacity: 0.5;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 }
 </style>
