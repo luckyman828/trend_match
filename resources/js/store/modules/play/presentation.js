@@ -71,9 +71,7 @@ export default {
             if (!currentTiming) return
             return currentTiming.product
         },
-        getCurrentVariant: (state, getters) => {
-            getters.getCurrentProduct.variants[0]
-        },
+        getCurrentVariant: (state, getters) => getters.getCurrentProduct.variants[0],
 
         // OLD
         getCurrentVideoRootobject: state => state.currentVideo,

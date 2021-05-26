@@ -1,37 +1,28 @@
 <template>
     <BaseFlyin position="right" :show="show" class="saved-styles-flyin" @close="$emit('close')">
-        <template v-slot:header v-if="show">
-            <div class="header-inner flex-list justify">
-                <div class="flex-list flex-v">
-                    <h3 v-if="view == 'wishlist'">Your Wishlist</h3>
-                    <h3 v-else>Your Basket</h3>
-                    <BaseSegmentedControl
-                        theme="light"
-                        activeClass="white"
-                        :options="segmentedControlOptions"
-                        :currentOptionIndex="view == 'wishlist' ? 0 : 1"
-                        v-slot="slotProps"
-                        @change="$event => $emit('update:view', segmentedControlOptions[$event].name)"
-                    >
-                        <i :class="[slotProps.option.iconClass]"></i>
-                        <span>{{ slotProps.option.size }}</span>
-                    </BaseSegmentedControl>
-                </div>
-
-                <div class="flex-list flex-v flex-end">
-                    <div class="total-price">
-                        {{ view == 'wishlist' ? wishlistTotal : basketTotal }} {{ userCurrency }}
-                    </div>
-                    <button class="small light pill">
-                        <i class="far fa-sliders-v-square"></i>
-                        <span>Filter</span>
-                    </button>
-                </div>
+        <template v-slot:header="slotProps" v-if="show">
+            <div class="header-inner flex-list center-v justify">
+                <button class="close circle" @click="slotProps.close()">
+                    <i class="far fa-times"></i>
+                </button>
+                <BaseSegmentedControl
+                    theme="light"
+                    activeClass="white"
+                    :options="segmentedControlOptions"
+                    :currentOptionIndex="view == 'Wishlist' ? 0 : 1"
+                    v-slot="slotProps"
+                    @change="$event => $emit('update:view', segmentedControlOptions[$event].name)"
+                >
+                    <i :class="[slotProps.option.iconClass]"></i>
+                    <span>{{ slotProps.option.name }}</span>
+                    <span>{{ slotProps.option.count }}</span>
+                </BaseSegmentedControl>
+                <div></div>
             </div>
         </template>
         <template v-if="show">
             <div class="saved-item-list flex-list flex-v min">
-                <template v-if="view == 'wishlist'">
+                <template v-if="view == 'Wishlist'">
                     <WishlistItem
                         v-for="item in wishlistSnapshot"
                         :key="item.id"
@@ -54,8 +45,9 @@
         />
         <div class="cta-wrapper">
             <BaseButton
+                v-if="view == 'Basket'"
                 class="checkout-button full-width"
-                buttonClass="dark full-width rounded lg checkout-button"
+                buttonClass="dark full-width checkout-button"
                 :disabled="basket.length <= 0"
             >
                 <template v-slot:iconLeft>
@@ -101,8 +93,8 @@ export default {
         },
         segmentedControlOptions() {
             return [
-                { name: 'wishlist', iconClass: 'far fa-heart', size: this.wishlist.length },
-                { name: 'basket', iconClass: 'far fa-shopping-bag', size: this.basket.length },
+                { name: 'Wishlist', iconClass: 'far fa-heart', count: this.wishlist.length },
+                { name: 'Basket', iconClass: 'far fa-shopping-bag', count: this.basket.length },
             ]
         },
     },
@@ -124,7 +116,7 @@ export default {
         }
     }
     .header-inner {
-        padding: 8px 8px 0 16px;
+        padding: 8px;
     }
     .add-to-basket-selector {
         position: absolute;
@@ -136,6 +128,12 @@ export default {
         &.show {
             transform: none;
         }
+    }
+    .cta-wrapper {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 16px;
     }
 }
 </style>

@@ -1,8 +1,6 @@
 <template>
     <div class="add-to-basket-selector flex-list bg-blur">
-        <button class="white true-square add-to-wishlist" @click="toggleInWishlist(variant)">
-            <i class="fa-heart ft-16" :class="variantIsInWishlist ? 'primary fas' : 'far'"></i>
-        </button>
+        <AddToWishlistButton class="white true-square" :variants="[variant]" />
         <div class="flex-list justify equal-width flex-1">
             <v-popover class="size-selector" trigger="click" ref="sizePopover">
                 <button class="white full-width">

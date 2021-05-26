@@ -15,14 +15,8 @@
             </div>
         </div>
         <div class="action-list flex-list space-xs" slot="popover">
-            <button
-                class="invisible true-square float-icon-hover"
-                @click="toggleInWishlist(variant)"
-                :class="isInWishlist ? 'primary active' : 'dark'"
-            >
-                <i class="far fa-heart ft-16"></i>
-            </button>
-            <button class="invisible true-square float-icon-hover" :class="isInWishlist ? 'primary active' : 'dark'">
+            <AddToWishlistButton :variants="[variant]" class="invisible true-square float-icon-hover" />
+            <button class="invisible true-square float-icon-hover dark">
                 <i class="far fa-shopping-bag ft-16"></i>
             </button>
         </div>
@@ -30,20 +24,14 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapMutations } from 'vuex'
+import AddToWishlistButton from './AddToWishlistButton'
+
 export default {
     name: 'play.variantPreview',
+    components: { AddToWishlistButton },
     props: ['variant'],
-    computed: {
-        ...mapGetters('wishlist', {
-            getVariantIsInWishlist: 'getVariantIsInWishlist',
-        }),
-        isInWishlist() {
-            return this.getVariantIsInWishlist(this.variant)
-        },
-    },
     methods: {
-        ...mapActions('wishlist', ['toggleInWishlist']),
         ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
     },
 }

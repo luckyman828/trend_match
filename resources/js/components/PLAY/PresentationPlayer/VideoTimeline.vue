@@ -80,7 +80,6 @@ export default {
         },
         onClickToTimestamp(e) {
             this.wasClick = true
-            console.log('on click')
             this.getDragTime(e)
             this.seekTo(this.dragTime)
             this.dragTime = null

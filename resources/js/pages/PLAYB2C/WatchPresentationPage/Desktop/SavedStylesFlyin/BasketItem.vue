@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="action-list flex-list center-v">
-                    <AddToWishlistButton :variant="variant" />
+                    <AddToWishlistButton :variants="[variant]" />
                     <div class="button invisible ghost-hover dark circle">
                         <i class="fas fa-ellipsis-h"></i>
                     </div>

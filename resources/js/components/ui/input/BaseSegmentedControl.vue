@@ -62,6 +62,13 @@ export default {
     background: $grey;
     &.theme-light {
         background: $bluegrey250;
+        .option {
+            font-weight: 700;
+            color: black;
+            i {
+                color: black;
+            }
+        }
     }
     border-radius: 50px;
     white-space: nowrap;

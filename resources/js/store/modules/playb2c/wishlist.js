@@ -34,6 +34,21 @@ export default {
         removeFromWishlist({commit}, variant) {
             commit('REMOVE_ITEM', variant)
         },
+        addItems({commit, getters}, variants) {
+            console.log('add items', variants)
+            variants.map(variant => {
+                if (!getters.getVariantIsInWishlist(variant)) {
+                    commit('ADD_ITEM', variant)
+                }
+            })
+        },
+        removeItems({commit, getters}, variants) {
+            variants.map(variant => {
+                if (getters.getVariantIsInWishlist(variant)) {
+                    commit('REMOVE_ITEM', variant)
+                }
+            })
+        },
     },
 
     mutations: {

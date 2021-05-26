@@ -29,17 +29,22 @@
                 </button>
             </div>
 
+            <div class="bottom-center-items flex-list">
+                <AddToWishlistButton
+                    class="circle white"
+                    :class="!currentVariant && 'disabled'"
+                    :disabled="!currentVariant"
+                    :variants="currentTiming.variants"
+                />
+                <BaseButton buttonClass="white pill" :disabled="!currentVariant">
+                    <i class="far fa-shopping-bag" />
+                    <span>Add to basket</span>
+                </BaseButton>
+            </div>
+
             <PreviewList v-if="currentTiming" />
 
-            <PlayerControls>
-                <template v-slot:center>
-                    <AddToWishlistButton buttonClass="white true-square" :disabled="!currentTiming" />
-                    <BaseButton buttonClass="white square" :disabled="!currentTiming">
-                        <i class="far fa-shopping-bag" />
-                        <span>Add to basket</span>
-                    </BaseButton>
-                </template>
-            </PlayerControls>
+            <PlayerControls />
 
             <ProductDetailsFlyin :show="!!sidebarItem" @close="SET_SIDEBAR_ITEM(null)" />
             <SavedStylesFlyin
@@ -92,6 +97,7 @@ export default {
             sidebarItem: 'getSidebarItem',
             currentTimingIndex: 'getCurrentTimingIndex',
             currentTiming: 'getCurrentTiming',
+            currentVariant: 'getCurrentVariant',
         }),
         ...mapGetters('player', {
             isPlaying: 'getIsPlaying',
@@ -128,6 +134,19 @@ export default {
         position: absolute;
         right: 12px;
         top: 8px;
+        @include bg-blur;
+        padding: 8px;
+        border-radius: 52px;
+    }
+    .bottom-center-items {
+        position: absolute;
+        bottom: 48px;
+        margin: 0 auto;
+        @include bg-blur;
+        padding: 8px;
+        border-radius: 52px;
+        left: 50%;
+        transform: translateX(-50%);
     }
     .wishlist-button {
         &.active {

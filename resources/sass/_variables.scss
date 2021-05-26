@@ -350,3 +350,8 @@ $card-sizes: ('xs', 4px, 4px), ('sm', 8px, 8px), ('md', 16px, 16px);
 
 // UI SQUARE SIZES ($name, $height, $padding, $min-width)
 $ui-square-sizes: ('xs', 24px, 12px, 8px), ('sm', 40px, 6px, 24px), ('md', 44px, 14px, 16px), ('lg', 48px, 14px, 20px);
+
+@mixin bg-blur {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px) brightness(80%);
+}
