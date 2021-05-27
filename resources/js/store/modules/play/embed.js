@@ -5,7 +5,7 @@ export default {
     actions: {
         postMessage({}, msg) {
             const targetWindow = window.parent
-            if (!targetWindow) return 
+            if (!targetWindow || targetWindow == window) return 
             const targetOrigin = `https://kollektteststore.myshopify.com`
             targetWindow.postMessage(msg, targetOrigin)
         },

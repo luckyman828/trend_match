@@ -107,6 +107,7 @@ export default {
 
 .product-details-flyin {
     line-height: 1.4;
+    background: white;
     &::v-deep {
         .flyin {
             min-width: 0;

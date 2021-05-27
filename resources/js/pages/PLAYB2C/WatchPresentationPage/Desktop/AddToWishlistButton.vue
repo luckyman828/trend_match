@@ -1,5 +1,5 @@
 <template>
-    <button class="add-to-wishlist" @click="onAddToWishlist">
+    <button class="add-to-wishlist" :class="isInWishlist && 'active'" @click="onAddToWishlist">
         <i class="fa-heart ft-16" :class="isInWishlist ? 'primary fas' : 'far'"></i>
     </button>
 </template>

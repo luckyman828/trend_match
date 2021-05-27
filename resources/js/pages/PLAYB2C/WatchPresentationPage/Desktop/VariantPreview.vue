@@ -16,9 +16,12 @@
         </div>
         <div class="action-list flex-list space-xs" slot="popover">
             <AddToWishlistButton :variants="[variant]" class="invisible true-square float-icon-hover" />
-            <button class="invisible true-square float-icon-hover dark">
-                <i class="far fa-shopping-bag ft-16"></i>
-            </button>
+            <AddToBasketButton
+                :variant="variant"
+                textStyle="none"
+                buttonClass="invisible true-square float-icon-hover"
+                :resetOnSubmit="true"
+            />
         </div>
     </v-popover>
 </template>
@@ -26,10 +29,11 @@
 <script>
 import { mapMutations } from 'vuex'
 import AddToWishlistButton from './AddToWishlistButton'
+import AddToBasketButton from './AddToBasketButton'
 
 export default {
     name: 'play.variantPreview',
-    components: { AddToWishlistButton },
+    components: { AddToWishlistButton, AddToBasketButton },
     props: ['variant'],
     methods: {
         ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),

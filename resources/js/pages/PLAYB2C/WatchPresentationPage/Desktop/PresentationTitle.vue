@@ -12,10 +12,8 @@
                 <i class="fas fa-arrow-left"></i>
             </button>
             <div class="title">
-                <!-- <div class="video-name">Matíníque</div>
-                <div class="brand-name">{{ workspace.title }}</div> -->
-                <div class="video-name">Main Spring 2021</div>
-                <div class="brand-name">Matíníque</div>
+                <div class="video-name">{{ presentation.name }}</div>
+                <div class="brand-name">{{ workspace.title }}</div>
             </div>
         </div>
     </div>
@@ -24,8 +22,8 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-    name: 'videoTitle',
-    props: ['video'],
+    name: 'presentationTitle',
+    props: ['presentation'],
     computed: {
         ...mapGetters('workspaces', {
             workspace: 'currentWorkspace',

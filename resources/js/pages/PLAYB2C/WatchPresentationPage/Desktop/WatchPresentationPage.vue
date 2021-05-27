@@ -5,7 +5,7 @@
                 <BeforeStartOverlay :video="video" />
             </template>
 
-            <VideoTitle :video="video" />
+            <PresentationTitle :presentation="presentation" />
             <div class="top-right-items flex-list">
                 <button
                     class="wishlist-count pill white w-xxs"
@@ -36,10 +36,12 @@
                     :disabled="!currentVariant"
                     :variants="currentTiming.variants"
                 />
-                <BaseButton buttonClass="white pill" :disabled="!currentVariant">
-                    <i class="far fa-shopping-bag" />
-                    <span>Add to basket</span>
-                </BaseButton>
+                <AddToBasketButton
+                    :variant="currentVariant"
+                    buttonClass="pill"
+                    baseClass="white"
+                    :resetOnSubmit="true"
+                />
             </div>
 
             <PreviewList v-if="currentTiming" />
@@ -57,29 +59,31 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../../../components/PLAY/VideoPlayer'
 import PlayerControls from '../../../../components/PLAY/PresentationPlayer/Desktop/PlayerControls'
 
 import BeforeStartOverlay from './BeforeStartOverlay'
-import VideoTitle from './VideoTitle'
+import PresentationTitle from './PresentationTitle'
 import PreviewList from './PreviewList'
 import AddToWishlistButton from './AddToWishlistButton'
+import AddToBasketButton from './AddToBasketButton'
 
 import ProductDetailsFlyin from './ProductDetailsFlyin/'
 import SavedStylesFlyin from './SavedStylesFlyin/'
 
 export default {
-    name: 'watchVideoPage',
+    name: 'watchPresentationPage',
     components: {
         VideoPlayer,
         PlayerControls,
         BeforeStartOverlay,
-        VideoTitle,
+        PresentationTitle,
         PreviewList,
         ProductDetailsFlyin,
         SavedStylesFlyin,
         AddToWishlistButton,
+        AddToBasketButton,
     },
     data: function() {
         return {
@@ -88,11 +92,13 @@ export default {
             showControls: true,
             showCart: false,
             showChatInput: false,
+            addToBasketVariant: null,
         }
     },
     computed: {
         ...mapGetters('playPresentation', {
             video: 'getVideo',
+            presentation: 'getPresentation',
             videoTimings: 'getTimings',
             sidebarItem: 'getSidebarItem',
             currentTimingIndex: 'getCurrentTimingIndex',
