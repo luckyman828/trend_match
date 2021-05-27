@@ -2,7 +2,7 @@
     <ChooseSizePopover
         :variant="localVariant"
         @submit="onAddToBasket"
-        :disabled="!!variantAddedToBasket || !!size"
+        :disabled="!variant || !!variantAddedToBasket || !!size"
         ref="sizeSelector"
     >
         <BaseStateAlternatingButton

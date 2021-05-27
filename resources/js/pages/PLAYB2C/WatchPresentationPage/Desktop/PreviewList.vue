@@ -1,7 +1,9 @@
 <template>
     <div class="preview-list-wrapper">
         <div class="preview-list flex-list flex-v bg-blur" ref="previewList">
-            <VariantPreview v-for="variant in currentTiming.variants" :variant="variant" :key="variant.id" />
+            <template v-if="currentTiming">
+                <VariantPreview v-for="variant in currentTiming.variants" :variant="variant" :key="variant.id" />
+            </template>
         </div>
     </div>
 </template>

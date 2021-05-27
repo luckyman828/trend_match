@@ -15,6 +15,7 @@ export default {
         timelineKnobIsBeingDragged: false,
         controlsHidden: false,
         recentlyStarted: false,
+        desiredQuality: null,
     },
 
     getters: {
@@ -34,6 +35,7 @@ export default {
         getPlayerStarted: state => state.isStarted,
         getPlayerRecentlyStarted: state => state.recentlyStarted,
         getContainerEl: state => state.player,
+        getDesiredQuality: state => state.desiredQuality,
     },
 
     actions: {
@@ -88,6 +90,14 @@ export default {
             if (getters.getVideoType == 'live') {
                 player.currentTime = player.duration
             }
+        },
+        async pause({ commit, getters }) {
+            if (getters.getIsLive && (getters.desiredStatus == 'playing' || getters.getStatus == 'playing')) return
+            const player = getters.getPlayer
+            if (!player) return
+            commit('SET_DESIRED_STATUS', 'paused')
+            player.pause()
+            
         },
         async seekTo({ commit, getters }, timestamp) {
             const player = getters.getPlayer
@@ -144,6 +154,9 @@ export default {
                 state.recentlyStarted = false
             }, delay)
         },
+        SET_DESIRED_QUALITY(state, quality) {
+            state.desiredQuality = quality
+        },
         RESET_PLAYER(state) {
             state.controlsHidden = false
             state.player = null
@@ -158,6 +171,7 @@ export default {
             state.isSeeking = false
             state.timelineKnobIsBeingDragged = false
             state.isStarted = false
+            state.desiredQuality = null
         },
     },
 }

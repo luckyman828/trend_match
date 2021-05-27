@@ -169,7 +169,7 @@ export default {
             })
             return status
         },
-        async fetchVideoUrls({}, video) {
+        async fetchVideoUrls({commit}, video) {
             let videoUrls
             const apiUrl = `media/get-cdn-video-urls`
             await axios.post(apiUrl, { key: video.identifier }).then(response => {
@@ -178,6 +178,7 @@ export default {
                 videoUrls.map(videoUrlObj => {
                     urlObj[videoUrlObj.quality] = videoUrlObj.play_url
                 })
+                commit('player/SET_DESIRED_QUALITY', videoUrls[videoUrls.length-1].quality, {root: true})
                 Vue.set(video, 'urls', urlObj)
             })
             return videoUrls

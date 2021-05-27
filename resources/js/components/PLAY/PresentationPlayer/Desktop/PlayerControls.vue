@@ -33,7 +33,22 @@
             <VideoTimeline v-if="playerReady && !isLive" />
         </div>
 
-        <div class="right">
+        <div class="right flex-list">
+            <v-popover trigger="click" ref="qualitySelector">
+                <button class="invisible white circle ghost-hover">
+                    <i class="far fa-cog"></i>
+                </button>
+                <BaseSelectButtons
+                    header="Quality"
+                    slot="popover"
+                    type="radio"
+                    :submitOnChange="true"
+                    :options="Object.keys(video.urls)"
+                    :value="desiredQuality"
+                    @change="onChangeQuality"
+                />
+            </v-popover>
+
             <!-- FULLSCREEN MODE -->
             <button
                 class="invisible white circle ghost-hover"
@@ -77,8 +92,10 @@ export default {
             isPlaying: 'getIsPlaying',
             hideControls: 'getControlsHidden',
             playerReady: 'getPlayer',
+            desiredQuality: 'getDesiredQuality',
         }),
         ...mapGetters('playPresentation', {
+            video: 'getVideo',
             timings: 'getTimings',
             currentTimingIndex: 'getCurrentTimingIndex',
             product: 'getCurrentProduct',
@@ -86,7 +103,11 @@ export default {
     },
     methods: {
         ...mapActions('player', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapMutations('player', ['SET_CONTROLS_HIDDEN']),
+        ...mapMutations('player', ['SET_CONTROLS_HIDDEN', 'SET_DESIRED_QUALITY']),
+        onChangeQuality(newQuality) {
+            this.SET_DESIRED_QUALITY(newQuality)
+            this.$refs.qualitySelector.hide()
+        },
         toggleFullscreenMode() {
             if (this.fullscreenModeActive) {
                 this.onExitFullscreen()

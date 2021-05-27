@@ -32,9 +32,9 @@
             <div class="bottom-center-items flex-list">
                 <AddToWishlistButton
                     class="circle white"
-                    :class="!currentVariant && 'disabled'"
-                    :disabled="!currentVariant"
-                    :variants="currentTiming.variants"
+                    :class="!currentTiming && 'disabled'"
+                    :disabled="!currentTiming"
+                    :variants="currentTiming && currentTiming.variants"
                 />
                 <AddToBasketButton
                     :variant="currentVariant"

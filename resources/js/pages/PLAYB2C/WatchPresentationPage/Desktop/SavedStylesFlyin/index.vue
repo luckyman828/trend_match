@@ -21,7 +21,7 @@
             </div>
         </template>
         <template v-if="show">
-            <div class="saved-item-list flex-list flex-v min">
+            <div class="saved-item-list flex-list flex-v space-sm">
                 <template v-if="view == 'Wishlist'">
                     <WishlistItem
                         v-for="item in wishlistSnapshot"
