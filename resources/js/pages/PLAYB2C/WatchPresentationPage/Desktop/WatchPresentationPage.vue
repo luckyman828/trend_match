@@ -1,5 +1,12 @@
 <template>
-    <div class="watch-video-page" :class="[`desired-${desiredStatus}`, { 'recently-started': recentlyStarted }]">
+    <div
+        class="watch-video-page"
+        :class="[
+            `desired-${desiredStatus}`,
+            { 'recently-started': recentlyStarted },
+            { 'show-timing-list': showTimingList },
+        ]"
+    >
         <VideoPlayer :video="video" :autoplay="false" :hideTimeline="true">
             <template v-slot:beforeStart>
                 <BeforeStartOverlay :video="video" />
@@ -46,7 +53,9 @@
 
             <PreviewList v-if="currentTiming" />
 
-            <PlayerControls />
+            <PlayerControls class="player-controls" @show-timing-list="showTimingList = true" />
+
+            <TimingListDrawer :show="showTimingList" @close="showTimingList = false" />
 
             <ProductDetailsFlyin :show="!!sidebarItem" @close="SET_SIDEBAR_ITEM(null)" />
             <SavedStylesFlyin
@@ -71,6 +80,7 @@ import AddToBasketButton from './AddToBasketButton'
 
 import ProductDetailsFlyin from './ProductDetailsFlyin/'
 import SavedStylesFlyin from './SavedStylesFlyin/'
+import TimingListDrawer from './TimingListDrawer/'
 
 export default {
     name: 'watchPresentationPage',
@@ -84,6 +94,7 @@ export default {
         SavedStylesFlyin,
         AddToWishlistButton,
         AddToBasketButton,
+        TimingListDrawer,
     },
     data: function() {
         return {
@@ -93,6 +104,7 @@ export default {
             showCart: false,
             showChatInput: false,
             addToBasketVariant: null,
+            showTimingList: null,
         }
     },
     computed: {
@@ -152,12 +164,27 @@ export default {
         padding: 8px;
         border-radius: 52px;
         left: 50%;
+        transition: transform 0.2s ease-out;
         transform: translateX(-50%);
+        z-index: 2;
+    }
+    .player-controls {
+        z-index: 2;
     }
     .wishlist-button {
         &.active {
             i {
                 font-weight: 900;
+            }
+        }
+    }
+    &.show-timing-list {
+        .bottom-center-items {
+            transform: translate(-50%, -216px);
+        }
+        &::v-deep {
+            .player-controls {
+                background: none;
             }
         }
     }

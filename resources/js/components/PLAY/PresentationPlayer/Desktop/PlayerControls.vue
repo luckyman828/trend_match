@@ -16,11 +16,11 @@
             <!-- MUTE / UNMUTE -->
             <VolumeControl />
 
-            <div class="product-totals">
-                <div class="pill invisible white">
+            <div class="product-totals" @click="$emit('show-timing-list')">
+                <button class="pill invisible white ghost-hover">
                     <i class="far fa-tshirt"></i>
                     <span> {{ currentTimingIndex + 1 }} of {{ timings.length }} styles </span>
-                </div>
+                </button>
             </div>
 
             <slot name="left" />

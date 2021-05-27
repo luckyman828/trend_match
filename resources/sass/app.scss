@@ -160,6 +160,12 @@ textarea {
 .lh-sm {
     line-height: 1.4;
 }
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
 
 // ---------- END FONTS
 

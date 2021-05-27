@@ -67,7 +67,7 @@ export default {
             }
         },
         desiredQuality(newQuality) {
-            this.pause()
+            this.player.pause()
             this.unhandledQualityChange = true
         },
     },
@@ -116,7 +116,9 @@ export default {
                 this.addEventListeners()
             } else if (this.unhandledQualityChange) {
                 this.seekTo(this.currentTimestamp)
-                this.play()
+                if (this.desiredStatus == 'playing') {
+                    this.play()
+                }
                 this.unhandledQualityChange = false
             }
         },

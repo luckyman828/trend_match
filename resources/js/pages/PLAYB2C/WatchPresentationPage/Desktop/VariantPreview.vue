@@ -55,7 +55,7 @@ export default {
         width: 100%;
     }
     .price-wrapper {
-        padding: 0 4px;
+        padding: 0 8px;
     }
     .price {
         font-size: 12px;

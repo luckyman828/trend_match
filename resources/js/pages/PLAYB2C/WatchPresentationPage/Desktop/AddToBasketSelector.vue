@@ -91,7 +91,7 @@ export default {
 @import '~@/_variables.scss';
 .add-to-basket-selector {
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 50px;
     backdrop-filter: blur(8px) brightness(80%);
     .size-selector {
         &::v-deep {
