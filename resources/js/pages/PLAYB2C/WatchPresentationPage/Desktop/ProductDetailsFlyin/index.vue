@@ -98,6 +98,11 @@ export default {
                 )
             }
         },
+        sidebarItem(newItem) {
+            if (newItem) {
+                this.setCurrentVariant(newItem.variant)
+            }
+        },
     },
 }
 </script>
@@ -112,6 +117,9 @@ export default {
         .flyin {
             min-width: 0;
             width: 352px;
+        }
+        .overlay {
+            opacity: 0;
         }
     }
     .header-inner {

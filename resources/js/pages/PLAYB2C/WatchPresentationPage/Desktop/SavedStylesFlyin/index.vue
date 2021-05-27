@@ -125,6 +125,9 @@ export default {
                 padding: 4px 0;
             }
         }
+        .overlay {
+            opacity: 0;
+        }
     }
     .header-inner {
         padding: 8px;

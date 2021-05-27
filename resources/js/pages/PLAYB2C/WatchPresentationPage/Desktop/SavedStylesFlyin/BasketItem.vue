@@ -1,6 +1,10 @@
 <template>
     <div class="basket-item flex-list space-min bg-theme-white">
-        <BaseImageSizer fit="cover" class="image">
+        <BaseImageSizer
+            fit="cover"
+            class="image"
+            @click.native="SET_SIDEBAR_ITEM({ variant, product: variant.product })"
+        >
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
 
@@ -69,7 +73,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../AddToWishlistButton'
 
 export default {
@@ -85,6 +89,7 @@ export default {
         },
     },
     methods: {
+        ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
         ...mapActions('basket', ['updateItemQty']),
         decrementQty() {
             this.updateItemQty({ item: this.item, qty: this.item.qty - 1 })
@@ -104,6 +109,7 @@ export default {
     box-shadow: $shadowXs;
     .image {
         width: 100px;
+        cursor: pointer;
     }
     .details {
         overflow: hidden;
