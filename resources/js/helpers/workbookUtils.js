@@ -184,6 +184,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         file.rows.map(row => {
             let rowCurrency = null
             let rowAssortmentName = null
+            let rowAssortmentGroup = null
             let rowVariant = null
             let rowDeliveries = []
 
@@ -461,16 +462,22 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                 // START MAP ASSORTMENTS
                 if (product.assortments && field.scope == 'assortments') {
+                    if (field.groupId != rowAssortmentGroup) {
+                        rowAssortmentName = null
+                    }
+                    
                     // Find the assortment name for this row && field to map.
                     // This only works because the assortment name field is always the first assortment field being mapped
                     if (field.name == 'name') {
+                        rowAssortmentGroup = field.groupId
                         rowAssortmentName = fieldValue
                     }
-
+                    
                     // Check if the assortment group already exists
                     let assortmentGroup = product.assortments.find(
                         x => x.mappingGroupId == field.groupId && x.name == rowAssortmentName
-                    )
+                        )
+                    if (!assortmentGroup && !rowAssortmentName) return
                     if (!assortmentGroup) {
                         assortmentGroup = {
                             mappingGroupId: field.groupId,
@@ -533,6 +540,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             })
         }
     })
+    console.log('instantiated products', products)
     // Remove products with no ID
     return products.filter(x => !!x.datasource_id)
 }
