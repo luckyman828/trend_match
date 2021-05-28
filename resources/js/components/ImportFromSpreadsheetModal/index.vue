@@ -194,10 +194,10 @@ export default {
                     // STRATEGY: REPLACE
                     if (strategy == 'replace') {
                         // If the strategy is replace, simply overwrite all the existing key values with our new values
+                        delete product[key]
                         Vue.set(product, key, newProduct[key])
                         return
                     }
-
                     this.setKeyValue(newProduct, product, key, strategy, mappedfields)
                 })
             })
