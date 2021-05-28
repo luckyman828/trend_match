@@ -21,10 +21,6 @@ export default {
                 description:
                     'The owner aligns selections and can make requests. Also manages the team and can add/remove users',
             },
-            {
-                role: 'Approver',
-                description: 'Replies to requests',
-            },
         ],
         workspaceFetchedFromId: null,
     },

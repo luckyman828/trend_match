@@ -219,7 +219,7 @@ export default {
             // Add the team to the selection
             await this.addTeamsToSelection({ selection: this.selection, teams })
 
-            this.updateSelectionUsers({ selection: this.selection, users: usersAddedFromTeams })
+            // this.updateSelectionUsers({ selection: this.selection, users: usersAddedFromTeams })
         },
         sortTeams(method, key) {
             // If if we are already sorting by the given key, flip the sort order
