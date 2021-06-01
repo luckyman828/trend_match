@@ -154,11 +154,23 @@ export default {
                 return a.start > b.start ? 1 : -1
             })
 
+            // const timingsToPost = timings.map(timing => {
+            //     const cleanTiming = Object.assign({}, timing)
+            //     delete cleanTiming.id
+            //     delete cleanTiming.initDone
+            //     return cleanTiming
+            // })
+
+            // const videoToPost = Object.assign({}, video)
+            // delete videoToPost.urls
+            // delete videoToPost.status
+
 
             await axios
                 .post(apiUrl, {
                     video,
-                    timings: timings,
+                    timings,
+                    published: true,
                 })
                 .then(response => {
                     commit('SET_STATUS', 'success')
@@ -268,24 +280,38 @@ export default {
                 // Give the timing an ID
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++
-                if (!timing.product_ids) Vue.set(timing, 'product_ids', [])
+                if (!timing.variants) Vue.set(timing, 'variants', [])
 
-                Object.defineProperty(timing, 'products', {
+                Object.defineProperty(timing, 'type', {
                     get() {
-                        const products = rootGetters['products/products']
-                        return products.filter(product => timing.product_ids.includes(product.id))
+                        return timing.variants.length > 1 ? 'Look' : 'Single'
+                    },
+                })
+                timing.variants.map(timingVariant => {
+                    Object.defineProperty(timingVariant, 'product', {
+                        get() {
+                            const products = rootGetters['products/products']
+                            return products.find(product => product.id == timingVariant.product_id)
+                        },
+                    })
+                    Object.defineProperty(timingVariant, 'variant', {
+                        get() {
+                            return timingVariant.product.variants.find(variant => variant.id == timingVariant.variant_id)
+                        },
+                    })
+
+                })
+                Object.defineProperty(timing, 'variantMaps', {
+                    get() {
+                        return timing.variants
                     },
                 })
                 Object.defineProperty(timing, 'product', {
                     get() {
-                        return timing.products[0]
+                        return timing.variantMaps.length > 0 && timing.variantMaps[0].product
                     },
                 })
-                Object.defineProperty(timing, 'variants', {
-                    get() {
-                        return timing.products.map(product => product.variants[0])
-                    },
-                })
+
                 Object.defineProperty(timing, 'start', {
                     get() {
                         return timing.start_at_ms

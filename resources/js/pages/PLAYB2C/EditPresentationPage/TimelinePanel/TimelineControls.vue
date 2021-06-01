@@ -38,16 +38,16 @@ export default {
             duration: 'getDuration',
             desiredStatus: 'getDesiredStatus',
         }),
-        ...mapGetters('videoPresentation', {
+        ...mapGetters('playPresentation', {
             zoom: 'getTimelineZoom',
-            timings: 'getVideoTimings',
+            timings: 'getTimings',
             zoomLevels: 'getZoomLevels',
             timelineRail: 'getTimelineRail',
         }),
     },
     methods: {
         ...mapActions('player', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapMutations('videoPresentation', ['SET_TIMELINE_ZOOM']),
+        ...mapMutations('playPresentation', ['SET_TIMELINE_ZOOM']),
         onToggleZoom() {
             const zoomLevels = this.zoomLevels
             const index = zoomLevels.findIndex(x => x == this.zoom)

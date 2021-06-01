@@ -7,85 +7,87 @@
         subHeader="Presentation details"
         v-bind="$attrs"
     >
-        <div class="upload-progress-wrapper flex-list center-h" v-if="presentation.uploadChannel">
-            <div
-                class="upload-progress flex-list center-v space-md"
-                :class="{ success: presentation.uploadChannel.progress.status != 'Uploading' }"
-            >
-                <div class="ft-10 ft-bd file-name">
-                    {{ presentation.uploadChannel.file.name }}
-                </div>
-                <div class="flex-list space-xs center-v">
-                    <div class="ft-10 color-grey">
-                        {{ presentation.uploadChannel.progress.progressPercentage }}
+        <template v-if="presentation">
+            <div class="upload-progress-wrapper flex-list center-h" v-if="presentation.uploadChannel">
+                <div
+                    class="upload-progress flex-list center-v space-md"
+                    :class="{ success: presentation.uploadChannel.progress.status != 'Uploading' }"
+                >
+                    <div class="ft-10 ft-bd file-name">
+                        {{ presentation.uploadChannel.file.name }}
                     </div>
-                    <div class="rail">
-                        <div
-                            class="current"
-                            :style="{ width: presentation.uploadChannel.progress.progressPercentage }"
-                        ></div>
+                    <div class="flex-list space-xs center-v">
+                        <div class="ft-10 color-grey">
+                            {{ presentation.uploadChannel.progress.progressPercentage }}
+                        </div>
+                        <div class="rail">
+                            <div
+                                class="current"
+                                :style="{ width: presentation.uploadChannel.progress.progressPercentage }"
+                            ></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="name-input-wrapper">
-            <BaseInputField
-                v-model="presentation.name"
-                theme="light"
-                class="lg"
-                :selectOnFocus="true"
-                innerLabel="Presentation name"
-                v-slot="slotProps"
-                @submit="onSubmitName"
-            >
-                <button class="white pill" @click="slotProps.activate()">
-                    <i class="far fa-pen"></i>
-                    <span>Edit</span>
-                </button>
-            </BaseInputField>
-        </div>
+            <div class="name-input-wrapper">
+                <BaseInputField
+                    v-model="presentation.name"
+                    theme="light"
+                    class="lg"
+                    :selectOnFocus="true"
+                    innerLabel="Presentation name"
+                    v-slot="slotProps"
+                    @submit="onSubmitName"
+                >
+                    <button class="white pill" @click="slotProps.activate()">
+                        <i class="far fa-pen"></i>
+                        <span>Edit</span>
+                    </button>
+                </BaseInputField>
+            </div>
 
-        <div class="thumbnail-section">
-            <div class="ft-14 ft-bd label">Thumbnail</div>
-            <BaseDroparea class="thumbnail-droparea" theme="light" @input="onImageChange" accept="image/*">
-                <template v-slot="slotProps">
-                    <!-- No thumbnail -->
-                    <template v-if="!presentation.thumbnail">
-                        <img class="upload-graphic" src="images/svg/undraw_Upload_re_pasx.svg" />
-                        <div class="ft-16 ft-bd">
-                            Drop your thumbnail file here
-                        </div>
-                        <button class="bottom-action white pill" @click="slotProps.activate()">
-                            <i class="far fa-laptop"></i>
-                            <span>Browse your computer</span>
-                        </button>
+            <div class="thumbnail-section">
+                <div class="ft-14 ft-bd label">Thumbnail</div>
+                <BaseDroparea class="thumbnail-droparea" theme="light" @input="onImageChange" accept="image/*">
+                    <template v-slot="slotProps">
+                        <!-- No thumbnail -->
+                        <template v-if="!presentation.thumbnail">
+                            <img class="upload-graphic" src="images/svg/undraw_Upload_re_pasx.svg" />
+                            <div class="ft-16 ft-bd">
+                                Drop your thumbnail file here
+                            </div>
+                            <button class="bottom-action white pill" @click="slotProps.activate()">
+                                <i class="far fa-laptop"></i>
+                                <span>Browse your computer</span>
+                            </button>
+                        </template>
+
+                        <!-- Has thumbnail -->
+                        <template v-else>
+                            <div class="flex-list thumbnail-list">
+                                <BaseImageSizer aspect="16:9" fit="cover" :controlWidth="true">
+                                    <img :src="presentation.thumbnail" />
+                                    <div class="pill xs dark size-pill">
+                                        <span>16:9</span>
+                                    </div>
+                                </BaseImageSizer>
+                                <BaseImageSizer aspect="9:16" fit="cover" :controlWidth="true">
+                                    <img :src="presentation.thumbnail" />
+                                    <div class="pill xs dark size-pill">
+                                        <span>9:16</span>
+                                    </div>
+                                </BaseImageSizer>
+                            </div>
+                            <button class="bottom-action white pill" @click="slotProps.activate()">
+                                <i class="far fa-laptop"></i>
+                                <span>Choose another file</span>
+                            </button>
+                        </template>
                     </template>
-
-                    <!-- Has thumbnail -->
-                    <template v-else>
-                        <div class="flex-list thumbnail-list">
-                            <BaseImageSizer aspect="16:9" fit="cover" :controlWidth="true">
-                                <img :src="presentation.thumbnail" />
-                                <div class="pill xs dark size-pill">
-                                    <span>16:9</span>
-                                </div>
-                            </BaseImageSizer>
-                            <BaseImageSizer aspect="9:16" fit="cover" :controlWidth="true">
-                                <img :src="presentation.thumbnail" />
-                                <div class="pill xs dark size-pill">
-                                    <span>9:16</span>
-                                </div>
-                            </BaseImageSizer>
-                        </div>
-                        <button class="bottom-action white pill" @click="slotProps.activate()">
-                            <i class="far fa-laptop"></i>
-                            <span>Choose another file</span>
-                        </button>
-                    </template>
-                </template>
-            </BaseDroparea>
-        </div>
+                </BaseDroparea>
+            </div>
+        </template>
     </FlowBaseScreen>
 </template>
 

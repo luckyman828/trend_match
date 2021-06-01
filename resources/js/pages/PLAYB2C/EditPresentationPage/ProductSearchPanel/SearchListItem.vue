@@ -5,7 +5,7 @@
             tabindex="0"
             @keydown.enter="onAddTiming"
         >
-            <BaseImageSizer fit="cover" class="image" @click.native="SET_SIDEBAR_ITEM({ variant, product })">
+            <BaseImageSizer fit="cover" class="image">
                 <BaseVariantImage :variant="variant" size="sm" />
             </BaseImageSizer>
 
@@ -60,7 +60,7 @@
                 <BaseButton
                     buttonClass="circle"
                     targetAreaPadding="4px"
-                    @click="onAddTiming"
+                    @click="$emit('create-look', variant)"
                     tabindex="-1"
                     v-tooltip="'Create a look'"
                 >
@@ -128,9 +128,8 @@ export default {
             const newTiming = {
                 id: null,
                 start_at_ms: 0,
-                note: 'single',
                 end_at_ms: this.videoDuration / 12,
-                product_ids: [this.product.id],
+                variants: [{ product_id: this.product.id, variant_id: this.variant.id }],
             }
             this.addTiming({ newTiming })
         },
@@ -152,7 +151,6 @@ export default {
     height: 114px;
     .image {
         width: 72px;
-        cursor: pointer;
         border-radius: $borderRadiusMd;
         overflow: hidden;
     }
