@@ -1,7 +1,13 @@
 <template>
-    <div class="search" :class="[theme && 'theme-' + theme]" v-observe-visibility="focusOnMount && onVisibilityChanged">
+    <div
+        class="search flex-list center-v"
+        :class="{ empty: searchString.length <= 0 }"
+        v-observe-visibility="focusOnMount && onVisibilityChanged"
+        @click="setFocus"
+    >
+        <i class="search-icon far fa-search"></i>
         <input
-            class="input-wrapper"
+            class="lh-min"
             :class="[inputClasses]"
             :placeholder="placeholderText || 'Search..'"
             type="search"
@@ -12,23 +18,23 @@
             @keydown.esc="onEsc"
             @paste="onPaste"
         />
-        <span
-            v-if="searchString.length > 0"
-            class="clear"
+        <div class="true-square dark xs hotkey ghost" v-if="hotkeyEnabled">S</div>
+        <button
+            class="clear invisible circle sm"
             @click.stop="
                 clear()
                 setFocus()
             "
         >
             <i class="far fa-times-circle"></i>
-        </span>
+        </button>
     </div>
 </template>
 
 <script>
 import getUniqueObjectValuesByKey from '../../../helpers/getUniqueObjectValuesByKey'
 export default {
-    name: 'searchField',
+    name: 'SearchFieldV2',
     props: {
         arrayToSearch: {},
         searchKey: {},
@@ -40,6 +46,7 @@ export default {
             default: 'small',
         },
         theme: {},
+        hotkeyEnabled: false,
     },
     data: function() {
         return {
@@ -236,26 +243,36 @@ export default {
                 })
             }
 
-            // console.log('getResult', resultsToReturn)
-
             return resultsToReturn
+        },
+        hotkeyHandler(e) {
+            console.log('hotkey', e)
+            const key = e.code
+            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT') return
+
+            // Focus search
+            if (key == 'KeyS') {
+                e.preventDefault()
+                this.setFocus()
+            }
         },
     },
     mounted() {
         if (this.focusOnMount) {
             this.setFocus()
-            // const focusSearchTester = setInterval(() => {
-            //     if (document.activeElement.type == 'search') {
-            //         clearInterval(focusSearchTester)
-            //         return
-            //     }
-            //     this.setFocus()
-            // }, 100)
         }
     },
     created() {
+        if (this.hotkeyEnabled) {
+            document.addEventListener('keydown', this.hotkeyHandler)
+        }
         if (this.arrayToSearch) {
             this.$emit('input', this.getResult())
+        }
+    },
+    destroyed() {
+        if (this.hotkeyEnabled) {
+            document.removeEventListener('keydown', this.hotkeyHandler)
         }
     },
 }
@@ -266,33 +283,69 @@ export default {
 
 .search {
     position: relative;
-    input.input-wrapper {
-        width: 100%;
-        padding-right: 32px;
-        box-sizing: border-box;
+    background: $themeGreyBg;
+    border: solid 2px transparent;
+    border-radius: 50px;
+    padding: 4px 4px 4px 12px;
+    overflow: hidden;
+    cursor: text;
+    height: 32px;
+    .search-icon {
+        transition: 0.2s ease-out;
+        margin-right: 4px;
+        color: $dark100;
     }
-    .clear {
-        position: absolute;
-        right: 0;
-        top: 0;
-        font-size: 14px;
-        color: $fontIcon;
-        cursor: pointer;
-        padding: 4px 12px;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        &:hover i {
-            color: $font;
+    .hotkey {
+        transition: 0.2s ease-out;
+    }
+    &.empty,
+    &.empty:focus-within {
+        .clear {
+            display: none;
         }
     }
-    &.theme-light {
-        // background: ;
-        &::v-deep {
+    &:not(.empty) {
+        .hotkey {
+            display: none;
+        }
+    }
+    .clear {
+        &:hover {
+            i {
+                font-weight: 900;
+            }
+        }
+    }
+    &::v-deep {
+        &:focus-within {
+            background: $themeWhiteBg;
+            border-color: $primary;
+            .search-icon {
+                opacity: 0;
+            }
+            .search-icon,
             input {
-                border-radius: 16px;
-                border-color: transparent;
-                background: $themeGreyBg;
+                transform: translateX(-20px);
+            }
+            input {
+                color: $font;
+            }
+            .hotkey {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+        }
+        input {
+            border: none;
+            background: none;
+            transition: 0.2s ease-out;
+            font-size: 12px;
+            font-weight: 700;
+            color: $bluegrey700;
+            width: 100%;
+            &:focus {
+                outline: none;
+                border: none;
             }
         }
     }

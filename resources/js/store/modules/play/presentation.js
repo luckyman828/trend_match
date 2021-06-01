@@ -264,6 +264,7 @@ export default {
         },
         initTimings({ state, getters, rootGetters }, timings) {
             timings.map(timing => {
+                console.log('init this timing', timing)
                 // Give the timing an ID
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++

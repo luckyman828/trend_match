@@ -116,7 +116,7 @@ export default {
     &::v-deep {
         .flyin {
             min-width: 0;
-            width: 352px;
+            width: 384px;
         }
         .overlay {
             opacity: 0;

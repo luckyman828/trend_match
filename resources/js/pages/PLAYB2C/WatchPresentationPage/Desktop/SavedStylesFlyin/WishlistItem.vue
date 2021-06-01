@@ -1,5 +1,5 @@
 <template>
-    <div class="wishlist-item flex-list space-min bg-theme-white">
+    <div class="wishlist-item flex-list bg-theme-white theme-border">
         <BaseImageSizer
             fit="cover"
             class="image"
@@ -11,67 +11,76 @@
         <div class="flex-list flex-v justify details">
             <!-- TOP -->
 
-            <div class="name-section flex-list flex-v space-sm">
-                <div class="flex-v lh-xs">
+            <div class="name-section flex-list flex-v">
+                <div class="flex-list flex-v lh-xs space-sm">
                     <div class="brand ft-10 ft-md ft-color-soft ft-uppercase">
                         {{ variant.product.brand }}
                     </div>
                     <div class="product-name ft-bd ft-14">
-                        <span>{{ variant.product.name }}</span>
+                        <span class="truncate">{{ variant.product.name }}</span>
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-14">
+                    <div class="current-price ft-bd ft-12">
                         {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
                     </div>
-                    <div class="old-price ft-strike ft-12 ft-md">
+                    <div class="old-price ft-strike ft-12 ft-bd">
                         {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
                     </div>
                 </div>
             </div>
 
             <!-- BOTTOM -->
-            <div class="flex-list flex-v space-sm">
-                <div class="ft-12 ft-color-soft ft-md">Color</div>
-                <div class="color-wrapper">
-                    <div class="square color">
-                        <span class="ft-bd">{{ variant.name }}</span>
+            <div class="flex-list">
+                <v-popover trigger="click">
+                    <div class="color pill sm">
+                        <span
+                            class="circle xxs color-preview"
+                            :style="{ backgroundImage: `url(${variantImage(variant)})` }"
+                        ></span>
+                        <span class="ft-bd truncate">{{ variant.name }}</span>
+                        <i class="fas fa-caret-down"></i>
                     </div>
-                </div>
+                    <BaseSelectButtons
+                        header="Change color"
+                        slot="popover"
+                        type="radio"
+                        :submitOnChange="true"
+                        :options="variant.product.variants"
+                        :value="variant"
+                        optionNameKey="name"
+                        @change="onChangeVariant"
+                    />
+                </v-popover>
             </div>
-
-            <!-- ACTIONS  -->
-            <div class="action-list flex-list center-v">
-                <AddToWishlistButton class="true-square white" :variants="[variant]" />
-                <div class="button invisible ghost-hover circle">
-                    <i class="fas fa-ellipsis-h"></i>
-                </div>
-            </div>
-            <button
-                class="primary pill ghost-hover add-to-basket"
-                :class="variantAddedToBasket ? '' : 'invisible'"
-                @click="$emit('add-to-basket', variant)"
-            >
-                <i class="far fa-shopping-bag">
-                    <i v-if="variantAddedToBasket" class="far fa-check pos-right pos-bottom"></i>
-                </i>
-                <span v-if="variantAddedToBasket">Added</span>
-                <span v-else>Add</span>
-            </button>
-            <!-- END ACTIONS  -->
         </div>
+        <!-- ACTIONS  -->
+        <div class="action-list flex-list center-v">
+            <div class="button invisible circle sm">
+                <i class="far fa-ellipsis-h"></i>
+            </div>
+            <AddToWishlistButton class="circle sm" :variants="[variant]" />
+            <AddToBasketButton buttonClass="circle sm invisible" :variant="variant" textStyle="none" />
+        </div>
+        <!-- END ACTIONS  -->
     </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../AddToWishlistButton'
+import AddToBasketButton from '../AddToBasketButton'
+import variantImage from '../../../../../mixins/variantImage'
 
 export default {
     name: 'wishlistItem',
-    components: { AddToWishlistButton },
+    components: { AddToWishlistButton, AddToBasketButton },
+    mixins: [variantImage],
     props: ['variant'],
     computed: {
+        ...mapGetters('wishlist', {
+            wishlist: 'getWishlist',
+        }),
         ...mapGetters('basket', {
             getVariantIsInBasket: 'getVariantIsInBasket',
         }),
@@ -81,6 +90,12 @@ export default {
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
+        onChangeVariant(newVariant) {
+            // Replace the item on the index of this variant if our newly selected variant
+            const index = this.wishlist.findIndex(wishlistVariant => wishlistVariant.id == this.variant.id)
+            this.wishlist.splice(index, 1, newVariant)
+            this.$emit('update')
+        },
     },
 }
 </script>
@@ -90,24 +105,27 @@ export default {
 
 .wishlist-item {
     background: white;
-    box-shadow: $shadowXs;
+    border-radius: $borderRadiusMd;
+    padding: 8px;
+    position: relative;
     .image {
         width: 100px;
         cursor: pointer;
+        border-radius: $borderRadiusMd;
+        overflow: hidden;
+    }
+    .color-preview {
+        background-size: 50000%;
+        background-position: center;
     }
     .details {
         overflow: hidden;
         flex: 1;
-        padding: 8px;
         position: relative;
         .name-section {
             overflow: hidden;
-            padding-right: 80px;
-        }
-        .action-list {
-            position: absolute;
-            top: 4px;
-            right: 4px;
+            margin-top: 20px;
+            padding-left: 4px;
         }
         .add-to-basket {
             position: absolute;
@@ -118,11 +136,10 @@ export default {
         //     font-weight: ;
         // }
     }
-    .product-name {
-        max-width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+    .action-list {
+        position: absolute;
+        top: 8px;
+        right: 8px;
     }
 }
 </style>

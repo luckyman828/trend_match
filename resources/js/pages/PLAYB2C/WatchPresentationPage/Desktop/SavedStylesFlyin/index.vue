@@ -28,6 +28,7 @@
                         :key="item.id"
                         :variant="item"
                         @add-to-basket="$event => (addToBasketVariant = $event)"
+                        @update="saveWishlistSnapshot"
                     />
                 </template>
                 <template v-else>
@@ -120,9 +121,9 @@ export default {
     &::v-deep {
         .flyin {
             min-width: 0;
-            width: 352px;
+            width: 384px;
             .body {
-                padding: 4px 0;
+                padding: 8px;
             }
         }
         .overlay {
@@ -132,7 +133,6 @@ export default {
     .header-inner {
         padding: 8px;
         background: white;
-        box-shadow: $shadowXs;
     }
     .add-to-basket-selector {
         position: absolute;

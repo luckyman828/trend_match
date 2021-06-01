@@ -1,10 +1,18 @@
 <template>
-    <div class="root-play" :class="[{ 'full-screen': $route.meta.isFullscreen }]">
+    <div
+        class="root-play"
+        :class="[
+            { 'full-screen': $route.meta.isFullscreen },
+            $route.meta.noScroll && 'no-scroll',
+            $route.meta.hideSidebar && 'hide-sidebar',
+            $route.meta.hideNavbar && 'hide-navbar',
+        ]"
+    >
         <RootLoader v-if="isLoading" />
         <template v-else>
             <template v-if="!$route.meta.isFullscreen">
-                <TheNavbar />
-                <TheSidebar />
+                <TheNavbar v-if="!$route.meta.hideNavbar" />
+                <TheSidebar v-if="!$route.meta.hideSidebar" />
             </template>
             <div class="main" id="main" ref="main" :class="{ 'hide-crisp': $route.meta.hideCrisp }">
                 <transition name="fade">
@@ -85,6 +93,24 @@ export default {
         position: relative;
         height: 100%;
         grid-area: main;
+    }
+    &.no-scroll {
+        .main {
+            overflow: hidden;
+        }
+    }
+    &.hide-sidebar {
+        grid-template-columns: auto;
+        grid-template-areas:
+            'navbar'
+            'main';
+        &.hide-navbar {
+            grid-template-areas: 'main';
+        }
+    }
+    &.hide-navbar {
+        grid-template-rows: auto;
+        grid-template-areas: 'sidebar main';
     }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-    <button class="add-to-wishlist" :class="isInWishlist && 'active'" @click="onAddToWishlist">
-        <i class="fa-heart ft-16" :class="isInWishlist ? 'primary fas' : 'far'"></i>
+    <button class="add-to-wishlist" :class="isInWishlist ? 'active red' : 'white'" @click="onAddToWishlist">
+        <i class="fa-heart ft-12" style="margin-top: 1px;" :class="isInWishlist ? 'fas' : 'far'"></i>
     </button>
 </template>
 
@@ -21,7 +21,6 @@ export default {
     methods: {
         ...mapActions('wishlist', ['addItems', 'removeItems']),
         onAddToWishlist() {
-            console.log('add to weishlist')
             // Check if we should add or remove
             if (this.isInWishlist) {
                 this.removeItems(this.variants)
