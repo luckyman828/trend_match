@@ -1794,6 +1794,12 @@ input::placeholder {
     &.flex-end-v {
         align-items: flex-end;
     }
+    &.flex-start-h {
+        justify-content: flex-start;
+    }
+    &.flex-start-v {
+        align-items: flex-start;
+    }
     &:not(.flex-v) {
         &.center-h {
             justify-content: center;
@@ -1872,6 +1878,18 @@ input::placeholder {
         }
         > *:not(:last-child) {
             margin-right: 0;
+        }
+        &.flex-end-h {
+            align-items: flex-end;
+        }
+        &.flex-end-v {
+            justify-content: flex-end;
+        }
+        &.flex-start-h {
+            align-items: flex-start;
+        }
+        &.flex-start-v {
+            justify-content: flex-start;
         }
         &.min,
         &.space-min {
@@ -1960,7 +1978,7 @@ input::placeholder {
             background: transparent;
         }
         &.active,
-        &:active {
+        &.interactable:active {
             background: nth($theme, 4);
         }
         &.bg-theme-hover {

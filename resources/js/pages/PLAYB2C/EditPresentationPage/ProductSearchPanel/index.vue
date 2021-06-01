@@ -16,18 +16,20 @@
             key-field="id"
             v-slot="{ item }"
         >
-            <SearchListItem :product="item" />
+            <SearchListItem :product="item" @create-look="onStartNewLook" />
         </RecycleScroller>
+        <EditLookPopover v-if="currentLook" />
     </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SearchListItem from './SearchListItem'
+import EditLookPopover from './EditLookPopover'
 
 export default {
     name: 'ProductSearchPanel',
-    components: { SearchListItem },
+    components: { SearchListItem, EditLookPopover },
     data: function() {
         return {
             itemsFilteredBySearch: [],
@@ -37,6 +39,18 @@ export default {
         ...mapGetters('products', {
             items: 'getProducts',
         }),
+        ...mapGetters('productGroups', {
+            currentLook: 'getCurrentProductGroup',
+        }),
+    },
+    methods: {
+        ...mapActions('productGroups', ['instantiateBaseProductGroup']),
+        ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
+        async onStartNewLook(variant) {
+            const newLook = await this.instantiateBaseProductGroup()
+            newLook.variants.push({ product_id: variant.product_id, variant_id: variant.id })
+            this.SET_CURRENT_GROUP(newLook)
+        },
     },
 }
 </script>

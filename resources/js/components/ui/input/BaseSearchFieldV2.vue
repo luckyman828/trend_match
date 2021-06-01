@@ -246,7 +246,6 @@ export default {
             return resultsToReturn
         },
         hotkeyHandler(e) {
-            console.log('hotkey', e)
             const key = e.code
             if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT') return
 

@@ -32,6 +32,7 @@ import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
 import kollektApps from './modules/kollektApps'
 import kollektFeatures from './modules/kollektFeatures'
+import productGroups from './modules/productGroups'
 
 //PLAY
 import videos from './modules/play/videos'
@@ -106,6 +107,7 @@ export const initialStoreModules = {
     player,
     playEmbed,
     bonaparte,
+    productGroups,
 }
 
 // const store = new Vuex.Store({
