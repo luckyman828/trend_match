@@ -57,41 +57,57 @@
             </div>
             <!-- ACTIONS  -->
             <div class="action-list flex-list center-v">
-                <BaseButton
+                <!-- Not editing look -->
+                <template v-if="!currentLook">
+                    <BaseButton
+                        buttonClass="circle"
+                        targetAreaPadding="4px"
+                        @click="$emit('create-look', variant)"
+                        tabindex="-1"
+                        v-tooltip="'Create a look'"
+                    >
+                        <i class="far fa-layer-group yellow"></i>
+                    </BaseButton>
+                    <BaseButton
+                        buttonClass="invisible circle ghost-hover"
+                        targetAreaPadding="4px"
+                        @click="onAddTiming"
+                        tabindex="-1"
+                        v-tooltip="'Add to timeline'"
+                    >
+                        <i class="far fa-plus primary"></i>
+                    </BaseButton>
+                </template>
+                <!-- Editing look -->
+                <BaseStateAlternatingButton
+                    v-else
                     buttonClass="circle"
                     targetAreaPadding="4px"
-                    @click="$emit('create-look', variant)"
+                    @click="!inCurrentLook ? onAddToLook() : onRemoveFromLook()"
                     tabindex="-1"
-                    v-tooltip="'Create a look'"
+                    :active="inCurrentLook"
+                    :baseState="{
+                        iconLeft: 'far fa-layer-group yellow',
+                        nestedIconLeft: 'fas fa-plus pos-top pos-right dark',
+                        tooltip: 'Add to look',
+                    }"
+                    :activeState="{
+                        class: 'yellow',
+                        iconLeft: 'far fa-layer-group white',
+                        nestedIconLeft: 'fas fa-check pos-top pos-right white',
+                    }"
+                    :activeHoverState="{
+                        class: 'yellow',
+                        iconLeft: 'far fa-layer-group white',
+                        nestedIconLeft: 'fas fa-times pos-top pos-right red',
+                        tooltip: 'Remove from',
+                    }"
                 >
-                    <i class="far fa-layer-group yellow"></i>
-                </BaseButton>
-                <BaseButton
-                    buttonClass="invisible circle ghost-hover"
-                    targetAreaPadding="4px"
-                    @click="onAddTiming"
-                    tabindex="-1"
-                    v-tooltip="'Add to timeline'"
-                >
-                    <i class="far fa-plus primary"></i>
-                </BaseButton>
+                    <!-- <i class="far fa-layer-group yellow"><i class="fas fa-plus pos-top pos-right dark"></i></i> -->
+                </BaseStateAlternatingButton>
             </div>
             <!-- END ACTIONS  -->
         </div>
-        <!-- <div class="product-search-list-item drag-item" tabindex="0" @keydown.enter="onAddTiming">
-            <div class="image">
-                <BaseVariantImage :key="product.id" :variant="product.variants[0]" size="sm" />
-            </div>
-            <div class="details">
-                <span class="id">#{{ product.datasource_id }}</span>
-                <strong class="name">{{ product.title }}</strong>
-            </div>
-            <div class="actions">
-                <BaseButton buttonClass="ghost true-square" targetAreaPadding="20px" @click="onAddTiming" tabindex="-1">
-                    <i class="fas fa-plus"></i>
-                </BaseButton>
-            </div>
-        </div> -->
     </div>
     <!-- </Draggable> -->
 </template>
@@ -117,13 +133,20 @@ export default {
         ...mapGetters('player', {
             videoDuration: 'getDuration',
         }),
+        ...mapGetters('productGroups', {
+            currentLook: 'getCurrentProductGroup',
+        }),
         variant() {
             return this.product.variants[this.variantIndex]
+        },
+        inCurrentLook() {
+            return this.currentLook.variantMaps.find(map => map.variant_id == this.variant.id)
         },
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
         ...mapActions('playPresentation', ['addTiming']),
+        ...mapActions('productGroups', ['addVariantMap', 'removeVariantMap']),
         onAddTiming() {
             const newTiming = {
                 id: null,
@@ -132,6 +155,12 @@ export default {
                 variants: [{ product_id: this.product.id, variant_id: this.variant.id }],
             }
             this.addTiming({ newTiming })
+        },
+        onAddToLook() {
+            this.addVariantMap({ productGroup: this.currentLook, variant: this.variant })
+        },
+        onRemoveFromLook() {
+            this.removeVariantMap({ productGroup: this.currentLook, variant: this.variant })
         },
     },
 }

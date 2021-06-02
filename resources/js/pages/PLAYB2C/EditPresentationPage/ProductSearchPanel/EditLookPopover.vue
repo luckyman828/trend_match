@@ -2,7 +2,9 @@
     <div class="edit-look-popover bg-theme-white theme-border">
         <div class="header flex-list justify">
             <div class="name-wrapper">
-                <span v-if="!editName" class="name ft-14 ft-bd" @click="editName = true">{{ look.name }}</span>
+                <span v-if="!editName" class="name ft-14 ft-bd line-clamp-2" @click="editName = true">{{
+                    look.name
+                }}</span>
                 <BaseTextarea
                     v-else
                     class="name ft-14 ft-bd input-wrapper"
@@ -27,7 +29,7 @@
                     </div>
                 </div>
                 <div class="total-price ft-10 ft-bd">
-                    {{ totalPrice }}
+                    {{ totalPrice | rounded(2) }}
                     <span class="currency" v-if="look.variantMaps.length > 0">{{
                         look.variantMaps[0].product.yourPrice.currency
                     }}</span>
@@ -39,7 +41,7 @@
                 <LookVariantListItem
                     v-for="variantMap in look.variantMaps"
                     :key="variantMap.variant_id"
-                    :variant="variantMap.variant"
+                    :variantMap="variantMap"
                     :look="look"
                 />
             </div>

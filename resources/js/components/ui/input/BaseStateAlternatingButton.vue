@@ -1,5 +1,6 @@
 <template>
     <BaseButtonV2
+        :tooltip="state.tooltip"
         :buttonClass="[state.class, $attrs.class, buttonClass]"
         v-hover="{ over: () => (hasHover = true), leave: () => (hasHover = false) }"
         v-bind="$attrs"

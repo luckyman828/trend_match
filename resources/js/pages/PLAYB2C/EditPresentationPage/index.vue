@@ -53,6 +53,7 @@ export default {
     methods: {
         ...mapActions('playPresentation', ['fetchPresentation', 'fetchPresentationVideo']),
         ...mapActions('products', ['fetchProducts']),
+        ...mapActions('productGroups', ['fetchFileProductGroups']),
         ...mapActions('videos', ['fetchVideoUrls', 'checkVideoStatus', 'startVideoStatusCheckJob']),
         async fetchData() {
             this.dataReady = false
@@ -61,6 +62,7 @@ export default {
             await Promise.all([
                 await this.fetchPresentation(presentationId),
                 await this.fetchProducts({ fileId: presentationId }),
+                await this.fetchFileProductGroups(presentationId),
             ])
             const video = this.video
             if (video) {

@@ -17,7 +17,7 @@
                     </div>
                 </div>
                 <div class="action-list" style="flex-shrink: 0">
-                    <button class="circle sm">
+                    <button class="circle sm" @click="onRemoveVariant">
                         <i class="fas fa-trash"></i>
                     </button>
                     <button class="circle invisible ghost-hover sm">
@@ -41,9 +41,10 @@
                         type="radio"
                         :submitOnChange="true"
                         :options="product.variants"
-                        :value="variant"
+                        v-model="variantMap.variant_id"
                         optionNameKey="name"
-                        @submit="onChangeVariant"
+                        optionValueKey="id"
+                        :disabledOptions="look.variantMaps.map(map => ({ id: map.variant_id }))"
                     />
                 </v-popover>
             </div>
@@ -52,20 +53,28 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import variantImage from '../../../../mixins/variantImage'
 
 export default {
     name: 'LookVariantListItem',
-    props: ['variant', 'look'],
+    props: ['variantMap', 'look'],
     mixins: [variantImage],
     computed: {
+        variant() {
+            return this.variantMap.variant
+        },
         product() {
             return this.variant.product
         },
     },
     methods: {
-        onChangeVariant(newVariant) {
-            this.look.variants[this.variant.index].variant_id = newVariant.id
+        ...mapActions('productGroups', ['removeVariantMap']),
+        // onChangeVariant(newVariant) {
+        //     this.look.variantMaps[this.variant.index].variant_id = newVariant.id
+        // },
+        onRemoveVariant() {
+            this.removeVariantMap({ productGroup: this.look, variant: this.variant })
         },
     },
 }
@@ -77,6 +86,8 @@ export default {
 .look-variant-list-item {
     padding: 8px;
     border-radius: $borderRadiusMd;
+    user-select: none;
+    margin-bottom: 8px;
     .image {
         width: 52px;
         border-radius: $borderRadiusMd;

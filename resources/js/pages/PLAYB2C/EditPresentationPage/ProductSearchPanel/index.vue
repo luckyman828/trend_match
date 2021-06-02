@@ -44,11 +44,15 @@ export default {
         }),
     },
     methods: {
-        ...mapActions('productGroups', ['instantiateBaseProductGroup']),
+        ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         async onStartNewLook(variant) {
             const newLook = await this.instantiateBaseProductGroup()
-            newLook.variants.push({ product_id: variant.product_id, variant_id: variant.id })
+            this.addVariantMap({
+                productGroup: newLook,
+                variant,
+            })
+
             this.SET_CURRENT_GROUP(newLook)
         },
     },
