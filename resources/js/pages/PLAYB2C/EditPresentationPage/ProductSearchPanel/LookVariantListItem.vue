@@ -17,10 +17,10 @@
                     </div>
                 </div>
                 <div class="action-list" style="flex-shrink: 0">
-                    <button class="circle sm" @click="onRemoveVariant">
+                    <button class="circle sm remove-variant" @click="onRemoveVariant">
                         <i class="fas fa-trash"></i>
                     </button>
-                    <button class="circle invisible ghost-hover sm">
+                    <button class="circle invisible ghost-hover sm drag-handle" v-if="look.variantMaps.length > 1">
                         <i class="far fa-grip-vertical"></i>
                     </button>
                 </div>
@@ -88,6 +88,7 @@ export default {
     border-radius: $borderRadiusMd;
     user-select: none;
     margin-bottom: 8px;
+    cursor: default;
     .image {
         width: 52px;
         border-radius: $borderRadiusMd;
@@ -105,6 +106,18 @@ export default {
                 margin-left: auto !important;
                 margin-right: 4px !important;
             }
+        }
+    }
+    .remove-variant {
+        opacity: 0;
+        transition: 0.1s ease-in;
+    }
+    .drag-handle {
+        cursor: grab;
+    }
+    &:hover {
+        .remove-variant {
+            opacity: 1;
         }
     }
 }

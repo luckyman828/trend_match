@@ -320,6 +320,9 @@ textarea {
         }
     }
 }
+.drag-handle {
+    cursor: grab;
+}
 
 // NAVBAR
 .navbar {
@@ -1978,7 +1981,7 @@ input::placeholder {
 @each $theme in $bg-themes {
     .bg-theme-#{nth($theme,1)} {
         background: nth($theme, 2);
-        &.interactable:not(.disabled) {
+        &.interactable {
             transition: background 0.2s ease-in;
             cursor: pointer;
             &:hover,
@@ -1997,6 +2000,8 @@ input::placeholder {
         }
         &.disabled {
             background: transparent;
+            transition: none;
+            cursor: default;
         }
         &.active,
         &.interactable:active {

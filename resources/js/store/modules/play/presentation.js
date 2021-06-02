@@ -10,7 +10,7 @@ export default {
         timings: [],
         timingsReady: false,
         sidebarItem: null,
-        
+
         // OLD
         sidebarProduct: null,
         status: 'success',
@@ -165,7 +165,6 @@ export default {
             // delete videoToPost.urls
             // delete videoToPost.status
 
-
             await axios
                 .post(apiUrl, {
                     video,
@@ -190,6 +189,9 @@ export default {
         },
         async addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
             commit('SET_TIMING_STATUS', 'adding')
+            // if (!newTiming.start_at_ms) newTiming.start_at_ms = 0
+            // if (!newTiming.end_at_ms) newTiming.end_at_ms = 5
+
             await dispatch('initTimings', [newTiming])
             const allTimings = getters.getTimings
             // First find out what index to give the new timing, so we insert it at it's correct spot
@@ -198,7 +200,6 @@ export default {
             const timestamp = rootGetters['player/getTimestamp']
             // Set the desired `start` time equal to the timestamp
             const desiredDuration = Math.ceil((newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom))
-            console.log('desired duration', desiredDuration, newTiming.end, newTiming.start, getters.getTimelineZoom)
             newTiming.start = timestamp
             newTiming.end = newTiming.start + desiredDuration
 
@@ -256,6 +257,18 @@ export default {
             await dispatch('updatePresentation')
             commit('SET_TIMING_STATUS', 'success')
         },
+        async updateTiming({ dispatch }, timing) {
+            const newVariantMaps = []
+            for (const variantMap of timing.productGroup.variantMaps) {
+                const newVariantMap = {
+                    product_id: variantMap.product_id,
+                    variant_id: variantMap.variant_id,
+                }
+                await dispatch('initVariantMaps', [newVariantMap])
+                newVariantMaps.push(newVariantMap)
+            }
+            timing.variants = newVariantMaps
+        },
         bumpConflictingTimings({ getters, dispatch }, newTiming) {
             // This function recursively bumps timings until there is space for all of them
             // It does nothing if my conflictin timings are found
@@ -274,9 +287,23 @@ export default {
             commit('REMOVE_TIMING', index)
             dispatch('updatePresentation')
         },
-        initTimings({ state, getters, rootGetters }, timings) {
-            timings.map(timing => {
-                console.log('init this timing', timing)
+        initVariantMaps({ rootGetters }, variantMaps) {
+            variantMaps.map(variantMap => {
+                Object.defineProperty(variantMap, 'product', {
+                    get() {
+                        const products = rootGetters['products/products']
+                        return products.find(product => product.id == variantMap.product_id)
+                    },
+                })
+                Object.defineProperty(variantMap, 'variant', {
+                    get() {
+                        return variantMap.product.variants.find(variant => variant.id == variantMap.variant_id)
+                    },
+                })
+            })
+        },
+        async initTimings({ state, getters, rootGetters, dispatch }, timings) {
+            timings.map(async timing => {
                 // Give the timing an ID
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++
@@ -287,30 +314,37 @@ export default {
                         return timing.variants.length > 1 ? 'Look' : 'Single'
                     },
                 })
-                timing.variants.map(timingVariant => {
-                    Object.defineProperty(timingVariant, 'product', {
-                        get() {
-                            const products = rootGetters['products/products']
-                            return products.find(product => product.id == timingVariant.product_id)
-                        },
-                    })
-                    Object.defineProperty(timingVariant, 'variant', {
-                        get() {
-                            return timingVariant.product.variants.find(variant => variant.id == timingVariant.variant_id)
-                        },
-                    })
 
-                })
+                await dispatch('initVariantMaps', timing.variants)
+
                 Object.defineProperty(timing, 'variantMaps', {
                     get() {
                         return timing.variants
                     },
                 })
-                Object.defineProperty(timing, 'product', {
+                Object.defineProperty(timing, 'variant', {
                     get() {
-                        return timing.variantMaps.length > 0 && timing.variantMaps[0].product
+                        return timing.variantMaps.length > 0 && timing.variantMaps[0].variant
                     },
                 })
+                Object.defineProperty(timing, 'product', {
+                    get() {
+                        return timing.variant.product
+                    },
+                })
+
+                // Create a product group from the timings variants
+                const productGroup = await dispatch('productGroups/instantiateBaseProductGroup', null, { root: true })
+                productGroup.name = `Timing #${timing.id}`
+                productGroup.timingId = timing.id
+                timing.variants.map(async variantMap => {
+                    await dispatch(
+                        'productGroups/addVariantMap',
+                        { productGroup, productId: variantMap.product_id, variantId: variantMap.variant_id },
+                        { root: true }
+                    )
+                })
+                Vue.set(timing, 'productGroup', productGroup)
 
                 Object.defineProperty(timing, 'start', {
                     get() {
@@ -374,7 +408,7 @@ export default {
                 })
                 Object.defineProperty(timing, 'isCurrent', {
                     get() {
-                        const currentTiming = rootGetters['player/getCurrentTiming']
+                        const currentTiming = getters.getCurrentTiming
                         if (!currentTiming) return false
                         return currentTiming.id == timing.id
                     },
@@ -419,7 +453,7 @@ export default {
         SET_TIMINGS_READY(state, payload) {
             state.timingsReady = payload
         },
-        
+
         // OLD
         SET_SIDEBAR_PRODUCT(state, product) {
             state.sidebarProduct = product

@@ -49,10 +49,10 @@ export default {
                     )
                 })
         },
-        async addVariantMap({ dispatch }, { productGroup, variant }) {
+        async addVariantMap({ dispatch }, { productGroup, variant, productId, variantId }) {
             const newVaraintMap = await dispatch('instantiateBaseVariantMap')
-            newVaraintMap.variant_id = variant.id
-            newVaraintMap.product_id = variant.product_id
+            newVaraintMap.variant_id = variant ? variant.id : variantId
+            newVaraintMap.product_id = variant ? variant.product_id : productId
             productGroup.variantMaps.push(newVaraintMap)
         },
         async removeVariantMap({}, { productGroup, variant }) {

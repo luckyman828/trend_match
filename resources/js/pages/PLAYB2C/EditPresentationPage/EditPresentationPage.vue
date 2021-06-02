@@ -65,7 +65,6 @@ export default {
             if (this.videoTimings && this.videoTimings.length > 0) {
                 let removedCount = 0
                 for (let i = this.videoTimings.length - 1; i >= 0; i--) {
-                    console.log('products', this.products)
                     const timing = this.videoTimings[i]
                     if (!timing.product) {
                         this.REMOVE_TIMING(i)

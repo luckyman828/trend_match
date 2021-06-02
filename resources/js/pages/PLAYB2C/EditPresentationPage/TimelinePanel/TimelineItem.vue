@@ -4,7 +4,7 @@
         class="timeline-item"
         :style="style"
         :id="`timeline-item-${timing.id}`"
-        :class="[{ current: isCurrent }, { 'drag-caps': isDragging }]"
+        :class="[{ current: isCurrent }, { 'drag-caps': isDragging }, timing.type.toLowerCase()]"
         tabindex="0"
         @keydown.delete="onRemoveTiming"
     >
@@ -12,6 +12,12 @@
             <button class="pill red sm" @click="onRemoveTiming">
                 <span>Delete</span>
                 <i class="far fa-trash"></i>
+            </button>
+        </div>
+        <div class="look-controls" v-if="timing.type == 'Look'">
+            <button class="pill yellow xs" @click="onEditLook" v-tooltip="'Edit look'">
+                <i class="far fa-layer-group"></i>
+                <span>{{ timing.variants.length }}</span>
             </button>
         </div>
         <div class="edge-drag-controls">
@@ -41,7 +47,7 @@
         <div class="inner">
             <div class="img-wrapper">
                 <div class="img-sizer">
-                    <BaseVariantImage :variant="product.variants && product.variants[0]" size="sm" />
+                    <BaseVariantImage :variant="variant" size="sm" />
                 </div>
             </div>
             <div class="details">
@@ -58,7 +64,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'timelineItem',
     props: ['timing', 'index', 'dragActive', 'isDragged'],
@@ -72,15 +78,18 @@ export default {
         ...mapGetters('player', {
             videoDuration: 'getDuration',
             cursorTimestamp: 'getTimestamp',
-            currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('playPresentation', {
+            currentTiming: 'getCurrentTiming',
             zoom: 'getTimelineZoom',
             rail: 'getTimelineRail',
             snapThreshold: 'getSnapThreshold',
         }),
+        variant() {
+            return this.timing.variant
+        },
         product() {
-            return this.timing.product
+            return this.variant.product
         },
         style() {
             const width = (this.timing.duration / this.videoDuration) * 100
@@ -102,8 +111,15 @@ export default {
     },
     methods: {
         ...mapActions('playPresentation', ['removeTiming', 'updatePresentation']),
+        ...mapActions('player', ['seekTo']),
+        ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap']),
+        ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         onRemoveTiming() {
             this.removeTiming(this.index)
+        },
+        async onEditLook() {
+            this.seekTo(this.timing.start)
+            this.SET_CURRENT_GROUP(this.timing.productGroup)
         },
         onMouseMoveCap(e, direction) {
             if (this.$el.classList.contains('dragged')) return
@@ -221,6 +237,12 @@ export default {
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    .look-controls {
+        position: absolute;
+        left: 4px;
+        z-index: 1;
+        top: -12px;
+    }
     .controls {
         position: absolute;
         top: -14px;
