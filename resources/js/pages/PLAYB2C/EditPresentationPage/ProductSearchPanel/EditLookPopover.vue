@@ -55,19 +55,6 @@
                 <i class="far fa-ellipsis-h primary"></i>
             </button>
 
-            <BaseStateAlternatingButton
-                class="pill sm"
-                :active="lookIsSaved"
-                @click="!lookIsSaved && onSaveLook()"
-                :disabled="lookIsSaved"
-                :baseState="{ iconLeft: 'far fa-tshirt primary', text: 'Save' }"
-                :activeState="{
-                    iconLeft: 'far fa-tshirt',
-                    text: 'Saved',
-                    nestedIconLeft: 'fas fa-check pos-top pos-right',
-                    class: 'primary',
-                }"
-            />
             <button v-if="!linkedTiming" class="pill sm" @click="onAddTiming">
                 <i class="far fa-plus"></i>
                 <span>To timeline</span>
@@ -75,7 +62,7 @@
             <!-- EDITING TIMING -->
             <template v-else>
                 <button class="pill sm" @click="onClose">
-                    <i class="far fa-save"></i>
+                    <i class="far fa-check"></i>
                     <span>Done</span>
                 </button>
             </template>
