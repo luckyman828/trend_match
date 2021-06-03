@@ -25,7 +25,7 @@ export default {
             })
             return productGroups
         },
-        async insertProductGroup({ commit, dispatch }, { fileId, productGroup }) {
+        async insertOrUpdateProductGroup({ commit, dispatch }, { fileId, productGroup }) {
             const apiUrl = `files/${fileId}/product-groups`
             await axios
                 .post(apiUrl, { product_groups: [productGroup] })

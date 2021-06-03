@@ -236,6 +236,12 @@ export default {
         }
     }
     .item-group {
+        &.disabled {
+            opacity: 0.5;
+            > * {
+                pointer-events: none;
+            }
+        }
         > .header {
             padding: 8px 16px;
             line-height: 1;

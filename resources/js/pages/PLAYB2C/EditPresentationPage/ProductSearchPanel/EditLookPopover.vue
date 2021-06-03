@@ -2,9 +2,13 @@
     <div class="edit-look-popover bg-theme-white theme-border">
         <div class="header flex-list justify">
             <div class="name-wrapper">
-                <span v-if="!editName" class="name ft-14 ft-bd line-clamp-2" @click="editName = true">{{
-                    look.name
-                }}</span>
+                <span
+                    v-if="!editName"
+                    class="name ft-14 ft-bd line-clamp-2"
+                    v-tooltip="!lookIsSaved && 'Editing look name, will save it as a look to the file'"
+                    @click="editName = true"
+                    >{{ look.name }} <i class="edit-icon far fa-pen"></i
+                ></span>
                 <BaseTextarea
                     v-else
                     class="name ft-14 ft-bd input-wrapper"
@@ -16,7 +20,7 @@
                     :selectOnFocus="true"
                     @blur="editName = false"
                     @submit="
-                        updateLook()
+                        onSaveLook()
                         editName = false
                     "
                 />
@@ -47,9 +51,10 @@
             </Draggable>
         </div>
         <div class="footer flex-list">
-            <button class="pill auto-right sm">
+            <button class="pill auto-right sm" v-show-contextmenu="{ ref: 'moreContext', placement: 'bottom' }">
                 <i class="far fa-ellipsis-h primary"></i>
             </button>
+
             <BaseStateAlternatingButton
                 class="pill sm"
                 :active="lookIsSaved"
@@ -75,6 +80,32 @@
                 </button>
             </template>
         </div>
+
+        <BaseContextMenu ref="moreContext" class="more-context">
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-times" hotkey="keyC" @click="onClose">
+                    <u>C</u>ancel
+                </BaseContextMenuItem>
+            </div>
+            <div
+                class="item-group"
+                :class="{ disabled: !lookIsSaved }"
+                v-tooltip="!lookIsSaved && 'Save look before you can edit it'"
+            >
+                <BaseContextMenuItem iconClass="far fa-pen" hotkey="KeyR" @click="editName = true">
+                    <u>R</u>ename
+                </BaseContextMenuItem>
+            </div>
+            <div
+                class="item-group"
+                :class="{ disabled: !lookIsSaved }"
+                v-tooltip="!lookIsSaved && 'Save look before you can edit it'"
+            >
+                <BaseContextMenuItem iconClass="far fa-trash" hotkey="KeyD" @click="onDeleteLook">
+                    <u>D</u>elete look
+                </BaseContextMenuItem>
+            </div>
+        </BaseContextMenu>
     </div>
 </template>
 
@@ -127,9 +158,8 @@ export default {
     },
     methods: {
         ...mapActions('playPresentation', ['addTiming', 'updateTiming']),
-        ...mapActions('productGroups', ['insertProductGroup']),
+        ...mapActions('productGroups', ['insertOrUpdateProductGroup', 'deleteProductGroup']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
-        updateLook() {},
         async onAddTiming() {
             const newTiming = {
                 id: null,
@@ -144,11 +174,14 @@ export default {
             await this.updateTiming(this.linkedTiming)
         },
         async onSaveLook() {
-            const savedLook = await this.insertProductGroup({ fileId: this.presentation.id, productGroup: this.look })
-            console.log('saved look', savedLook)
+            await this.insertOrUpdateProductGroup({ fileId: this.presentation.id, productGroup: this.look })
         },
         onClose() {
             this.SET_CURRENT_GROUP(null)
+        },
+        onDeleteLook() {
+            this.deleteProductGroup(this.look)
+            this.onClose()
         },
     },
 }
@@ -175,9 +208,19 @@ export default {
     }
     .name-wrapper {
         overflow: hidden;
+        cursor: pointer;
         .name {
             font-size: 14px;
             font-weight: 800;
+        }
+        .edit-icon {
+            opacity: 0;
+            transition: 0.2s ease-out;
+        }
+        &:hover {
+            .edit-icon {
+                opacity: 1;
+            }
         }
     }
     .right {

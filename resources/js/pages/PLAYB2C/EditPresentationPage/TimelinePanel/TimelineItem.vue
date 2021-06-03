@@ -12,7 +12,7 @@
             <BaseButtonV2
                 class="look-button pill yellow xs"
                 @click="onEditLook"
-                tooltip="Edit look"
+                :tooltip="timing.type == 'Look' ? 'Edit look' : 'Create look'"
                 targetAreaPadding="4px"
             >
                 <i class="far fa-layer-group"></i>
