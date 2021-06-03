@@ -97,11 +97,11 @@ export default {
             // -> initialize the workspace
             if (newVal == 'success') {
                 this.initSignalR()
-                this.initCrispChat()
                 this.getActiveJobs()
                 await this.initWorkspace()
                 this.initCanny()
                 this.SET_AUTHENTICATED_INIT_DONE(true)
+                this.initCrispChat()
             }
         },
         // Watch for workspace changes
@@ -265,7 +265,7 @@ export default {
         },
         initCrispChat() {
             $crisp.push(['set', 'user:email', this.authUser.email])
-            $crisp.push(['set', 'user:nickname', this.authUser.name])
+            $crisp.push(['set', 'user:nickname', this.authUser.name ? this.authUser.name : 'No name'])
         },
         initCanny() {
             Canny('identify', {
