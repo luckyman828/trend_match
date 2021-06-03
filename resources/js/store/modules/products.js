@@ -467,7 +467,7 @@ export default {
                         })
                         .then(response => {
                             // Add the created ID to the products
-                            products.map(product => {
+                            productChunk.map(product => {
                                 product.id = response.data.added_product_id_map[product.datasource_id]
                             })
                             // Start image sync job
