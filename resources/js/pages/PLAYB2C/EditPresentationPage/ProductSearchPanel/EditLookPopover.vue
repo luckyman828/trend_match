@@ -96,11 +96,7 @@
                     <u>R</u>ename
                 </BaseContextMenuItem>
             </div>
-            <div
-                class="item-group"
-                :class="{ disabled: !lookIsSaved }"
-                v-tooltip="!lookIsSaved && 'Save look before you can edit it'"
-            >
+            <div class="item-group" v-if="lookIsSaved || look.timingId">
                 <BaseContextMenuItem iconClass="far fa-trash" hotkey="KeyD" @click="onDeleteLook">
                     <u>D</u>elete look
                 </BaseContextMenuItem>
@@ -157,7 +153,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('playPresentation', ['addTiming', 'updateTiming']),
+        ...mapActions('playPresentation', ['addTiming', 'updateTiming', 'removeTiming']),
         ...mapActions('productGroups', ['insertOrUpdateProductGroup', 'deleteProductGroup']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         async onAddTiming() {
@@ -180,7 +176,10 @@ export default {
             this.SET_CURRENT_GROUP(null)
         },
         onDeleteLook() {
-            this.deleteProductGroup(this.look)
+            this.deleteProductGroup({ fileId: this.presentation.id, productGroup: this.look })
+            if (this.look.timing) {
+                this.removeTiming(this.look.timing.index)
+            }
             this.onClose()
         },
     },

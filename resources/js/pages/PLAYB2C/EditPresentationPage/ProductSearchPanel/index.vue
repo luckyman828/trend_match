@@ -38,7 +38,7 @@
             key-field="id"
             v-slot="{ item }"
         >
-            <SearchListItem :product="item" @create-look="onStartNewLook" />
+            <SearchListLook :look="item" />
         </RecycleScroller>
         <EditLookPopover v-if="currentLook" />
     </div>
@@ -47,11 +47,12 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SearchListItem from './SearchListItem'
+import SearchListLook from './SearchListLook'
 import EditLookPopover from './EditLookPopover'
 
 export default {
     name: 'ProductSearchPanel',
-    components: { SearchListItem, EditLookPopover },
+    components: { SearchListItem, SearchListLook, EditLookPopover },
     data: function() {
         return {
             currentTab: 'All',

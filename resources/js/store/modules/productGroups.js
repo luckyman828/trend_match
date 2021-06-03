@@ -54,6 +54,12 @@ export default {
                 })
             return productGroup
         },
+        deleteProductGroup({ commit }, { fileId, productGroup }) {
+            const apiUrl = `files/${fileId}/product-groups`
+            axios.delete(apiUrl, { data: { ids: [productGroup.id] } }).then(reponse => {
+                commit('REMOVE_PRODUCT_GROUPS', [productGroup])
+            })
+        },
         async addVariantMap({ dispatch }, { productGroup, variant, productId, variantId }) {
             const newVaraintMap = await dispatch('instantiateBaseVariantMap')
             newVaraintMap.variant_id = variant ? variant.id : variantId
@@ -122,6 +128,9 @@ export default {
         },
         INSERT_PRODUCT_GROUPS(state, productGroups) {
             state.productGroups.push(...productGroups)
+        },
+        REMOVE_PRODUCT_GROUPS(state, productGroups) {
+            state.productGroups = state.productGroups.filter(group => !productGroups.find(x => x.id == group.id))
         },
     },
 }

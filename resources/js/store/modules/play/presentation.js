@@ -340,6 +340,11 @@ export default {
                 // Create a product group from the timings variants
                 const productGroup = await dispatch('productGroups/instantiateBaseProductGroup', null, { root: true })
                 productGroup.name = `Timing #${timing.id}`
+                Object.defineProperty(productGroup, 'timing', {
+                    get() {
+                        return timing
+                    },
+                })
                 productGroup.timingId = timing.id
                 timing.variants.map(async variantMap => {
                     await dispatch(
