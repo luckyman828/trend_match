@@ -643,8 +643,20 @@ export default {
                     commit('ADD_USERS_TO_FILE', { file, users })
                 })
         },
+        async instantiateBaseFile({ dispatch, rootGetters }) {
+            const newFile = {
+                id: 0,
+                name: `New file`,
+                type: 'File',
+                parent_id: 0,
+                children: [],
+                workspace_id: rootGetters['workspaces/getCurrentWorkspaceId'],
+            }
+            await dispatch('initFiles', [newFile])
+            return newFile
+        },
         initFiles({ state }, files) {
-            files.map(file => {
+            for (const file of files) {
                 Object.defineProperty(file, 'parent', {
                     get: function() {
                         if (!file.parent_id || !state.allFiles) return
@@ -660,7 +672,8 @@ export default {
                 })
                 Vue.set(file, 'broadcastChannels', [])
                 file.isInitialized = true
-            })
+                file.initDone = true
+            }
         },
         async fetchBroadcastChannels({ commit }, file) {
             const apiUrl = `files/${file.id}/broadcast-channels`

@@ -382,6 +382,7 @@ export default {
             'fetchFiles',
             'moveFiles',
             'setCurrentFolder',
+            'instantiateBaseFile',
         ]),
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         ...mapMutations('tables', ['SET_TABLE_PROPERTY']),
@@ -470,7 +471,7 @@ export default {
                 this.selected = this.selected.filter(x => x.id != folder.id)
             }
         },
-        onNewFile(type) {
+        async onNewFile(type) {
             // Check if we already have added a new folder
             const existingNewFolder = this.files.find(x => x.id == null && type == 'Folder')
             // If we already have a new folder, focus the edit title field
@@ -481,18 +482,15 @@ export default {
             }
             // Else create a new folder
             else {
-                const newFolder = {
-                    id: 0,
-                    name: `New ${type}`,
-                    type,
-                    parent_id: this.folder ? this.folder.id : 0,
-                    workspace_id: this.currentWorkspace.id,
-                    children: [],
-                }
+                const newFile = await this.instantiateBaseFile()
+                newFile.id = 0
+                newFile.name = `New ${type}`
+                newFile.type = type
+                newFile.parent_id = this.folder ? this.folder.id : 0
                 // Push new folder to the current folder
-                this.files.push(newFolder)
+                this.files.push(newFile)
                 // Activate title edit of new folder
-                this.fileToEdit = newFolder
+                this.fileToEdit = newFile
             }
         },
         onSort(sortAsc, sortKey) {
