@@ -321,7 +321,7 @@ export default {
             if (this.selectedUsers.length > 0) {
                 usersToPost = this.selectedUsers.map(user => {
                     user.role = baseUser.role
-                    user.job = baseUser.job ? baseUse.job : 'Feedback'
+                    user.job = baseUser.job ? baseUser.job : 'Feedback'
                     return user
                 })
             } else usersToPost = [baseUser]
