@@ -17,7 +17,7 @@
             >
                 <button class="pill white">
                     <i class="far fa-copy"></i>
-                    <span>Copy link</span>
+                    <span>Copy</span>
                 </button>
             </BaseInputField>
             <div class="ft-12 ft-md color-grey">
@@ -37,7 +37,7 @@
                 >
                     <button class="pill white">
                         <i class="far fa-copy"></i>
-                        <span>Copy link</span>
+                        <span>Copy</span>
                     </button>
                 </BaseInputField>
             </div>
@@ -55,7 +55,7 @@
                 >
                     <button class="pill white">
                         <i class="far fa-copy"></i>
-                        <span>Copy link</span>
+                        <span>Copy</span>
                     </button>
                 </BaseInputField>
             </div>

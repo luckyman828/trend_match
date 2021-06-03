@@ -50,7 +50,7 @@
             <button class="pill auto-right sm">
                 <i class="far fa-ellipsis-h primary"></i>
             </button>
-            <button class="pill sm">
+            <button class="pill sm" @click="onSaveLook">
                 <i class="far fa-tshirt primary"></i>
                 <span class="color-primary">Save</span>
             </button>
@@ -60,21 +60,17 @@
             </button>
             <!-- EDITING TIMING -->
             <template v-else>
-                <button v-if="changedFromLinkedTiming" class="pill sm" @click="updateLinkedTiming">
+                <button class="pill sm" @click="onClose">
                     <i class="far fa-save"></i>
-                    <span>Update</span>
+                    <span>Done</span>
                 </button>
-                <div v-else class="pill sm disabled secondary">
-                    <i class="far fa-save"><i class="fas fa-check primary pos-top pos-right"></i></i>
-                    <span>Changes saved</span>
-                </div>
             </template>
         </div>
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import LookVariantListItem from './LookVariantListItem'
 import Draggable from 'vuedraggable'
 
@@ -92,6 +88,7 @@ export default {
         }),
         ...mapGetters('playPresentation', {
             timings: 'getTimings',
+            presentation: 'getPresentation',
         }),
         totalPrice() {
             return this.look.variantMaps.reduce((total, curr) => {
@@ -108,20 +105,36 @@ export default {
             )
         },
     },
+    watch: {
+        changedFromLinkedTiming(isChanged) {
+            if (isChanged) {
+                this.updateLinkedTiming()
+            }
+        },
+    },
     methods: {
         ...mapActions('playPresentation', ['addTiming', 'updateTiming']),
+        ...mapActions('productGroups', ['insertProductGroup']),
+        ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         updateLook() {},
-        onAddTiming() {
+        async onAddTiming() {
             const newTiming = {
                 id: null,
                 start_at_ms: null,
                 end_at_ms: null,
                 variants: JSON.parse(JSON.stringify(this.look.variantMaps)),
             }
-            this.addTiming({ newTiming })
+            await this.addTiming({ newTiming })
+            this.SET_CURRENT_GROUP(newTiming.productGroup)
         },
-        updateLinkedTiming() {
-            this.updateTiming(this.linkedTiming)
+        async updateLinkedTiming() {
+            await this.updateTiming(this.linkedTiming)
+        },
+        onSaveLook() {
+            this.insertProductGroup({ fileId: this.presentation.id, productGroup: this.look })
+        },
+        onClose() {
+            this.SET_CURRENT_GROUP(null)
         },
     },
 }

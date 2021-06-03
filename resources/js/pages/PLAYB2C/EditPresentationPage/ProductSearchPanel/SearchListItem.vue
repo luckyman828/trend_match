@@ -100,7 +100,7 @@
                         class: 'yellow',
                         iconLeft: 'far fa-layer-group white',
                         nestedIconLeft: 'fas fa-times pos-top pos-right red',
-                        tooltip: 'Remove from',
+                        tooltip: 'Remove from look',
                     }"
                 >
                     <!-- <i class="far fa-layer-group yellow"><i class="fas fa-plus pos-top pos-right dark"></i></i> -->

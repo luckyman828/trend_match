@@ -189,8 +189,8 @@ export default {
         },
         async addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
             commit('SET_TIMING_STATUS', 'adding')
-            // if (!newTiming.start_at_ms) newTiming.start_at_ms = 0
-            // if (!newTiming.end_at_ms) newTiming.end_at_ms = 5
+            if (!newTiming.start_at_ms) newTiming.start_at_ms = 0
+            if (!newTiming.end_at_ms) newTiming.end_at_ms = 5
 
             await dispatch('initTimings', [newTiming])
             const allTimings = getters.getTimings
@@ -199,6 +199,7 @@ export default {
             let index = 0
             const timestamp = rootGetters['player/getTimestamp']
             // Set the desired `start` time equal to the timestamp
+
             const desiredDuration = Math.ceil((newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom))
             newTiming.start = timestamp
             newTiming.end = newTiming.start + desiredDuration
@@ -303,7 +304,7 @@ export default {
             })
         },
         async initTimings({ state, getters, rootGetters, dispatch }, timings) {
-            timings.map(async timing => {
+            for (const timing of timings) {
                 // Give the timing an ID
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++
@@ -320,6 +321,9 @@ export default {
                 Object.defineProperty(timing, 'variantMaps', {
                     get() {
                         return timing.variants
+                    },
+                    set(value) {
+                        timing.variants = value
                     },
                 })
                 Object.defineProperty(timing, 'variant', {
@@ -414,7 +418,7 @@ export default {
                     },
                 })
                 timing.initDone = true
-            })
+            }
         },
         getTimestampFromMouseEvent({ getters, rootGetters }, mouseEvent) {
             const mouseX = mouseEvent.clientX

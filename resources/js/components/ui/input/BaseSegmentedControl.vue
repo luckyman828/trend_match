@@ -14,7 +14,7 @@
         >
             <slot :option="option" :isActive="theCurrentOptionIndex == index" />
             <span v-if="labelKey">{{ option[labelKey] }} </span>
-            <span class="dark xxs pill count" v-if="countKey">
+            <span class="dark xxs pill count" v-if="countKey && option[countKey] != null">
                 <span>{{ option[countKey] }}</span>
             </span>
         </div>
@@ -27,7 +27,7 @@ export default {
     props: {
         options: { default: [] },
         labelKey: { default: 'label' },
-        countKey: {},
+        countKey: { default: 'count' },
         valueKey: {},
         currentOptionIndex: {},
         sizeClass: {},

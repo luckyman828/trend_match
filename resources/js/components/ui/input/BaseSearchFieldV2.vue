@@ -37,9 +37,8 @@ export default {
     name: 'SearchFieldV2',
     props: {
         arrayToSearch: {},
+        arraysToSearch: {},
         searchKey: {},
-        searchMultipleArrays: {},
-        multipleArrayKey: {},
         placeholderText: {},
         focusOnMount: { default: false },
         inputClasses: {
@@ -133,7 +132,7 @@ export default {
             const searchKey = this.searchKey && !Array.isArray(this.searchKey) ? [this.searchKey] : this.searchKey
             // First test that we actually have a search string
             if (!searchString) {
-                return array
+                return this.arraysToSearch ? this.arraysToSearch : array
             }
 
             let resultsToReturn = []
@@ -221,26 +220,21 @@ export default {
             }
             // END Helper functions
 
-            // Normal Search
-            if (!this.searchMultipleArrays) {
-                resultsToReturn = getResults(array)
+            // Search in multiple arrays
+            if (this.arraysToSearch && typeof this.arraysToSearch == 'object') {
+                const arrayKeys = Object.keys(this.arraysToSearch)
+                console.log('this is the case', arrayKeys, this.arraysToSearch)
+                const objectToReturn = {}
+                for (const key of arrayKeys) {
+                    const array = this.arraysToSearch[key]
+                    objectToReturn[key] = getResults(array)
+                }
+                resultsToReturn = objectToReturn
             }
-            // Search Multiple Objects
+
+            // Normal Search
             else {
-                array.map(searchObj => {
-                    const key = this.multipleArrayKey
-                    // Make a copy of the object
-                    const objClone = Object.assign({}, searchObj)
-                    // Get the values to search on the object
-                    const searchArray = getUniqueObjectValuesByKey(searchObj, key)
-                    // Get the results
-                    const objResults = getResults(searchArray)
-                    // console.log('obj results', objResults, searchArray)
-                    if (objResults.length > 0) {
-                        objClone[key] = objResults
-                        resultsToReturn.push(objClone)
-                    }
-                })
+                resultsToReturn = getResults(array)
             }
 
             return resultsToReturn
@@ -265,7 +259,7 @@ export default {
         if (this.hotkeyEnabled) {
             document.addEventListener('keydown', this.hotkeyHandler)
         }
-        if (this.arrayToSearch) {
+        if (this.arrayToSearch || this.arraysToSearch) {
             this.$emit('input', this.getResult())
         }
     },

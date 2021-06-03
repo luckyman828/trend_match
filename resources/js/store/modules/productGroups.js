@@ -28,7 +28,7 @@ export default {
         async insertProductGroup({ commit, dispatch }, { fileId, productGroup }) {
             const apiUrl = `files/${fileId}/product-groups`
             axios
-                .post(apiUrl, productGroup)
+                .post(apiUrl, { product_groups: [productGroup] })
                 .then(response => {
                     console.log('success inersting product group', response.data)
                     Vue.set(productGroup, 'id', response.data.id)
@@ -36,12 +36,12 @@ export default {
                 .catch(err => {
                     console.log('error when inserting product groups', err)
                     commit(
-                        'SHOW_SNACKBAR',
+                        'alerts/SHOW_SNACKBAR',
                         {
                             type: 'warning',
                             msg: 'Something went wrong trying to insert product groups',
                             callback: () => {
-                                dispatch('insertProductGroups', { fileId, productGroups })
+                                dispatch('insertProductGroups', { fileId, productGroup })
                             },
                             callbackLabel: 'Retry',
                         },
@@ -62,9 +62,9 @@ export default {
         async instantiateBaseProductGroup({ dispatch }) {
             const newGroup = {
                 id: null,
-                name: 'Look #1 could also be called something longer than "look #1" i guess...',
+                name: 'New group',
                 description: '',
-                variantMaps: [],
+                variants: [],
             }
             await dispatch('initProductGroups', [newGroup])
             return newGroup
@@ -79,6 +79,14 @@ export default {
         },
         async initProductGroups({ dispatch }, productGroups) {
             productGroups.map(async group => {
+                Object.defineProperty(group, 'variantMaps', {
+                    get() {
+                        return group.variants
+                    },
+                    set(value) {
+                        group.variants = value
+                    },
+                })
                 await dispatch('initVariantMaps', group.variantMaps)
             })
         },

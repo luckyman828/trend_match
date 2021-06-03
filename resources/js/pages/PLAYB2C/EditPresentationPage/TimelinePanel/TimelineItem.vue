@@ -8,18 +8,28 @@
         tabindex="0"
         @keydown.delete="onRemoveTiming"
     >
-        <div class="controls">
-            <button class="pill red sm" @click="onRemoveTiming">
-                <span>Delete</span>
-                <i class="far fa-trash"></i>
-            </button>
-        </div>
-        <div class="look-controls" v-if="timing.type == 'Look'">
-            <button class="pill yellow xs" @click="onEditLook" v-tooltip="'Edit look'">
+        <div class="controls flex-list space-sm justify">
+            <BaseButtonV2
+                class="look-button pill yellow xs"
+                @click="onEditLook"
+                tooltip="Edit look"
+                targetAreaPadding="4px"
+            >
                 <i class="far fa-layer-group"></i>
-                <span>{{ timing.variants.length }}</span>
-            </button>
+                <span v-if="timing.variants.length > 1">{{ timing.variants.length }}</span>
+                <i v-else class="far fa-plus"></i>
+            </BaseButtonV2>
+            <BaseButtonV2
+                class="delete-button pill red xs"
+                tooltip="Delete timing"
+                targetAreaPadding="4px"
+                @click="onRemoveTiming"
+            >
+                <!-- <span class="truncate">Delete</span> -->
+                <i class="far fa-trash"></i>
+            </BaseButtonV2>
         </div>
+
         <div class="edge-drag-controls">
             <img
                 src="/assets/cursors/arrow-to-right-regular.svg"
@@ -85,6 +95,9 @@ export default {
             rail: 'getTimelineRail',
             snapThreshold: 'getSnapThreshold',
         }),
+        ...mapGetters('productGroups', {
+            currentProductGroup: 'getCurrentProductGroup',
+        }),
         variant() {
             return this.timing.variant
         },
@@ -111,15 +124,17 @@ export default {
     },
     methods: {
         ...mapActions('playPresentation', ['removeTiming', 'updatePresentation']),
-        ...mapActions('player', ['seekTo']),
         ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         onRemoveTiming() {
             this.removeTiming(this.index)
         },
         async onEditLook() {
-            this.seekTo(this.timing.start)
-            this.SET_CURRENT_GROUP(this.timing.productGroup)
+            if (this.currentProductGroup && this.currentProductGroup.timingId == this.timing.id) {
+                this.SET_CURRENT_GROUP(null)
+            } else {
+                this.SET_CURRENT_GROUP(this.timing.productGroup)
+            }
         },
         onMouseMoveCap(e, direction) {
             if (this.$el.classList.contains('dragged')) return
@@ -237,20 +252,28 @@ export default {
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-    .look-controls {
-        position: absolute;
-        left: 4px;
-        z-index: 1;
-        top: -12px;
+    &.look {
+        .controls {
+            opacity: 1;
+        }
     }
     .controls {
         position: absolute;
-        top: -14px;
-        right: 4px;
-        opacity: 0;
-        pointer-events: none;
-        transition: 0.1s ease-out;
+        left: 0;
         z-index: 2;
+        top: -16px;
+        transition: 0.1s ease-out;
+        opacity: 0;
+        width: 100%;
+        padding: 0 4px;
+        .look-button {
+            flex-shrink: 0;
+        }
+        .delete-button {
+            flex-shrink: 0;
+            opacity: 0;
+            transition: 0.1s ease-out;
+        }
     }
     &:focus,
     &:focus-within {
@@ -258,7 +281,8 @@ export default {
         // color: white;
         border-color: $primary;
         &:not(.dragged):not(.drag-caps) {
-            .controls {
+            .controls,
+            .controls .delete-button {
                 opacity: 1;
                 pointer-events: all;
             }
