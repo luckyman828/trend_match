@@ -258,6 +258,30 @@ export default {
     },
 
     actions: {
+        async instantiateBaseSelection({ dispatch }) {
+            const newSelection = {
+                id: null,
+                file_id: null,
+                name: 'New selection',
+                type: 'Normal',
+                currency: null,
+                user_count: 0,
+                team_count: 0,
+                children: [],
+                visible_from: null,
+                visible_to: null,
+                open_from: null,
+                open_to: null,
+                completed_at: null,
+                your_role: null,
+                is_presenting: null,
+                budget: 0,
+                budget_spend: 0,
+                product_set_identifier: '',
+            }
+            await dispatch('initSelections', [newSelection])
+            return newSelection
+        },
         async fetchSelections({ commit, dispatch }, { fileId, addToState = true }) {
             return new Promise(async (resolve, reject) => {
                 commit('SET_LOADING', true)
@@ -332,7 +356,9 @@ export default {
                 .post(apiUrl, selection)
                 .then(async response => {
                     Object.assign(selection, response.data)
+
                     dispatch('initSelections', [selection])
+
                     if (addToState) {
                         commit('insertSelections', { file, selections: [selection] })
                     }
@@ -1150,11 +1176,15 @@ export default {
             return joinResponse
         },
         async initSelections({ getters, rootGetters }, selections) {
-            selections.map(selection => {
+            for (const selection of selections) {
+                if (selection.initDone) continue
                 const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
                 const chatperId =
                     chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
                 Vue.set(selection, 'chapterId', chatperId)
+                if (!selection.children) {
+                    Vue.set(selection, 'children', [])
+                }
 
                 if (!selection.your_roles) {
                     Vue.set(selection, 'your_roles', [])
@@ -1213,7 +1243,8 @@ export default {
                 //         return selection.chapter ? selection.chapter.name : ''
                 //     },
                 // })
-            })
+                selection.initDone = true
+            }
         },
         async fetchChapterRules({ commit, dispatch }, { selection }) {
             const apiUrl = `selections/${selection.id}/chapter`

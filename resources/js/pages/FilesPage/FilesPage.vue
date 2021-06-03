@@ -83,7 +83,6 @@ export default {
         },
     },
     async created() {
-        console.log('created files page')
         // If the route has a fileId param set, then show that file in a flyin and set the current folder to the files parent
         const routeFileId = this.$route.params.fileId
         if (routeFileId) {

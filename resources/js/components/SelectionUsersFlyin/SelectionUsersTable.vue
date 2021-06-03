@@ -472,7 +472,6 @@ export default {
                         })
                     }
 
-                    console.log('update job', newJob, oldJob)
                     user.job = baseUser.job
                     return user
                 })
