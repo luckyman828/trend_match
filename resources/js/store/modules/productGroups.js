@@ -27,11 +27,15 @@ export default {
         },
         async insertProductGroup({ commit, dispatch }, { fileId, productGroup }) {
             const apiUrl = `files/${fileId}/product-groups`
-            axios
+            await axios
                 .post(apiUrl, { product_groups: [productGroup] })
-                .then(response => {
+                .then(async response => {
                     console.log('success inersting product group', response.data)
-                    Vue.set(productGroup, 'id', response.data.id)
+                    Vue.set(productGroup, 'id', response.data.added_product_groups[0].id)
+                    if (!productGroup.initDone) {
+                        await dispatch('initProductGroups', [productGroup])
+                    }
+                    commit('INSERT_PRODUCT_GROUPS', [productGroup])
                 })
                 .catch(err => {
                     console.log('error when inserting product groups', err)
@@ -48,6 +52,7 @@ export default {
                         { root: true }
                     )
                 })
+            return productGroup
         },
         async addVariantMap({ dispatch }, { productGroup, variant, productId, variantId }) {
             const newVaraintMap = await dispatch('instantiateBaseVariantMap')
@@ -88,6 +93,7 @@ export default {
                     },
                 })
                 await dispatch('initVariantMaps', group.variantMaps)
+                group.initDone = true
             })
         },
         initVariantMaps({ rootGetters }, variantMaps) {
@@ -115,7 +121,7 @@ export default {
             state.productGroups = productGroups
         },
         INSERT_PRODUCT_GROUPS(state, productGroups) {
-            state.productGroups.push(productGroups)
+            state.productGroups.push(...productGroups)
         },
     },
 }

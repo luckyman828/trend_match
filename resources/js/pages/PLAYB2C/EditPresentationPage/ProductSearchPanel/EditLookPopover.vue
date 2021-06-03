@@ -50,10 +50,19 @@
             <button class="pill auto-right sm">
                 <i class="far fa-ellipsis-h primary"></i>
             </button>
-            <button class="pill sm" @click="onSaveLook">
-                <i class="far fa-tshirt primary"></i>
-                <span class="color-primary">Save</span>
-            </button>
+            <BaseStateAlternatingButton
+                class="pill sm"
+                :active="lookIsSaved"
+                @click="!lookIsSaved && onSaveLook()"
+                :disabled="lookIsSaved"
+                :baseState="{ iconLeft: 'far fa-tshirt primary', text: 'Save' }"
+                :activeState="{
+                    iconLeft: 'far fa-tshirt',
+                    text: 'Saved',
+                    nestedIconLeft: 'fas fa-check pos-top pos-right',
+                    class: 'primary',
+                }"
+            />
             <button v-if="!linkedTiming" class="pill sm" @click="onAddTiming">
                 <i class="far fa-plus"></i>
                 <span>To timeline</span>
@@ -85,6 +94,7 @@ export default {
     computed: {
         ...mapGetters('productGroups', {
             look: 'getCurrentProductGroup',
+            looks: 'getProductGroups',
         }),
         ...mapGetters('playPresentation', {
             timings: 'getTimings',
@@ -103,6 +113,9 @@ export default {
                 this.linkedTiming &&
                 JSON.stringify(this.linkedTiming.variantMaps) != JSON.stringify(this.look.variantMaps)
             )
+        },
+        lookIsSaved() {
+            return this.looks.find(look => look.id == this.look.id)
         },
     },
     watch: {
@@ -130,8 +143,9 @@ export default {
         async updateLinkedTiming() {
             await this.updateTiming(this.linkedTiming)
         },
-        onSaveLook() {
-            this.insertProductGroup({ fileId: this.presentation.id, productGroup: this.look })
+        async onSaveLook() {
+            const savedLook = await this.insertProductGroup({ fileId: this.presentation.id, productGroup: this.look })
+            console.log('saved look', savedLook)
         },
         onClose() {
             this.SET_CURRENT_GROUP(null)
