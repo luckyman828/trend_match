@@ -876,6 +876,7 @@ export default {
             'deleteImages',
             'deleteProducts',
             'initProducts',
+            'instantiateNewProductVariant',
         ]),
         ...mapMutations('products', ['setCurrentProduct']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
@@ -957,28 +958,16 @@ export default {
                 this.$emit('closeSingle')
             }
         },
-        onAddVariant() {
-            const newVariant = {
-                id: this.$uuid.v4(),
-                name: 'Unnamed',
-                style_option_id: null,
-                color: null,
-                variant: null,
-                image: null,
-                blob_id: null,
-                sizes: [],
-                images: [],
-                pictures: [
-                    {
-                        url: null,
-                        name: null,
-                    },
-                ],
-                imageIndex: 0,
-                ean: null,
-                ean_sizes: [],
-                extra_data: {},
-            }
+        async onAddVariant() {
+            const newVariant = await this.instantiateNewProductVariant()
+            newVariant.name = 'Unnamed'
+            newVariant.color = 'Unnamed'
+            newVariant.blob_id = null
+            newVariant.imageIndex = 0
+            newVariant.pictures.push({
+                url: null,
+                name: null,
+            })
 
             Object.defineProperty(newVariant, 'currentImg', {
                 get: function() {

@@ -4,6 +4,7 @@ import Compressor from 'compressorjs'
 import { instantiateProductsFromMappedFields, parseCSVStringToRowsAndCells } from '../../helpers/workbookUtils'
 import chunkArray from '../../helpers/chunkArray'
 import getUniqueObjectValuesByKey from '../../helpers/getUniqueObjectValuesByKey'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
     namespaced: true,
@@ -595,7 +596,7 @@ export default {
         },
         instantiateNewProductVariant({ commit }) {
             return {
-                id: null,
+                id: uuidv4(),
                 color: null,
                 variant: null,
                 delivery_dates: [],
