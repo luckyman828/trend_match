@@ -5,105 +5,79 @@
             tabindex="0"
             @keydown.enter="onAddTiming"
         >
-            <BaseImageSizer fit="cover" class="image">
-                <BaseVariantImage :variant="look.variantMaps[0].variant" size="sm" />
+            <BaseImageSizer fit="cover" class="image" @click.native="$emit('edit-look', look)">
+                <div class="resize-target picture-collage" :class="`size-${look.variantMaps.slice(0, 4).length}`">
+                    <BaseVariantImage
+                        :variant="variantMap.variant"
+                        size="sm"
+                        v-for="variantMap in look.variantMaps.slice(0, 4)"
+                        :key="variantMap.variant_id"
+                    />
+                </div>
+                <div v-if="look.variantMaps.length > 4" class="pill dark extra-count xs w-sm">
+                    <span>+ {{ look.variantMaps.slice(4).length }}</span>
+                </div>
             </BaseImageSizer>
 
-            <div class="flex-list flex-v justify details">
+            <div class="flex-list flex-v justify details" style="margin-right: 0">
                 <!-- TOP -->
 
                 <div class="name-section flex-list flex-v lh-xs">
                     <div class="flex-list flex-v space-sm">
                         <div class="product-name ft-bd ft-14">
-                            <span class="truncate">{{ look.name }}</span>
-                        </div>
-                        <div class="price flex-list center-v">
-                            <div class="current-price ft-bd ft-10">
-                                {{ look.yourPrice.wholesale_price }} {{ look.yourPrice.currency }}
-                            </div>
-                            <div class="old-price ft-strike ft-10 ft-bd">
-                                {{ look.yourPrice.recommended_retail_price }} {{ look.yourPrice.currency }}
-                            </div>
+                            <span class="line-clamp-3">{{ look.name }}</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- BOTTOM -->
-                <div class="flex-list" v-if="variant">
-                    <v-popover trigger="click" class="variant-selector" ref="variantSelector">
-                        <div class="color pill sm full-width">
-                            <span
-                                class="circle xxs color-preview"
-                                :style="{ backgroundImage: `url(${variantImage(variant)})` }"
-                            ></span>
-                            <span class="ft-bd truncate">{{ variant.name }}</span>
-                            <i class="fas fa-caret-down"></i>
+                <div class="flex-list justify" v-if="variant">
+                    <div class="price flex-list center-v">
+                        <div class="current-price ft-bd ft-10">
+                            {{ look.yourPrice.wholesale_price }} {{ look.yourPrice.currency }}
                         </div>
-                        <BaseSelectButtons
-                            header="Change color"
-                            slot="popover"
-                            type="radio"
-                            :submitOnChange="true"
-                            :options="product.variants"
-                            :value="variantIndex"
-                            optionValueKey="index"
-                            optionNameKey="name"
-                            v-model="variantIndex"
-                            @submit="$refs.variantSelector.hide()"
-                        />
-                    </v-popover>
+                        <div class="old-price ft-strike ft-10 ft-bd">
+                            {{ look.yourPrice.recommended_retail_price }} {{ look.yourPrice.currency }}
+                        </div>
+                    </div>
+                    <div class="pill invisible xs dark">
+                        <i class="fas fa-tshirt"></i>
+                        <span>{{ look.variantMaps.length }}</span>
+                    </div>
                 </div>
             </div>
             <!-- ACTIONS  -->
             <div class="action-list flex-list center-v">
-                <!-- Not editing look -->
-                <template v-if="!currentLook">
-                    <BaseButton
-                        buttonClass="circle"
-                        targetAreaPadding="4px"
-                        @click="$emit('create-look', variant)"
-                        tabindex="-1"
-                        v-tooltip="'Create a look'"
-                    >
-                        <i class="far fa-layer-group yellow"></i>
-                    </BaseButton>
-                    <BaseButton
-                        buttonClass="invisible circle ghost-hover"
-                        targetAreaPadding="4px"
-                        @click="onAddTiming"
-                        tabindex="-1"
-                        v-tooltip="'Add to timeline'"
-                    >
-                        <i class="far fa-plus primary"></i>
-                    </BaseButton>
-                </template>
-                <!-- Editing look -->
-                <BaseStateAlternatingButton
+                <BaseButton
+                    v-if="isCurrentLook"
+                    buttonClass="circle"
+                    targetAreaPadding="4px"
+                    @click="$emit('edit-look', null)"
+                    tabindex="-1"
+                    v-tooltip="'Done'"
+                >
+                    <i class="far fa-check"></i>
+                </BaseButton>
+                <BaseButton
                     v-else
                     buttonClass="circle"
                     targetAreaPadding="4px"
-                    @click="!inCurrentLook ? onAddToLook() : onRemoveFromLook()"
+                    @click="$emit('edit-look', look)"
                     tabindex="-1"
-                    :active="inCurrentLook"
-                    :baseState="{
-                        iconLeft: 'far fa-layer-group yellow',
-                        nestedIconLeft: 'fas fa-plus pos-top pos-right dark',
-                        tooltip: 'Add to look',
-                    }"
-                    :activeState="{
-                        class: 'yellow',
-                        iconLeft: 'far fa-layer-group white',
-                        nestedIconLeft: 'fas fa-check pos-top pos-right white',
-                    }"
-                    :activeHoverState="{
-                        class: 'yellow',
-                        iconLeft: 'far fa-layer-group white',
-                        nestedIconLeft: 'fas fa-times pos-top pos-right red',
-                        tooltip: 'Remove from look',
-                    }"
+                    v-tooltip="'Edit look'"
                 >
-                    <!-- <i class="far fa-layer-group yellow"><i class="fas fa-plus pos-top pos-right dark"></i></i> -->
-                </BaseStateAlternatingButton>
+                    <i class="far fa-pen"></i>
+                </BaseButton>
+
+                <BaseButton
+                    buttonClass="invisible circle ghost-hover"
+                    targetAreaPadding="4px"
+                    @click="onAddTiming"
+                    tabindex="-1"
+                    v-tooltip="'Add to timeline'"
+                >
+                    <i class="far fa-plus primary"></i>
+                </BaseButton>
             </div>
             <!-- END ACTIONS  -->
         </div>
@@ -124,9 +98,7 @@ export default {
     props: ['look', 'focusIndex'],
     mixins: [variantImage],
     data() {
-        return {
-            variantIndex: 0,
-        }
+        return {}
     },
     computed: {
         ...mapGetters('player', {
@@ -136,10 +108,10 @@ export default {
             currentLook: 'getCurrentProductGroup',
         }),
         variant() {
-            return this.product.variants[this.variantIndex]
+            return this.look.variantMaps[0]
         },
-        inCurrentLook() {
-            return this.currentLook.variantMaps.find(map => map.variant_id == this.variant.id)
+        isCurrentLook() {
+            return this.currentLook && this.look.id == this.currentLook.id
         },
     },
     methods: {
@@ -151,7 +123,8 @@ export default {
                 id: null,
                 start_at_ms: 0,
                 end_at_ms: this.videoDuration / 12,
-                variants: [{ product_id: this.product.id, variant_id: this.variant.id }],
+                variants: [],
+                product_group_id: this.look.id,
             }
             this.addTiming({ newTiming })
         },
@@ -181,6 +154,84 @@ export default {
         width: 72px;
         border-radius: $borderRadiusMd;
         overflow: hidden;
+        cursor: pointer;
+        .extra-count {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        img {
+            // transition: opacity 0.1s ease-in;
+        }
+        &:hover {
+            img {
+                opacity: 0.7;
+            }
+        }
+    }
+    .picture-collage {
+        display: grid;
+        gap: 2px;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        > * {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            object-fit: cover;
+            border-radius: $borderRadiusSm;
+        }
+        &.size-1 {
+            grid-template-areas:
+                'main main'
+                'main main';
+            > * {
+                grid-area: main;
+            }
+        }
+        &.size-2 {
+            grid-template-areas:
+                'top top'
+                'bottom bottom';
+            > :nth-child(1) {
+                grid-area: top;
+            }
+            > :nth-child(2) {
+                grid-area: bottom;
+            }
+        }
+        &.size-3 {
+            grid-template-areas:
+                'top top'
+                'bottom-left bottom-right';
+            > :nth-child(1) {
+                grid-area: top;
+            }
+            > :nth-child(2) {
+                grid-area: bottom-left;
+            }
+            > :nth-child(3) {
+                grid-area: bottom-right;
+            }
+        }
+        &.size-4 {
+            grid-template-areas:
+                'top-left top-right'
+                'bottom-left bottom-right';
+            > :nth-child(1) {
+                grid-area: top-left;
+            }
+            > :nth-child(2) {
+                grid-area: top-right;
+            }
+            > :nth-child(3) {
+                grid-area: bottom-left;
+            }
+            > :nth-child(4) {
+                grid-area: bottom-right;
+            }
+        }
     }
     .color-preview {
         background-size: 50000%;

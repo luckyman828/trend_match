@@ -3,7 +3,7 @@
         <BaseImageSizer fit="cover" class="image">
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
-        <div class="right flex-list flex-v justify flex-1">
+        <div class="details right flex-list flex-v justify flex-1">
             <div class="top flex-list justify">
                 <div class="name-wrapper">
                     <div class="name ft-bd ft-12 truncate">{{ variant.name }}</div>
@@ -45,6 +45,7 @@
                         optionNameKey="name"
                         optionValueKey="id"
                         :disabledOptions="look.variantMaps.map(map => ({ id: map.variant_id }))"
+                        @submit="$emit('change-variant')"
                     />
                 </v-popover>
             </div>
@@ -92,6 +93,10 @@ export default {
     .image {
         width: 52px;
         border-radius: $borderRadiusMd;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .details {
         overflow: hidden;
     }
     .name-wrapper {

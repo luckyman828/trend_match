@@ -41,10 +41,10 @@ export default {
     &.cover img {
         object-fit: cover;
     }
-    img,
+    > img,
     > .image,
-    .img,
-    .resize-target {
+    > .img,
+    > .resize-target {
         position: absolute;
         left: 0;
         top: 0;

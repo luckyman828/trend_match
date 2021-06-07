@@ -38,7 +38,7 @@
             key-field="id"
             v-slot="{ item }"
         >
-            <SearchListLook :look="item" />
+            <SearchListLook :look="item" @edit-look="onEditLook" />
         </RecycleScroller>
         <EditLookPopover v-if="currentLook" />
     </div>
@@ -80,6 +80,9 @@ export default {
             })
 
             this.SET_CURRENT_GROUP(newLook)
+        },
+        onEditLook(look) {
+            this.SET_CURRENT_GROUP(look)
         },
     },
 }

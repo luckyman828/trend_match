@@ -41,12 +41,13 @@
             </div>
         </div>
         <div class="body">
-            <Draggable class="variant-list" v-model="look.variantMaps">
+            <Draggable class="variant-list" v-model="look.variantMaps" @end="onSaveLook">
                 <LookVariantListItem
                     v-for="variantMap in look.variantMaps"
                     :key="variantMap.variant_id"
                     :variantMap="variantMap"
                     :look="look"
+                    @change-variant="onSaveLook"
                 />
             </Draggable>
         </div>
@@ -128,6 +129,9 @@ export default {
                 JSON.stringify(this.linkedTiming.variantMaps) != JSON.stringify(this.look.variantMaps)
             )
         },
+        variantMapLength() {
+            return this.look.variantMaps.length
+        },
         lookIsSaved() {
             return this.looks.find(look => look.id == this.look.id)
         },
@@ -137,6 +141,9 @@ export default {
             if (isChanged) {
                 this.updateLinkedTiming()
             }
+        },
+        variantMapLength() {
+            this.onSaveLook()
         },
     },
     methods: {

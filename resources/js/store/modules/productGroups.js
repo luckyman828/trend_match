@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Vue from 'vue'
+import roundDecimals from '../../helpers/roundDecimals'
 
 export default {
     namespaced: true,
@@ -30,8 +31,9 @@ export default {
             await axios
                 .post(apiUrl, { product_groups: [productGroup] })
                 .then(async response => {
-                    console.log('success inersting product group', response.data)
-                    Vue.set(productGroup, 'id', response.data.added_product_groups[0].id)
+                    if (response.data.added_product_groups.length > 0) {
+                        Vue.set(productGroup, 'id', response.data.added_product_groups[0].id)
+                    }
                     if (!productGroup.initDone) {
                         await dispatch('initProductGroups', [productGroup])
                     }
@@ -99,6 +101,56 @@ export default {
                     },
                 })
                 await dispatch('initVariantMaps', group.variantMaps)
+
+                // Prices
+                Vue.set(group, 'yourPrice', {})
+                Object.defineProperty(group.yourPrice, 'currency', {
+                    get() {
+                        if (group.variantMaps.length <= 0) return
+                        return group.variantMaps[0].product.yourPrice.currency
+                    },
+                })
+                Object.defineProperty(group.yourPrice, 'wholesale_price', {
+                    get() {
+                        return roundDecimals(
+                            group.variantMaps.reduce((total, curr) => {
+                                const price = curr.product.prices.find(
+                                    price => price.currency == group.yourPrice.currency
+                                )
+                                if (!price) return total
+                                return (total += price.wholesale_price)
+                            }, 0),
+                            2
+                        )
+                    },
+                })
+                Object.defineProperty(group.yourPrice, 'recommended_retail_price', {
+                    get() {
+                        return roundDecimals(
+                            group.variantMaps.reduce((total, curr) => {
+                                const price = curr.product.prices.find(
+                                    price => price.currency == group.yourPrice.currency
+                                )
+                                if (!price) return total
+                                return (total += price.recommended_retail_price)
+                            }, 0),
+                            2
+                        )
+                    },
+                })
+                Object.defineProperty(group.yourPrice, 'mark_up', {
+                    get() {
+                        return !group.yourPrice.wholesale_price
+                            ? 0
+                            : Number(
+                                  Math.round(
+                                      group.recommended_retail_price / group.yourPrice.wholesale_price +
+                                          `e${amountOfDecimals}`
+                                  ) + `e-${amountOfDecimals}`
+                              )
+                    },
+                })
+
                 group.initDone = true
             })
         },
