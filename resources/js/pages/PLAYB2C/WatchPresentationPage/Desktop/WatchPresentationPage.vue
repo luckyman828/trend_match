@@ -44,7 +44,7 @@
                     :variants="currentTiming && currentTiming.variants"
                 />
                 <AddToBasketButton
-                    :variant="currentVariant"
+                    :variant="currentTiming && currentTiming.variants[0]"
                     buttonClass="pill"
                     baseClass="white"
                     :resetOnSubmit="true"
@@ -115,7 +115,6 @@ export default {
             sidebarItem: 'getSidebarItem',
             currentTimingIndex: 'getCurrentTimingIndex',
             currentTiming: 'getCurrentTiming',
-            currentVariant: 'getCurrentVariant',
         }),
         ...mapGetters('player', {
             isPlaying: 'getIsPlaying',

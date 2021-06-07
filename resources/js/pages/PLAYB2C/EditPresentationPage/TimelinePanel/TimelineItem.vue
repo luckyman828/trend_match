@@ -139,6 +139,7 @@ export default {
                 // If we don't already have a linked product group, create a new one
                 if (!this.timing.productGroup) {
                     const productGroup = await this.instantiateBaseProductGroup()
+                    productGroup.name = 'Look: ' + this.timing.variant.product.name
                     await this.addVariantMap({ productGroup, variant: this.timing.variant })
                     await this.insertOrUpdateProductGroup({ fileId: this.presentation.id, productGroup })
                     this.timing.product_group_id = productGroup.id

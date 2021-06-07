@@ -115,7 +115,7 @@ export default {
     },
     methods: {
         ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap', 'deleteProductGroup']),
-        ...mapActions('playPresentation', ['removeTiming']),
+        ...mapActions('playPresentation', ['removeTimings']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         async onStartNewLook(variant) {
             const newLook = await this.instantiateBaseProductGroup()
@@ -135,11 +135,8 @@ export default {
         },
         async onDeleteLook(look) {
             const linkedTimings = this.timings.filter(timing => timing.product_group_id == look.id)
-            if (!linkedTiming || (await this.$refs.confirmDeleteDialog.confirm())) {
-                linkedTimings.map(linkedTiming => {
-                    const index = this.timings.findIndex(timing => timing.id == linkedTiming.id)
-                    this.removeTiming(index)
-                })
+            if (linkedTimings.length <= 0 || (await this.$refs.confirmDeleteDialog.confirm())) {
+                this.removeTimings(linkedTimings)
                 this.deleteProductGroup({ fileId: this.presentation.id, productGroup: look })
             }
         },

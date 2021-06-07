@@ -24,13 +24,13 @@ export default {
     props: ['timing'],
     computed: {
         ...mapGetters('playPresentation', {
-            currentVariant: 'getCurrentVariant',
+            currentTiming: 'getCurrentTiming',
         }),
         isCurrent() {
-            return this.currentVariant && this.currentVariant.id == this.variant.id
+            return this.currentTiming && this.currentTiming.id == this.timing.id
         },
         variant() {
-            return this.timing.variants[0]
+            return this.timing.variant
         },
     },
     methods: {

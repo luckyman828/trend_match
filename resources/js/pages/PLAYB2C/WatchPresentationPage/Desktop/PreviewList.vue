@@ -2,11 +2,16 @@
     <div class="preview-list-wrapper">
         <div class="preview-list flex-list flex-v bg-blur" ref="previewList">
             <template v-if="currentTiming">
-                <VariantPreview
-                    v-for="variantMap in currentTiming.variantMaps"
-                    :variant="variantMap.variant"
-                    :key="variantMap.variant_id"
-                />
+                <template v-if="currentTiming.type == 'Single'">
+                    <VariantPreview :variant="currentTiming.variant" />
+                </template>
+                <template v-else>
+                    <VariantPreview
+                        v-for="variantMap in currentTiming.productGroup.variantMaps"
+                        :variant="variantMap.variant"
+                        :key="variantMap.variant_id"
+                    />
+                </template>
             </template>
         </div>
     </div>

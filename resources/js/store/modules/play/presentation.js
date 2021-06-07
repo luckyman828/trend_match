@@ -297,6 +297,13 @@ export default {
             commit('REMOVE_TIMING', index)
             dispatch('updatePresentation')
         },
+        removeTimings({ getters, commit, dispatch }, timings) {
+            for (const timing of timings) {
+                const index = getters.getTimings.findIndex(stateTiming => stateTiming.id == timing.id)
+                commit('REMOVE_TIMING', index)
+            }
+            dispatch('updatePresentation')
+        },
         initVariantMaps({ rootGetters }, variantMaps) {
             variantMaps.map(variantMap => {
                 Object.defineProperty(variantMap, 'product', {
