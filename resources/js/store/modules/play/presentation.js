@@ -214,17 +214,23 @@ export default {
                 index = prevTiming.index + 1
             }
 
-            const conflictingTiming = allTimings.find(
+            const conflictingTimings = allTimings.filter(
                 x =>
-                    (newTiming.start >= x.start && newTiming.start < x.end) ||
-                    (newTiming.end < x.end && newTiming.end > x.start)
+                    (newTiming.start >= x.start && newTiming.start < x.end) || // New timing start is inside another timing
+                    (newTiming.end < x.end && newTiming.end > x.start) || // New timing end is inside another timing
+                    (x.start > newTiming.start && x.end < newTiming.end) || // Another timing is entirely inside new timing
+                    (newTiming.start > x.start && newTiming.end < x.end) // New timing is entirely inside another timing
             )
+            const conflictingTiming = conflictingTimings.reduce((first, current) => {
+                return current.start < first.start ? current : first
+            }, conflictingTimings[0])
             const minDuration = 1
             if (conflictingTiming) {
                 // Place befoe
                 const placeBefore = newTiming.start < conflictingTiming.start
                 if (placeBefore) {
-                    const nextTiming = allTimings[newTiming.index + 1]
+                    // const nextTiming = allTimings[newTiming.index + 1]
+                    const nextTiming = conflictingTiming
                     newTiming.end = nextTiming.start
                 }
 
