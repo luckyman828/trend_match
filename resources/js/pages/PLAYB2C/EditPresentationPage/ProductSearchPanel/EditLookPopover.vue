@@ -52,7 +52,10 @@
             </Draggable>
         </div>
         <div class="footer flex-list">
-            <button class="pill auto-right sm" v-show-contextmenu="{ ref: 'moreContext', placement: 'bottom' }">
+            <button
+                class="pill auto-right sm"
+                v-show-contextmenu="{ trigger: 'click', ref: 'moreContext', placement: 'right' }"
+            >
                 <i class="far fa-ellipsis-h primary"></i>
             </button>
 
@@ -90,6 +93,16 @@
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
+
+        <BaseDialog ref="confirmDeleteDialog" type="confirm" confirmColor="red" confirmText="Yes, delete it">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-layer-group"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>A video timing is linked to this look</h3>
+            <p>Deleting this look, will cause any linked video timings to also be deleted</p>
+        </BaseDialog>
     </div>
 </template>
 
@@ -121,13 +134,7 @@ export default {
             }, 0)
         },
         linkedTiming() {
-            return this.timings.find(timing => timing.id == this.look.timingId)
-        },
-        changedFromLinkedTiming() {
-            return (
-                this.linkedTiming &&
-                JSON.stringify(this.linkedTiming.variantMaps) != JSON.stringify(this.look.variantMaps)
-            )
+            return this.timings.find(timing => timing.product_group_id == this.look.id)
         },
         variantMapLength() {
             return this.look.variantMaps.length
@@ -137,11 +144,6 @@ export default {
         },
     },
     watch: {
-        changedFromLinkedTiming(isChanged) {
-            if (isChanged) {
-                this.updateLinkedTiming()
-            }
-        },
         variantMapLength() {
             this.onSaveLook()
         },
@@ -160,20 +162,21 @@ export default {
             await this.addTiming({ newTiming })
             this.SET_CURRENT_GROUP(newTiming.productGroup)
         },
-        async updateLinkedTiming() {
-            await this.updateTiming(this.linkedTiming)
-            await this.updatePresentation()
-        },
         async onSaveLook() {
             await this.insertOrUpdateProductGroup({ fileId: this.presentation.id, productGroup: this.look })
         },
         onClose() {
             this.SET_CURRENT_GROUP(null)
         },
-        onDeleteLook() {
-            this.deleteProductGroup({ fileId: this.presentation.id, productGroup: this.look })
-            if (this.look.timing) {
-                this.removeTiming(this.look.timing.index)
+        async onDeleteLook() {
+            const linkedTimings = this.timings.filter(timing => timing.product_group_id == this.look.id)
+            if (!linkedTimings.length > 0 || (await this.$refs.confirmDeleteDialog.confirm())) {
+                linkedTimings.map(linkedTiming => {
+                    const index = this.timings.findIndex(timing => timing.id == linkedTiming.id)
+                    this.removeTiming(index)
+                })
+
+                this.deleteProductGroup({ fileId: this.presentation.id, productGroup: this.look })
             }
             this.onClose()
         },

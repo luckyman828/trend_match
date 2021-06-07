@@ -21,6 +21,7 @@
             />
         </div>
         <RecycleScroller
+            :key="currentTab"
             v-if="currentTab != 'Looks'"
             class="result-list item-list"
             :items="filteredBySearch.items"
@@ -32,15 +33,54 @@
         </RecycleScroller>
         <RecycleScroller
             v-else
+            :key="currentTab"
             class="result-list look-list"
             :items="filteredBySearch.looks"
             :item-size="118"
             key-field="id"
             v-slot="{ item }"
         >
-            <SearchListLook :look="item" @edit-look="onEditLook" />
+            <SearchListLook
+                :look="item"
+                :ref="`look-${item.id}`"
+                @edit-look="onEditLook"
+                v-show-contextmenu="{
+                    trigger: 'contextmenu',
+                    ref: 'moreContext',
+                    item: item,
+                }"
+                :contextMenuVisible="contextLook && contextLook.id == item.id"
+            />
         </RecycleScroller>
         <EditLookPopover v-if="currentLook" />
+
+        <BaseContextMenu ref="moreContext" class="more-context" @show="contextLook = $event" @hide="contextLook = null">
+            <template v-if="contextLook">
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-times" hotkey="keyC"> <u>C</u>ancel </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-pen" hotkey="KeyR" @click="onEditName(contextLook)">
+                        <u>R</u>ename
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-trash" hotkey="KeyD" @click="onDeleteLook(contextLook)">
+                        <u>D</u>elete look
+                    </BaseContextMenuItem>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseDialog ref="confirmDeleteDialog" type="confirm" confirmColor="red" confirmText="Yes, delete it">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-layer-group"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>A video timing is linked to this look</h3>
+            <p>Deleting this look, will cause any linked video timings to also be deleted</p>
+        </BaseDialog>
     </div>
 </template>
 
@@ -57,6 +97,7 @@ export default {
         return {
             currentTab: 'All',
             filteredBySearch: { items: [], looks: [] },
+            contextLook: null,
         }
     },
     computed: {
@@ -67,9 +108,14 @@ export default {
             currentLook: 'getCurrentProductGroup',
             looks: 'getProductGroups',
         }),
+        ...mapGetters('playPresentation', {
+            presentation: 'getPresentation',
+            timings: 'getTimings',
+        }),
     },
     methods: {
-        ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap']),
+        ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap', 'deleteProductGroup']),
+        ...mapActions('playPresentation', ['removeTiming']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         async onStartNewLook(variant) {
             const newLook = await this.instantiateBaseProductGroup()
@@ -83,6 +129,19 @@ export default {
         },
         onEditLook(look) {
             this.SET_CURRENT_GROUP(look)
+        },
+        onEditName(look) {
+            this.$refs[`look-${look.id}`].editName = true
+        },
+        async onDeleteLook(look) {
+            const linkedTimings = this.timings.filter(timing => timing.product_group_id == look.id)
+            if (!linkedTiming || (await this.$refs.confirmDeleteDialog.confirm())) {
+                linkedTimings.map(linkedTiming => {
+                    const index = this.timings.findIndex(timing => timing.id == linkedTiming.id)
+                    this.removeTiming(index)
+                })
+                this.deleteProductGroup({ fileId: this.presentation.id, productGroup: look })
+            }
         },
     },
 }

@@ -31,13 +31,16 @@ export default {
             await axios
                 .post(apiUrl, { product_groups: [productGroup] })
                 .then(async response => {
-                    if (response.data.added_product_groups.length > 0) {
+                    const isNew = response.data.added_product_groups.length > 0
+                    if (isNew) {
                         Vue.set(productGroup, 'id', response.data.added_product_groups[0].id)
                     }
                     if (!productGroup.initDone) {
                         await dispatch('initProductGroups', [productGroup])
                     }
-                    commit('INSERT_PRODUCT_GROUPS', [productGroup])
+                    if (isNew) {
+                        commit('INSERT_PRODUCT_GROUPS', [productGroup])
+                    }
                 })
                 .catch(err => {
                     console.log('error when inserting product groups', err)
@@ -47,7 +50,7 @@ export default {
                             type: 'warning',
                             msg: 'Something went wrong trying to insert product groups',
                             callback: () => {
-                                dispatch('insertProductGroups', { fileId, productGroup })
+                                dispatch('insertOrUpdateProductGroup', { fileId, productGroup })
                             },
                             callbackLabel: 'Retry',
                         },
@@ -92,6 +95,7 @@ export default {
         },
         async initProductGroups({ dispatch }, productGroups) {
             productGroups.map(async group => {
+                if (!group.variants) Vue.set(group, 'variants', [])
                 Object.defineProperty(group, 'variantMaps', {
                     get() {
                         return group.variants
@@ -182,7 +186,11 @@ export default {
             state.productGroups.push(...productGroups)
         },
         REMOVE_PRODUCT_GROUPS(state, productGroups) {
-            state.productGroups = state.productGroups.filter(group => !productGroups.find(x => x.id == group.id))
+            for (let i = productGroups.length - 1; i >= 0; i--) {
+                const productGroup = productGroups[i]
+                const index = state.productGroups.findIndex(group => productGroup.id == group.id)
+                state.productGroups.splice(index, 1)
+            }
         },
     },
 }

@@ -2,8 +2,9 @@
     <div class="drag-wrapper item-wrapper" :key="look.id">
         <div
             class="search-list-item drag-item flex-list bg-theme-white theme-border"
+            :class="contextMenuVisible && 'focus'"
             tabindex="0"
-            @keydown.enter="onAddTiming"
+            @keydown.enter.self="onAddTiming"
         >
             <BaseImageSizer fit="cover" class="image" @click.native="$emit('edit-look', look)">
                 <div class="resize-target picture-collage" :class="`size-${look.variantMaps.slice(0, 4).length}`">
@@ -25,7 +26,22 @@
                 <div class="name-section flex-list flex-v lh-xs">
                     <div class="flex-list flex-v space-sm">
                         <div class="product-name ft-bd ft-14">
-                            <span class="line-clamp-3">{{ look.name }}</span>
+                            <span class="line-clamp-3" v-if="!editName">{{ look.name }}</span>
+                            <BaseTextarea
+                                v-else
+                                class="name ft-14 ft-bd input-wrapper"
+                                @click.native.stop
+                                v-model="look.name"
+                                ref="nameInput"
+                                :inheritStyles="false"
+                                :focusOnMount="true"
+                                :selectOnFocus="true"
+                                @blur="editName = false"
+                                @submit="
+                                    onSaveLook()
+                                    editName = false
+                                "
+                            />
                         </div>
                     </div>
                 </div>
@@ -95,10 +111,10 @@ export default {
     components: {
         Draggable,
     },
-    props: ['look', 'focusIndex'],
+    props: ['look', 'focusIndex', 'contextMenuVisible'],
     mixins: [variantImage],
     data() {
-        return {}
+        return { editName: false }
     },
     computed: {
         ...mapGetters('player', {
@@ -106,6 +122,9 @@ export default {
         }),
         ...mapGetters('productGroups', {
             currentLook: 'getCurrentProductGroup',
+        }),
+        ...mapGetters('playPresentation', {
+            presentation: 'getPresentation',
         }),
         variant() {
             return this.look.variantMaps[0]
@@ -117,7 +136,7 @@ export default {
     methods: {
         ...mapMutations('playPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
         ...mapActions('playPresentation', ['addTiming']),
-        ...mapActions('productGroups', ['addVariantMap', 'removeVariantMap']),
+        ...mapActions('productGroups', ['addVariantMap', 'removeVariantMap', 'insertOrUpdateProductGroup']),
         onAddTiming() {
             const newTiming = {
                 id: null,
@@ -133,6 +152,9 @@ export default {
         },
         onRemoveFromLook() {
             this.removeVariantMap({ productGroup: this.currentLook, variant: this.variant })
+        },
+        onSaveLook() {
+            this.insertOrUpdateProductGroup({ fileId: this.presentation.id, productGroup: this.look })
         },
     },
 }
@@ -150,6 +172,9 @@ export default {
     padding: 8px;
     position: relative;
     height: 114px;
+    &.focus {
+        border-color: $primary;
+    }
     .image {
         width: 72px;
         border-radius: $borderRadiusMd;

@@ -16,7 +16,7 @@
                 targetAreaPadding="4px"
             >
                 <i class="far fa-layer-group"></i>
-                <span v-if="timing.variants.length > 1">{{ timing.variants.length }}</span>
+                <span v-if="timing.productGroup">{{ timing.productGroup.variantMaps.length }}</span>
                 <i v-else class="far fa-plus"></i>
             </BaseButtonV2>
             <BaseButtonV2
@@ -94,6 +94,7 @@ export default {
             zoom: 'getTimelineZoom',
             rail: 'getTimelineRail',
             snapThreshold: 'getSnapThreshold',
+            presentation: 'getPresentation',
         }),
         ...mapGetters('productGroups', {
             currentProductGroup: 'getCurrentProductGroup',
@@ -124,15 +125,25 @@ export default {
     },
     methods: {
         ...mapActions('playPresentation', ['removeTiming', 'updatePresentation']),
-        ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap']),
+        ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap', 'insertOrUpdateProductGroup']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         onRemoveTiming() {
             this.removeTiming(this.index)
         },
         async onEditLook() {
-            if (this.currentProductGroup && this.currentProductGroup.timingId == this.timing.id) {
+            if (this.currentProductGroup && this.currentProductGroup.id == this.timing.product_group_id) {
+                // Hide product group
                 this.SET_CURRENT_GROUP(null)
             } else {
+                // Show product group
+                // If we don't already have a linked product group, create a new one
+                if (!this.timing.productGroup) {
+                    const productGroup = await this.instantiateBaseProductGroup()
+                    await this.addVariantMap({ productGroup, variant: this.timing.variant })
+                    await this.insertOrUpdateProductGroup({ fileId: this.presentation.id, productGroup })
+                    this.timing.product_group_id = productGroup.id
+                    this.updatePresentation()
+                }
                 this.SET_CURRENT_GROUP(this.timing.productGroup)
             }
         },

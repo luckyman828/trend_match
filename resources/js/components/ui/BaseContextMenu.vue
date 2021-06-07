@@ -72,6 +72,7 @@ export default {
             // Save a reference to the mouseClick event
             this.mouseEvent = e
             this.item = item
+            this.$emit('show', item)
 
             // Set the current context menu item
             const mouseX = e.clientX + clickOffset.x
@@ -203,7 +204,7 @@ export default {
     border-radius: $borderRadiusModule;
     border: $borderModule;
     box-shadow: $shadowModuleHard;
-    z-index: 1;
+    z-index: 99;
     position: fixed;
     // overflow: hidden;
     display: flex;

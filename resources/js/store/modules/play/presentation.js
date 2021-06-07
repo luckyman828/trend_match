@@ -321,48 +321,44 @@ export default {
 
                 Object.defineProperty(timing, 'type', {
                     get() {
-                        return timing.variants.length > 1 ? 'Look' : 'Single'
+                        return !!parseInt(timing.product_group_id) ? 'Look' : 'Single'
                     },
                 })
 
-                await dispatch('initVariantMaps', timing.variants)
-
-                Object.defineProperty(timing, 'variantMaps', {
+                Object.defineProperty(timing, 'productGroup', {
                     get() {
-                        return timing.variants
+                        if (!timing.product_group_id) return
+                        return rootGetters['productGroups/getProductGroups'].find(
+                            group => group.id == timing.product_group_id
+                        )
                     },
-                    set(value) {
-                        timing.variants = value
+                })
+
+                Object.defineProperty(timing, 'product', {
+                    get() {
+                        if (timing.type == 'Single') {
+                            if (timing.variants.length <= 0) return
+                            const products = rootGetters['products/products']
+                            return products.find(product => product.id == timing.variants[0].product_id)
+                        }
+                        if (timing.type == 'Look') {
+                            if (timing.productGroup && timing.productGroup.variantMaps.length <= 0) return
+                            return timing.productGroup.variantMaps[0].product
+                        }
                     },
                 })
                 Object.defineProperty(timing, 'variant', {
                     get() {
-                        return timing.variantMaps.length > 0 && timing.variantMaps[0].variant
+                        if (timing.type == 'Single') {
+                            if (!timing.product) return
+                            return timing.product.variants.find(variant => variant.id == timing.variants[0].variant_id)
+                        }
+                        if (timing.type == 'Look') {
+                            if (timing.productGroup && timing.productGroup.variantMaps.length <= 0) return
+                            return timing.productGroup.variantMaps[0].variant
+                        }
                     },
                 })
-                Object.defineProperty(timing, 'product', {
-                    get() {
-                        return timing.variant.product
-                    },
-                })
-
-                // Create a product group from the timings variants
-                const productGroup = await dispatch('productGroups/instantiateBaseProductGroup', null, { root: true })
-                productGroup.name = `Timing #${timing.id}`
-                Object.defineProperty(productGroup, 'timing', {
-                    get() {
-                        return timing
-                    },
-                })
-                productGroup.timingId = timing.id
-                timing.variants.map(async variantMap => {
-                    await dispatch(
-                        'productGroups/addVariantMap',
-                        { productGroup, productId: variantMap.product_id, variantId: variantMap.variant_id },
-                        { root: true }
-                    )
-                })
-                Vue.set(timing, 'productGroup', productGroup)
 
                 Object.defineProperty(timing, 'start', {
                     get() {
