@@ -128,7 +128,7 @@
                 <span v-else>-</span>
             </td>
             <td class="status">
-                <template v-if="selection.your_job == 'Alignment'">
+                <template v-if="userHasEditAccess">
                     <BaseButton
                         :buttonClass="`editable sm ${selection.is_open && 'ghost'}`"
                         :disabled="selection.is_presenting"
