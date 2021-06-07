@@ -2,7 +2,11 @@
     <div class="preview-list-wrapper">
         <div class="preview-list flex-list flex-v bg-blur" ref="previewList">
             <template v-if="currentTiming">
-                <VariantPreview v-for="variant in currentTiming.variants" :variant="variant" :key="variant.id" />
+                <VariantPreview
+                    v-for="variantMap in currentTiming.variantMaps"
+                    :variant="variantMap.variant"
+                    :key="variantMap.variant_id"
+                />
             </template>
         </div>
     </div>
@@ -26,21 +30,34 @@ export default {
     },
     watch: {
         timing(newVal, oldVal) {
-            if (!oldVal || newVal.id != oldVal.id) {
+            if (!oldVal || !newVal || newVal.id != oldVal.id) {
                 this.onNewTiming(newVal)
             }
         },
     },
     methods: {
-        onNewTiming(newTiming) {
-            const duration = 400
-            this.$refs.previewList.classList.add('animate')
-            setTimeout(() => {
-                this.$refs.previewList.classList.remove('animate')
-            }, duration)
-            setTimeout(() => {
-                this.currentTiming = newTiming
-            }, (duration / 100) * 40)
+        async onNewTiming(newTiming) {
+            const animationDuration = 200
+            const el = this.$refs.previewList
+
+            // Add class fly-out
+            el.classList.add('fly-out')
+
+            // Wait a little
+            await this._delay(animationDuration)
+
+            // Set new timing
+            this.currentTiming = newTiming
+
+            // Add class fly-in
+            if (newTiming) {
+                // Wait a little before showing the new
+                await this._delay(100)
+                el.classList.remove('fly-out')
+            } else {
+                await this._delay(100)
+                el.classList.add('fly-out')
+            }
         },
     },
     created() {
@@ -53,6 +70,7 @@ export default {
 @import '~@/_variables.scss';
 .preview-list-wrapper {
     transition: transform $videoPauseTransition;
+    pointer-events: none !important;
     .desired-paused &,
     .recently-started & {
         transform: translateY(60px);
@@ -64,25 +82,10 @@ export default {
     padding: 8px;
     border-radius: 16px;
     width: 128px;
-    &.animate {
-        animation: flyin 0.4s ease-out 1 forwards;
-    }
+    pointer-events: all;
+    transition: transform 0.2s ease-out;
     &.fly-out {
-        animation: flyin 0.4s ease-out 1 forwards reverse;
-    }
-    @keyframes flyin {
-        0% {
-            transform: translateX(0);
-        }
-        40% {
-            transform: translateX(calc(-100% - 16px));
-        }
-        60% {
-            transform: translateX(calc(-100% - 16px));
-        }
-        100% {
-            transform: translateX(0);
-        }
+        transform: translateX(calc(-100% - 16px));
     }
 }
 </style>

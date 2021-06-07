@@ -38,7 +38,10 @@ export default {
             const timings = getters.getTimings
             const timestamp = rootGetters['player/getTimestamp']
 
-            // Loop backwards through our timings to find the last match that is before our timestamp
+            // // Find the first timing that intersects our current timestamp
+            // const timingIndex = timings.findIndex(timing => timing.start < timestamp && timing.end > timestamp)
+
+            // // Loop backwards through our timings to find the last match that is before our timestamp
             let timingIndex = -1
             for (let i = timings.length - 1; i >= 0; i--) {
                 const timing = timings[i]

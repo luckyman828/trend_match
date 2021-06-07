@@ -51,7 +51,7 @@
                 />
             </div>
 
-            <PreviewList v-if="currentTiming" />
+            <PreviewList />
 
             <PlayerControls class="player-controls" @show-timing-list="showTimingList = true" />
 

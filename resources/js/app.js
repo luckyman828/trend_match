@@ -222,6 +222,9 @@ Vue.mixin({
             if (currentIndex == 0 && !forwards) return array.length - 1
             return forwards ? currentIndex + 1 : currentIndex - 1
         },
+        async _delay(duration) {
+            await new Promise(resolve => setTimeout(() => resolve(), duration))
+        },
     },
 })
 
