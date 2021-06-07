@@ -20,8 +20,8 @@
                     <span>Join Feedback</span>
                 </button>
                 <button v-if="selection.type == 'Master'" class="primary ghost" @click="onJoinSelection('Approval')">
-                    <i class="far fa-user-plus"></i>
-                    <span>Join Alignment</span>
+                    <i class="far fa-user-clock"></i>
+                    <span>Join Approval</span>
                 </button>
             </div>
 
