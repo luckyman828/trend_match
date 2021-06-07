@@ -140,7 +140,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('playPresentation', ['addTiming', 'updateTiming', 'removeTiming']),
+        ...mapActions('playPresentation', ['addTiming', 'updateTiming', 'removeTiming', 'updatePresentation']),
         ...mapActions('productGroups', ['insertOrUpdateProductGroup', 'deleteProductGroup']),
         ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         async onAddTiming() {
@@ -155,6 +155,7 @@ export default {
         },
         async updateLinkedTiming() {
             await this.updateTiming(this.linkedTiming)
+            await this.updatePresentation()
         },
         async onSaveLook() {
             await this.insertOrUpdateProductGroup({ fileId: this.presentation.id, productGroup: this.look })
