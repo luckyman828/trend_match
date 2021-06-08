@@ -1,19 +1,16 @@
 <template>
-    <v-popover class="size-selector" trigger="click" ref="sizePopover" v-bind="$attrs">
-        <slot />
-        <BaseSelectButtons
-            v-if="variant"
-            header="Choose size"
-            slot="popover"
-            type="radio"
-            :submitOnChange="true"
-            :options="variant.ean_sizes"
-            optionNameKey="size"
-            optionValueKey="size"
-            v-model="selectedSize"
-            @change="onChangeSize"
-        />
-    </v-popover>
+    <BaseSelectButtons
+        v-if="variant"
+        header="Choose size"
+        slot="popover"
+        type="radio"
+        :submitOnChange="true"
+        :options="variant.ean_sizes"
+        optionNameKey="size"
+        optionValueKey="size"
+        v-model="selectedSize"
+        @change="onChangeSize"
+    />
 </template>
 
 <script>
@@ -34,13 +31,13 @@ export default {
         onChangeSize(size) {
             this.$emit('input', size)
             this.$emit('submit', size)
-            this.$nextTick(() => {
-                this.$refs.sizePopover.hide()
-            })
         },
         reset() {
             this.selectedSize = this.value
         },
+    },
+    created() {
+        this.selectedSize = this.value
     },
 }
 </script>

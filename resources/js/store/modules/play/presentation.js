@@ -366,6 +366,16 @@ export default {
                         }
                     },
                 })
+                Object.defineProperty(timing, 'variantList', {
+                    get() {
+                        if (timing.type == 'Single') {
+                            return [timing.variant]
+                        }
+                        if (timing.type == 'Look') {
+                            return timing.productGroup.variantMaps.map(variantMap => variantMap.variant)
+                        }
+                    },
+                })
 
                 Object.defineProperty(timing, 'start', {
                     get() {

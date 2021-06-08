@@ -2,15 +2,24 @@
     <div class="add-to-basket-selector flex-list bg-blur">
         <AddToWishlistButton class="white circle" :variants="[variant]" />
         <div class="flex-list justify equal-width flex-1">
-            <ChooseSizePopover class="size-selector" v-model="selectedSize" :variant="variant" ref="sizeSelector">
+            <v-popover trigger="click" class="size-button">
                 <button class="white full-width pill">
                     <i class="far fa-ruler"></i>
                     <span v-if="selectedSize">Size: {{ selectedSize }}</span>
                     <span v-else>Choose size</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
-            </ChooseSizePopover>
+                <ChooseSizePopover
+                    slot="popover"
+                    class="size-selector"
+                    v-model="selectedSize"
+                    :variant="variant"
+                    ref="sizeSelector"
+                />
+            </v-popover>
+
             <AddToBasketButton
+                class="add-to-basket-button"
                 :variant="variant"
                 baseClass="white"
                 buttonClass="pill full-width"
@@ -99,6 +108,10 @@ export default {
                 width: 100%;
             }
         }
+    }
+    .size-button,
+    .add-to-basket-button {
+        display: block;
     }
 }
 </style>

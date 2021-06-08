@@ -1,10 +1,5 @@
 <template>
-    <ChooseSizePopover
-        :variant="localVariant"
-        @submit="onAddToBasket"
-        :disabled="!variant || !!variantAddedToBasket || !!size"
-        ref="sizeSelector"
-    >
+    <v-popover trigger="click" :disabled="!variant || !!variantAddedToBasket || !!size">
         <BaseStateAlternatingButton
             :buttonClass="[buttonClass, variantAddedToBasket && 'active']"
             :active="variantAddedToBasket"
@@ -30,9 +25,9 @@
                 localVariant = variant
                 variantAddedToBasket ? onRemoveFromBasket(localVariant) : size && onAddToBasket(size)
             "
-        >
-        </BaseStateAlternatingButton>
-    </ChooseSizePopover>
+        />
+        <ChooseSizePopover slot="popover" :variant="localVariant" ref="sizeSelector" @submit="onAddToBasket" />
+    </v-popover>
 </template>
 
 <script>

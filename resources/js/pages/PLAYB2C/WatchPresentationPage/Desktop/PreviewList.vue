@@ -1,28 +1,31 @@
 <template>
     <div class="preview-list-wrapper">
-        <div class="preview-list flex-list flex-v bg-blur" ref="previewList">
-            <template v-if="currentTiming">
-                <template v-if="currentTiming.type == 'Single'">
-                    <VariantPreview :variant="currentTiming.variant" />
+        <div class="preview-list bg-blur" ref="previewList">
+            <div class="rail flex-list flex-v" @scroll="onScroll">
+                <template v-if="currentTiming">
+                    <template v-if="currentTiming.type == 'Single'">
+                        <PreviewListItem :variant="currentTiming.variant" />
+                    </template>
+                    <template v-else>
+                        <PreviewListItem
+                            v-for="variantMap in currentTiming.productGroup.variantMaps"
+                            :variant="variantMap.variant"
+                            :key="variantMap.variant_id"
+                            ref="listItem"
+                        />
+                    </template>
                 </template>
-                <template v-else>
-                    <VariantPreview
-                        v-for="variantMap in currentTiming.productGroup.variantMaps"
-                        :variant="variantMap.variant"
-                        :key="variantMap.variant_id"
-                    />
-                </template>
-            </template>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import VariantPreview from './VariantPreview'
+import PreviewListItem from './PreviewListItem'
 export default {
     name: 'preview-list',
-    components: { VariantPreview },
+    components: { PreviewListItem },
     data() {
         return {
             currentTiming: null,
@@ -64,6 +67,12 @@ export default {
                 el.classList.add('fly-out')
             }
         },
+        onScroll() {
+            // Hide
+            for (const listItem of this.$refs.listItem) {
+                listItem.hidePopover()
+            }
+        },
     },
     created() {
         this.currentTiming = this.timing
@@ -89,8 +98,20 @@ export default {
     width: 128px;
     pointer-events: all;
     transition: transform 0.2s ease-out;
+    overflow: hidden;
+    max-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
     &.fly-out {
         transform: translateX(calc(-100% - 16px));
+    }
+    .rail {
+        overflow-y: scroll;
+        padding-right: 4px;
+        margin-right: -8px;
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
     }
 }
 </style>

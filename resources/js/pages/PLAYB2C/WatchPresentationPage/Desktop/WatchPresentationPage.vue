@@ -41,19 +41,24 @@
                     class="circle"
                     :class="!currentTiming && 'disabled'"
                     :disabled="!currentTiming"
-                    :variants="currentTiming && currentTiming.variants"
+                    :variants="currentTiming && currentTiming.variantList"
                 />
-                <AddToBasketButton
-                    :variant="currentTiming && currentTiming.variants[0]"
-                    buttonClass="pill"
-                    baseClass="white"
-                    :resetOnSubmit="true"
-                />
+                <v-popover trigger="click" :autoHide="false" :disabled="!currentTiming" ref="addToBasketPopover">
+                    <BaseButtonV2 class="pill white" :disabled="!currentTiming">
+                        <i class="far fa-shopping-bag"></i>
+                        <span>Add to basket</span>
+                    </BaseButtonV2>
+                    <AddToBasketPopover
+                        slot="popover"
+                        :variants="currentTiming && currentTiming.variantList"
+                        @hide="$refs.addToBasketPopover.hide()"
+                    />
+                </v-popover>
             </div>
 
             <PreviewList />
 
-            <PlayerControls class="player-controls" @show-timing-list="showTimingList = true" />
+            <PlayerControls class="player-controls" @show-timing-list="showTimingList = !showTimingList" />
 
             <TimingListDrawer :show="showTimingList" @close="showTimingList = false" />
 
@@ -77,6 +82,7 @@ import PresentationTitle from './PresentationTitle'
 import PreviewList from './PreviewList'
 import AddToWishlistButton from './AddToWishlistButton'
 import AddToBasketButton from './AddToBasketButton'
+import AddToBasketPopover from './AddToBasketPopover'
 
 import ProductDetailsFlyin from './ProductDetailsFlyin/'
 import SavedStylesFlyin from './SavedStylesFlyin/'
@@ -95,6 +101,7 @@ export default {
         AddToWishlistButton,
         AddToBasketButton,
         TimingListDrawer,
+        AddToBasketPopover,
     },
     data: function() {
         return {

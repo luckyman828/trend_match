@@ -1,5 +1,5 @@
 <template>
-    <v-popover trigger="hover" placement="right" popoverClass="min pad-xs">
+    <v-popover trigger="hover" placement="right" popoverClass="min pad-xs" ref="popover">
         <div
             class="variant-preview flex-list flex-v min"
             v-if="variant"
@@ -17,7 +17,7 @@
         <div class="action-list flex-list space-xs" slot="popover">
             <AddToWishlistButton :variants="[variant]" class="invisible true-square float-icon-hover" />
             <AddToBasketButton
-                :variant="variant"
+                :variants="[variant]"
                 textStyle="none"
                 buttonClass="invisible true-square float-icon-hover"
                 :resetOnSubmit="true"
@@ -32,11 +32,14 @@ import AddToWishlistButton from './AddToWishlistButton'
 import AddToBasketButton from './AddToBasketButton'
 
 export default {
-    name: 'play.variantPreview',
+    name: 'PreviewListItem',
     components: { AddToWishlistButton, AddToBasketButton },
     props: ['variant'],
     methods: {
         ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
+        hidePopover() {
+            this.$refs.popover.hide()
+        },
     },
 }
 </script>
