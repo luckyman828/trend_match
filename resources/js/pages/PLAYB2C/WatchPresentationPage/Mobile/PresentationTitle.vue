@@ -1,6 +1,6 @@
 <template>
-    <div class="video-title-wrapper">
-        <div class="video-title">
+    <div class="presentation-title-wrapper">
+        <div class="presentation-title">
             <button
                 class="white circle"
                 @click="
@@ -12,10 +12,8 @@
                 <i class="fas fa-arrow-left"></i>
             </button>
             <div class="title">
-                <!-- <div class="video-name">Matíníque</div>
-                <div class="brand-name">{{ workspace.title }}</div> -->
-                <div class="video-name">Main Spring 2021</div>
-                <div class="brand-name">Matíníque</div>
+                <div class="presentation-name">{{ presentation.name }}</div>
+                <div class="brand-name">{{ workspace.title }}</div>
             </div>
         </div>
     </div>
@@ -24,8 +22,8 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-    name: 'videoTitle',
-    props: ['video'],
+    name: 'PresentationTitle',
+    props: ['presentation'],
     computed: {
         ...mapGetters('workspaces', {
             workspace: 'currentWorkspace',
@@ -36,7 +34,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.video-title-wrapper {
+.presentation-title-wrapper {
     position: fixed;
     top: 0;
     left: 0;
@@ -64,7 +62,7 @@ export default {
         opacity: 1;
     }
 }
-.video-title {
+.presentation-title {
     display: flex;
     transition: transform $videoPauseTransition, opacity $videoPauseTransition;
     transform: translateX(-40px);
@@ -77,12 +75,12 @@ export default {
     button {
         margin-right: 12px;
     }
-    .video-name,
+    .presentation-name,
     .brand-name {
         line-height: 1;
         color: white;
     }
-    .video-name {
+    .presentation-name {
         font-size: 20px;
         font-weight: 700;
     }

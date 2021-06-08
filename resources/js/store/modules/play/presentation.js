@@ -9,7 +9,7 @@ export default {
         video: null,
         timings: [],
         timingsReady: false,
-        sidebarItem: null,
+        pdpItem: null,
 
         // OLD
         sidebarProduct: null,
@@ -29,7 +29,7 @@ export default {
         getVideo: state => state.video,
         getTimings: state => state.timings,
         getSidebarProduct: state => state.sidebarProduct,
-        getSidebarItem: state => state.sidebarItem,
+        getPdpItem: state => state.pdpItem,
         getIsLive: state => false,
         getTimingsReady: state => state.timingsReady,
 
@@ -478,8 +478,8 @@ export default {
         REMOVE_TIMING(state, index) {
             state.timings.splice(index, 1)
         },
-        SET_SIDEBAR_ITEM(state, item) {
-            state.sidebarItem = item
+        SET_PDP_ITEM(state, item) {
+            state.pdpItem = item
         },
         SET_TIMINGS_READY(state, payload) {
             state.timingsReady = payload

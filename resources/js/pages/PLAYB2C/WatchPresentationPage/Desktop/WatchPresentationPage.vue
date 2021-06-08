@@ -7,7 +7,7 @@
             { 'show-timing-list': showTimingList },
         ]"
     >
-        <VideoPlayer :video="video" :autoplay="false" :hideTimeline="true">
+        <VideoPlayer :video="video" :autoplay="false">
             <template v-slot:beforeStart>
                 <BeforeStartOverlay :video="video" />
             </template>
@@ -62,7 +62,7 @@
 
             <TimingListDrawer :show="showTimingList" @close="showTimingList = false" />
 
-            <ProductDetailsFlyin :show="!!sidebarItem" @close="SET_SIDEBAR_ITEM(null)" />
+            <ProductDetailsFlyin :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
             <SavedStylesFlyin
                 :show="!!showSavedProductsDrawer"
                 :view.sync="savedProductsView"
@@ -117,7 +117,7 @@ export default {
             video: 'getVideo',
             presentation: 'getPresentation',
             videoTimings: 'getTimings',
-            sidebarItem: 'getSidebarItem',
+            pdpItem: 'getPdpItem',
             currentTimingIndex: 'getCurrentTimingIndex',
             currentTiming: 'getCurrentTiming',
         }),
@@ -137,7 +137,7 @@ export default {
         }),
     },
     methods: {
-        ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
+        ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
     },
 }
 </script>

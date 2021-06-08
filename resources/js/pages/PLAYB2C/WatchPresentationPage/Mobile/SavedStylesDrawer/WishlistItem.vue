@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="action-list flex-list center-v">
-                    <AddToWishlistButton :variant="variant" />
+                    <AddToWishlistButton :variants="[variant]" class="circle" />
                     <div class="button invisible ghost-hover dark circle">
                         <i class="fas fa-ellipsis-h"></i>
                     </div>
@@ -30,9 +30,9 @@
             <!-- Bottom row -->
             <div class="flex-list justify flex-end-v">
                 <div class="ui-square">
-                    <div class="flex-list flex-v xs">
+                    <div class="flex-list flex-v xs truncate">
                         <label>Color</label>
-                        <div class="ft-bd">{{ variant.name }}</div>
+                        <div class="ft-bd truncate ft-12">{{ variant.name }}</div>
                     </div>
                 </div>
                 <button
@@ -53,7 +53,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import AddToWishlistButton from '../AddToWishlistButton'
+import AddToWishlistButton from '../../AddToWishlistButton'
 
 export default {
     name: 'wishlistItem',
@@ -82,6 +82,7 @@ export default {
     }
     .details {
         flex: 1;
+        overflow: hidden;
     }
     .brand {
         font-size: 10px;

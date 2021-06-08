@@ -3,17 +3,12 @@
         <div class="preview-list bg-blur" ref="previewList">
             <div class="rail flex-list flex-v" @scroll="onScroll">
                 <template v-if="currentTiming">
-                    <template v-if="currentTiming.type == 'Single'">
-                        <PreviewListItem :variant="currentTiming.variant" />
-                    </template>
-                    <template v-else>
-                        <PreviewListItem
-                            v-for="variantMap in currentTiming.productGroup.variantMaps"
-                            :variant="variantMap.variant"
-                            :key="variantMap.variant_id"
-                            ref="listItem"
-                        />
-                    </template>
+                    <PreviewListItem
+                        v-for="variant in currentTiming.variantList"
+                        :variant="variant"
+                        :key="variant.id"
+                        ref="listItem"
+                    />
                 </template>
             </div>
         </div>

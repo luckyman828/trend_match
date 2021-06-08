@@ -1,16 +1,22 @@
 <template>
     <div class="watch-video-page" :class="[`desired-${desiredStatus}`, { 'recently-started': recentlyStarted }]">
-        <VideoPlayer :video="video" :autoplay="false" :hideTimeline="true">
-            <BeforeStartOverlay :video="video" v-if="!playerStarted" />
+        <VideoPlayer :video="video" :autoplay="false">
+            <template v-slot:beforeStart>
+                <BeforeStartOverlay />
+            </template>
 
-            <VideoTitle :video="video" />
+            <PresentationTitle :presentation="presentation" />
 
             <template v-if="playerStarted">
                 <div class="bottom-aligned flex-list flex-v md">
                     <PreviewList v-if="currentTiming" />
                     <div class="top flex-list justify">
-                        <button class="white lg circle comment-button"><i class="far fa-comment"></i></button>
-                        <AddToWishlistButton class="lg like-button" v-if="currentTiming" />
+                        <!-- <button class="white lg circle comment-button"><i class="far fa-comment"></i></button> -->
+                        <AddToWishlistButton
+                            class="lg circle"
+                            :disabled="!currentTiming"
+                            :variants="currentTiming && currentTiming.variantList"
+                        />
                     </div>
                     <div class="bottom flex-list equal-width justify center-v">
                         <div class="left">
@@ -49,11 +55,7 @@
                 </div>
                 <VideoTimeline />
 
-                <ProductDetailsDrawer
-                    :show="!!sidebarProduct"
-                    :product="sidebarProduct"
-                    @close="SET_SIDEBAR_PRODUCT(null)"
-                />
+                <ProductDetailsDrawer :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
                 <SavedStylesDrawer
                     :show="!!showSavedProductsDrawer"
                     :view.sync="savedProductsView"
@@ -70,9 +72,9 @@ import VideoPlayer from '../../../../components/PLAY/VideoPlayer'
 import VideoTimeline from '../../../../components/PLAY/PresentationPlayer/VideoTimeline'
 
 import BeforeStartOverlay from './BeforeStartOverlay'
-import VideoTitle from './VideoTitle'
+import PresentationTitle from './PresentationTitle'
 import PreviewList from './PreviewList'
-import AddToWishlistButton from './AddToWishlistButton'
+import AddToWishlistButton from '../AddToWishlistButton'
 
 import ProductDetailsDrawer from './ProductDetailsDrawer/'
 import SavedStylesDrawer from './SavedStylesDrawer/'
@@ -83,7 +85,7 @@ export default {
         VideoPlayer,
         VideoTimeline,
         BeforeStartOverlay,
-        VideoTitle,
+        PresentationTitle,
         PreviewList,
         ProductDetailsDrawer,
         SavedStylesDrawer,
@@ -101,9 +103,10 @@ export default {
     },
     computed: {
         ...mapGetters('playPresentation', {
+            presentation: 'getPresentation',
             videoTimings: 'getTimings',
             video: 'getVideo',
-            sidebarProduct: 'getSidebarProduct',
+            pdpItem: 'getPdpItem',
             currentTimingIndex: 'getCurrentTimingIndex',
             currentTiming: 'getCurrentTiming',
         }),
@@ -124,25 +127,9 @@ export default {
         ...mapGetters('basket', {
             basket: 'getBasket',
         }),
-        currentTimingIsInWishlist() {
-            return this.currentTiming && this.wishlist.find(product => product.id == this.currentTiming.product.id)
-        },
     },
     methods: {
-        ...mapActions('player', ['play']),
-        ...mapMutations('player', ['SET_DESIRED_STATUS']),
-        ...mapMutations('playPresentation', ['ADD_TIMING', 'SET_SIDEBAR_PRODUCT']),
-        onAddToWishlist() {
-            // Check if we should add or remove
-            if (this.currentTimingIsInWishlist) {
-                // Remove
-                const index = this.wishlist.findIndex(product => product.id == this.currentTiming.product.id)
-                this.wishlist.splice(index, 1)
-            } else {
-                // Add
-                this.wishlist.push(this.currentTiming.product)
-            }
-        },
+        ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
     },
 }
 </script>
@@ -183,6 +170,12 @@ export default {
         pointer-events: none;
         > * {
             pointer-events: all;
+        }
+        .top {
+            pointer-events: none;
+            > * {
+                pointer-events: all;
+            }
         }
     }
     .wishlist-button {
@@ -308,33 +301,4 @@ export default {
         } // End v-deep
     }
 }
-</style>
-<style lang="scss">
-@import '~@/_variables.scss';
-// @include desktop {
-//     // ADD TO BASKET SELECTOR
-//     .add-to-basket-selector {
-//         border-radius: 32px !important;
-//         padding: 32px !important;
-//         height: auto !important;
-//         &:not(.show) {
-//             bottom: -160px !important;
-//         }
-//         .flex-list.equal-width {
-//             margin-left: 16px;
-//             .trigger {
-//                 width: 100%;
-//                 padding-right: 32px;
-//             }
-//         }
-//         button {
-//             height: 92px !important;
-//             min-width: 92px !important;
-//             font-size: 28px !important;
-//             i {
-//                 font-size: 28px !important;
-//             }
-//         }
-//     }
-// }
 </style>

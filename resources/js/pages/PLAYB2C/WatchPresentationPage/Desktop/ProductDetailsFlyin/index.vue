@@ -78,11 +78,11 @@ export default {
     },
     computed: {
         ...mapGetters('playPresentation', {
-            sidebarItem: 'getSidebarItem',
+            pdpItem: 'getPdpItem',
         }),
         product() {
-            if (!this.sidebarItem) return
-            return this.sidebarItem.product
+            if (!this.pdpItem) return
+            return this.pdpItem.product
         },
     },
     methods: {
@@ -93,12 +93,10 @@ export default {
     watch: {
         show(isVisible) {
             if (isVisible) {
-                this.setCurrentVariant(
-                    this.sidebarItem.variant ? this.sidebarItem.variant : this.sidebarItem.product.variants[0]
-                )
+                this.setCurrentVariant(this.pdpItem.variant ? this.pdpItem.variant : this.pdpItem.product.variants[0])
             }
         },
-        sidebarItem(newItem) {
+        pdpItem(newItem) {
             if (newItem) {
                 this.setCurrentVariant(newItem.variant)
             }

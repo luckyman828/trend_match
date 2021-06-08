@@ -1,10 +1,6 @@
 <template>
     <div class="wishlist-item flex-list bg-theme-white theme-border">
-        <BaseImageSizer
-            fit="cover"
-            class="image"
-            @click.native="SET_SIDEBAR_ITEM({ variant, product: variant.product })"
-        >
+        <BaseImageSizer fit="cover" class="image" @click.native="SET_PDP_ITEM({ variant, product: variant.product })">
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
 
@@ -89,7 +85,7 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
+        ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
         onChangeVariant(newVariant) {
             // Replace the item on the index of this variant if our newly selected variant
             const index = this.wishlist.findIndex(wishlistVariant => wishlistVariant.id == this.variant.id)

@@ -1,14 +1,14 @@
 <template>
     <BaseFloatyBar
-        classes="add-to-basket-selector flex-list justify bg-blur"
+        classes="add-to-basket-selector flex-list justify bg-blur rounded"
         :show="show"
         :autoHide="autoHide"
         @hide="onHide"
     >
-        <AddToWishlistButton v-if="!hideWishlist" class="lg" />
+        <AddToWishlistButton v-if="!hideWishlist" class="lg circle" :variants="[item]" />
         <div class="flex-list justify equal-width flex-1">
-            <v-popover trigger="click" ref="sizePopover">
-                <button class="rounded lg white full-width">
+            <v-popover trigger="click" ref="sizePopover" class="size-button">
+                <button class="pill lg white full-width">
                     <i class="far fa-ruler"></i>
                     <span v-if="selectedSize">Size: {{ selectedSize }}</span>
                     <span v-else>Choose size</span>
@@ -28,8 +28,8 @@
                 />
             </v-popover>
             <BaseButton
-                class="full-width"
-                buttonClass="dark rounded lg full-width"
+                class="full-width add-button"
+                buttonClass="dark pill lg full-width"
                 :disabled="!selectedSize"
                 @click="onAddToBasket"
             >
@@ -42,7 +42,7 @@
 
 <script>
 import { mapActions, mapMutations } from 'vuex'
-import AddToWishlistButton from './AddToWishlistButton'
+import AddToWishlistButton from '../AddToWishlistButton'
 
 export default {
     name: 'addToBasketSelector',
@@ -79,4 +79,17 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+.size-button,
+.add-button {
+    display: block;
+    &::v-deep {
+        .trigger {
+            width: 100%;
+        }
+    }
+    .trigger {
+        width: 100%;
+    }
+}
 </style>

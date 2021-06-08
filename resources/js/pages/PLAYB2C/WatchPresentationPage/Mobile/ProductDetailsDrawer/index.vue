@@ -76,10 +76,10 @@ export default {
     },
     computed: {
         ...mapGetters('playPresentation', {
-            sidebarItem: 'getSidebarItem',
+            pdpItem: 'getPdpItem',
         }),
         product() {
-            return this.sidebarItem.product
+            return this.pdpItem && this.pdpItem.product
         },
     },
     methods: {
@@ -90,9 +90,7 @@ export default {
     watch: {
         show(isVisible) {
             if (isVisible) {
-                this.setCurrentVariant(
-                    this.sidebarItem.variant ? this.sidebarItem.variant : this.sidebarItem.product.variants[0]
-                )
+                this.setCurrentVariant(this.pdpItem.variant ? this.pdpItem.variant : this.pdpItem.product.variants[0])
             }
         },
     },

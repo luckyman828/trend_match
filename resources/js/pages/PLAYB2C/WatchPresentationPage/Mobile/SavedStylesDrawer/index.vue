@@ -20,12 +20,12 @@
 
                 <div class="flex-list flex-v flex-end">
                     <div class="total-price">
-                        {{ view == 'wishlist' ? wishlistTotal : basketTotal }} {{ userCurrency }}
+                        {{ view == 'wishlist' ? wishlistTotal : basketTotal | rounded(2) }} {{ userCurrency }}
                     </div>
-                    <button class="small light pill">
+                    <!-- <button class="small light pill">
                         <i class="far fa-sliders-v-square"></i>
                         <span>Filter</span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </template>
@@ -52,10 +52,10 @@
             @hide="addToBasketItem = null"
             @click.native="addToBasketItem = null"
         />
-        <BaseFloatyBar v-if="view == 'basket'" :show="show" pos="bottom">
+        <!-- <BaseFloatyBar v-if="view == 'basket'" :show="show" pos="bottom" classes="rounded">
             <BaseButton
                 class="checkout-button full-width"
-                buttonClass="dark full-width rounded lg checkout-button"
+                buttonClass="dark full-width pill lg checkout-button"
                 :disabled="basket.length <= 0"
             >
                 <template v-slot:iconLeft>
@@ -63,7 +63,7 @@
                 </template>
                 <span>Go to Checkout</span>
             </BaseButton>
-        </BaseFloatyBar>
+        </BaseFloatyBar> -->
     </BaseDrawer>
 </template>
 

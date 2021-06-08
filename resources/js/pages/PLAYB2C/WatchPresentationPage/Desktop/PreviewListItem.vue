@@ -3,7 +3,7 @@
         <div
             class="variant-preview flex-list flex-v min"
             v-if="variant"
-            @click="SET_SIDEBAR_ITEM({ product: variant.product, variant })"
+            @click="SET_PDP_ITEM({ product: variant.product, variant })"
         >
             <BaseImageSizer class="img-wrapper" fit="cover">
                 <BaseVariantImage :variant="variant" size="sm" />
@@ -36,7 +36,7 @@ export default {
     components: { AddToWishlistButton, AddToBasketButton },
     props: ['variant'],
     methods: {
-        ...mapMutations('playPresentation', ['SET_SIDEBAR_ITEM']),
+        ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
         hidePopover() {
             this.$refs.popover.hide()
         },
