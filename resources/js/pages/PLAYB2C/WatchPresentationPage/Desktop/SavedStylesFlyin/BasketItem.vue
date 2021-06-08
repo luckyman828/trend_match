@@ -74,7 +74,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import AddToWishlistButton from '../AddToWishlistButton'
+import AddToWishlistButton from '../../AddToWishlistButton'
 
 export default {
     name: 'basketItem',

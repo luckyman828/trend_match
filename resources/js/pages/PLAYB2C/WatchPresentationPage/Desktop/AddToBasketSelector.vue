@@ -32,9 +32,9 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import AddToWishlistButton from './AddToWishlistButton'
-import AddToBasketButton from './AddToBasketButton'
-import ChooseSizePopover from './ChooseSizePopover'
+import AddToWishlistButton from '../AddToWishlistButton'
+import AddToBasketButton from '../AddToBasketButton'
+import ChooseSizePopover from '../ChooseSizePopover'
 
 export default {
     name: 'addToBasketSelector',

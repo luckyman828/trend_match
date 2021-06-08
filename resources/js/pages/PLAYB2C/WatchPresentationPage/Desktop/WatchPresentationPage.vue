@@ -80,8 +80,7 @@ import PlayerControls from '../../../../components/PLAY/PresentationPlayer/Deskt
 import BeforeStartOverlay from './BeforeStartOverlay'
 import PresentationTitle from './PresentationTitle'
 import PreviewList from './PreviewList'
-import AddToWishlistButton from './AddToWishlistButton'
-import AddToBasketButton from './AddToBasketButton'
+import AddToWishlistButton from '../AddToWishlistButton'
 import AddToBasketPopover from './AddToBasketPopover'
 
 import ProductDetailsFlyin from './ProductDetailsFlyin/'
@@ -99,7 +98,6 @@ export default {
         ProductDetailsFlyin,
         SavedStylesFlyin,
         AddToWishlistButton,
-        AddToBasketButton,
         TimingListDrawer,
         AddToBasketPopover,
     },

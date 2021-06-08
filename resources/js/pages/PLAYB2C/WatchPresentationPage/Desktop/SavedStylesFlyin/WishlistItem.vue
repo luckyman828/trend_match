@@ -68,8 +68,8 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import AddToWishlistButton from '../AddToWishlistButton'
-import AddToBasketButton from '../AddToBasketButton'
+import AddToWishlistButton from '../../AddToWishlistButton'
+import AddToBasketButton from '../../AddToBasketButton'
 import variantImage from '../../../../../mixins/variantImage'
 
 export default {

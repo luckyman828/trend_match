@@ -49,8 +49,8 @@
 </template>
 
 <script>
-import ChooseSizePopover from './ChooseSizePopover'
-import AddToBasketButton from './AddToBasketButton'
+import ChooseSizePopover from '../ChooseSizePopover'
+import AddToBasketButton from '../AddToBasketButton'
 
 export default {
     name: 'AddToBasketPopoverListItem',

@@ -17,7 +17,7 @@
         <div class="action-list flex-list space-xs" slot="popover">
             <AddToWishlistButton :variants="[variant]" class="invisible true-square float-icon-hover" />
             <AddToBasketButton
-                :variants="[variant]"
+                :variant="variant"
                 textStyle="none"
                 buttonClass="invisible true-square float-icon-hover"
                 :resetOnSubmit="true"
@@ -28,8 +28,8 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import AddToWishlistButton from './AddToWishlistButton'
-import AddToBasketButton from './AddToBasketButton'
+import AddToWishlistButton from '../AddToWishlistButton.vue'
+import AddToBasketButton from '../AddToBasketButton'
 
 export default {
     name: 'PreviewListItem',
