@@ -2,7 +2,7 @@
     <div class="product-search-panel">
         <div class="search-field">
             <BaseSearchFieldV2
-                :searchKey="['datasource_id', 'title', 'eans']"
+                :searchKey="['datasource_id', 'title', 'eans', 'name']"
                 placeholderText="Search for Style or Look"
                 :arraysToSearch="{ items, looks }"
                 v-model="filteredBySearch"
