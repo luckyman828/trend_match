@@ -96,7 +96,7 @@ export default {
         },
         hasWriteAccess() {
             const userWriteAccess = this.getUserWriteAccess(this.selection, this.product)
-            return userWriteAccess && userWriteAccess.actions
+            return userWriteAccess && userWriteAccess.actions.hasAccess
         },
     },
     methods: {
