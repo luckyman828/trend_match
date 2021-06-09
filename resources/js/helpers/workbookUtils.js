@@ -351,7 +351,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             const variant = product.variants.find(x => x.color == color && x.variant == variantVariant)
                             rowVariant = variant
 
-                            if (!variant) continue
+                            if (!variant) {
+                                variantFieldHasBeenProcessed = true
+                                continue
+                            }
 
                             // Now that we have our variant, it's just a question of setting the values
                             const variantField = field.customProperty
@@ -424,6 +427,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             }
 
                             variant[field.name] = fieldValue
+                            variantFieldHasBeenProcessed = true
                         }
                     }
                     if (variantFieldHasBeenProcessed) return
