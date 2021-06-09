@@ -102,13 +102,11 @@
                     class="square ghost xs"
                     v-if="product.min_variant_order != null || product.min_order != null"
                     v-tooltip="
-                        `
-                    ${
                         showQty
                             ? `<strong>Total QTY /</strong> Minimum`
-                            : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`
-                    }
-                `
+                            : product.min_variant_order
+                            ? `<strong>Variant Minimum: </strong> ${product.min_variant_order}`
+                            : ''
                     "
                 >
                     <span>
