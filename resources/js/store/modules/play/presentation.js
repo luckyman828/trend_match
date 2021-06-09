@@ -16,7 +16,6 @@ export default {
         status: 'success',
         timingStatus: 'success',
         searchItemDragActive: false,
-        timingId: 0,
         timelineZoom: 1,
         timelineRail: null,
         timelineEl: null,
@@ -175,6 +174,13 @@ export default {
                     published: true,
                 })
                 .then(response => {
+                    // Make sure the timings have an ID
+                    console.log('update video', response.data)
+                    if (response.data.timings) {
+                        response.data.timings.map((responseTiming, index) => {
+                            Vue.set(timings[index], 'id', responseTiming.id)
+                        })
+                    }
                     commit('SET_STATUS', 'success')
                 })
                 .catch(err => {
@@ -321,9 +327,6 @@ export default {
         },
         async initTimings({ state, getters, rootGetters, dispatch }, timings) {
             for (const timing of timings) {
-                // Give the timing an ID
-                Vue.set(timing, 'id', state.timingId)
-                state.timingId++
                 if (!timing.variants) Vue.set(timing, 'variants', [])
 
                 Object.defineProperty(timing, 'type', {
