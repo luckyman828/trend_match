@@ -33,7 +33,7 @@ jobs:
         env-file: DEPLOYMENT_ENV
 
     - name: Install php library
-      uses: MilesChou/composer-action@v1.0.1
+      uses: MilesChou/composer-action/7.4/install@master
       with:
         args: install --no-dev
 
