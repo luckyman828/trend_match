@@ -72,8 +72,9 @@ export default {
 @import '~@/_variables.scss';
 
 .header {
-    padding: 0 16px;
+    padding: 0 8px;
     margin-bottom: 8px;
+    white-space: nowrap;
 }
 
 .segment-toggle {

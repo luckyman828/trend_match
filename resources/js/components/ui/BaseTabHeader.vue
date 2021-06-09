@@ -1,15 +1,13 @@
 <template>
-    <div class="tab-header" :class="{'active': active}">
-        <slot/>
+    <div class="tab-header" :class="{ active: active }">
+        <slot />
     </div>
 </template>
 
 <script>
 export default {
     name: 'tabHeader',
-    props: [
-        'active'
-    ]
+    props: ['active'],
 }
 </script>
 
@@ -27,7 +25,7 @@ export default {
     font-weight: 700;
     color: $fontSoft;
     cursor: pointer;
-    padding: 2px 1px 2px 2px;
+    padding: 2px 3px 2px 4px;
     user-select: none;
     &:first-child {
         border-radius: $borderRadiusEl 0 0 $borderRadiusEl;
@@ -63,5 +61,4 @@ export default {
         // color: $primary;
     }
 }
-
 </style>
