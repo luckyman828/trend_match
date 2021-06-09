@@ -18,7 +18,7 @@
             >
                 <template v-slot:left>
                     <div class="item-group product-title-wrapper">
-                        <h3>{{ `#${product.datasource_id}: ${product.title}` }}</h3>
+                        <h3 class="truncate">{{ `#${product.datasource_id}: ${product.title}` }}</h3>
                         <span class="product-count"
                             >Product
                             {{ availableProducts.findIndex(x => x.id == product.id) + 1 }}
@@ -746,8 +746,8 @@ export default {
             > .flyin {
                 > .flyin-inner {
                     > .flyin-header {
-                            margin-bottom: 8px;
-                        }
+                        margin-bottom: 8px;
+                    }
                     > .body {
                         border-top: $borderModule;
                     }

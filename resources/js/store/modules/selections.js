@@ -1193,6 +1193,14 @@ export default {
                     Vue.set(selection, 'your_role', selection.your_roles[0])
                 }
 
+                // Users
+                Object.defineProperty(selection, 'excludedUsers', {
+                    get: () => {
+                        if (!selection.users) return []
+                        return selection.users.filter(user => user.roles.includes('Denied'))
+                    },
+                })
+
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {
                     get: () => {
@@ -1423,12 +1431,10 @@ export default {
             if (currentSelection) stateSelections.push(currentSelection)
             if (stateSelections.length > 0) {
                 stateSelections.map(stateSelection => {
-                    // Make users, teams and denied_users reactive
+                    // Make properties reactive
                     if (selection.users) Vue.set(stateSelection, 'users', selection.users)
-                    if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
                     if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
                     if (selection.children) Vue.set(stateSelection, 'children', selection.children)
-                    // Object.assign(stateSelection, selection)
                 })
             }
         },

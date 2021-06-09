@@ -153,7 +153,7 @@
             </td>
             <td class="presentation">
                 <SelectionPresenterModeButton
-                    v-if="selection.your_job == 'Alignment'"
+                    v-if="selection.your_job == 'Alignment' && selection.your_role == 'Owner'"
                     :selection="selection"
                     :showLabel="false"
                 />
