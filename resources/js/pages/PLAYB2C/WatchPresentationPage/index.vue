@@ -48,6 +48,7 @@ export default {
         ...mapActions('productGroups', ['fetchFileProductGroups']),
         ...mapActions('products', ['fetchProducts']),
         ...mapActions('videos', ['fetchVideoUrls']),
+        ...mapMutations('player', ['SET_DESIRED_QUALITY']),
         async fetchData() {
             this.loadingData = true
             // Fetch presentation details
@@ -61,6 +62,10 @@ export default {
                 this.fetchVideoComments({ video }),
                 this.fetchVideoUrls(video),
             ])
+
+            // Set the desired quality to the highest available on the video
+            this.SET_DESIRED_QUALITY('HD1080P')
+
             this.loadingData = false
         },
 

@@ -75,7 +75,9 @@ export default {
         },
         async play({ commit, getters, dispatch }) {
             const player = getters.getPlayer
-            if (!player) return
+            if (!player) {
+                return
+            }
             commit('SET_DESIRED_STATUS', 'playing')
 
             // Restart the video if it has ended
@@ -97,7 +99,6 @@ export default {
             if (!player) return
             commit('SET_DESIRED_STATUS', 'paused')
             player.pause()
-            
         },
         async seekTo({ commit, getters }, timestamp) {
             const player = getters.getPlayer

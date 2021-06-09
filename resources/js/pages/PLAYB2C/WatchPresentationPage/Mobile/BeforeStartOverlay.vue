@@ -4,7 +4,7 @@
         :style="presentation.thumbnail && `background-image: url(${presentation.thumbnail})`"
     >
         <div class="overlay"></div>
-        <button class="xxl circle white invisible bg-blur" @click="play">
+        <button class="xxl circle white invisible bg-blur" @click="onPlay">
             <i class="fas fa-play"></i>
         </button>
     </div>
@@ -21,6 +21,9 @@ export default {
     },
     methods: {
         ...mapActions('player', ['play']),
+        onPlay() {
+            this.play()
+        },
     },
 }
 </script>

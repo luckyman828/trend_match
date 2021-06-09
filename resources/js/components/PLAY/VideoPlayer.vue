@@ -7,7 +7,9 @@
             tabindex="-1"
             :autoplay="autoplay"
             :controls="false"
+            playsinline
             @canplay="onPlayerReady"
+            @loadedmetadata="onPlayerReady"
             @playing="onPlayingStatus"
             @pause="SET_PLAYER_STATUS('paused')"
             @waiting="SET_PLAYER_STATUS('buffering')"
