@@ -426,25 +426,29 @@ export default {
             const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
             this.DELETE_REQUEST_COMMENT({ request, comment: requestComment })
         },
-        bulkFeedbackArrivedHandler(selectionId, feedbacks) {
+        async bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             if (feedbacks[0].user_id != this.authUser.id) {
                 // console.log('bulk feedback arrived', selectionId, feedbacks)
+                await this.initActions({ actions: feedbacks, type: 'feedback' })
                 this.SET_FEEDBACKS(feedbacks)
             }
         },
-        feedbackArrivedHandler(selectionId, feedback) {
+        async feedbackArrivedHandler(selectionId, feedback) {
             if (feedback.user_id != this.authUser.id) {
-                // console.log('feedback arrived', selectionId, feedback)
+                console.log('feedback arrived', selectionId, feedback)
+                await this.initActions({ actions: [feedback], type: 'feedback' })
                 this.SET_FEEDBACKS([feedback])
             }
         },
-        bulkAlignmentArrivedHandler(selectionId, alignments) {
+        async bulkAlignmentArrivedHandler(selectionId, alignments) {
             if (alignments[0].user_id != this.authUser.id) {
+                await this.initActions({ actions: alignments, type: 'action' })
                 this.SET_ACTIONS(alignments)
             }
         },
-        alignmentArrivedHandler(selectionId, alignment) {
+        async alignmentArrivedHandler(selectionId, alignment) {
             if (alignment.user_id != this.authUser.id) {
+                await this.initActions({ actions: [alignment], type: 'action' })
                 this.SET_ACTIONS([alignment])
             }
         },

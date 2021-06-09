@@ -123,7 +123,7 @@
                     v-if="userHasEditAccess"
                     @click="$emit('showSelectionUsersFlyin', selection)"
                 >
-                    <i class="far fa-user"></i><span>{{ selection.user_count }}</span>
+                    <i class="far fa-user"></i><span>{{ selection.direct_user_count }}</span>
                 </button>
                 <span v-else>-</span>
             </td>

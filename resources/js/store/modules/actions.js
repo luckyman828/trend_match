@@ -369,6 +369,7 @@ export default {
                     },
                 })
                 await dispatch('initVariantActions', { productAction: action, variantActions: action.variants })
+                action.initDone = true
             })
         },
         async initVariantActions({}, { productAction, variantActions }) {

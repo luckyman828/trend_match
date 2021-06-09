@@ -5,7 +5,7 @@
                 <span class="ft-14 ft-bd">Votes</span>
                 <div class="pill xxs dark w-xxs" v-if="totalVotes > 0">{{ totalVotes }}</div>
             </div>
-            <button class="pill sm" :class="hasUserVote ? 'red-hover dark' : ''" @click="onVote">
+            <button v-if="hasWriteAccess" class="pill sm" :class="hasUserVote ? 'red-hover dark' : ''" @click="onVote">
                 <template v-if="hasUserVote">
                     <span class="hover-only">Remove vote</span>
                     <span class="no-hover">Voted</span>
@@ -54,6 +54,8 @@ export default {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', {
             selectionMode: 'getCurrentSelectionMode',
+            selection: 'getCurrentSelection',
+            getUserWriteAccess: 'getAuthUserSelectionWriteAccess',
         }),
         totalVotes() {
             return this.labelInput.votes.length
@@ -64,6 +66,10 @@ export default {
         },
         noneChapterVotes() {
             return this.labelInput.votes.filter(vote => !vote.selection.chapter)
+        },
+        hasWriteAccess() {
+            const userWriteAccess = this.getUserWriteAccess(this.selection, this.product)
+            return userWriteAccess && userWriteAccess.actions.hasAccess
         },
         votesChunkedByChapter() {
             const chapters = []
