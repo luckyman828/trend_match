@@ -1,5 +1,8 @@
 <template>
-    <div class="before-start-overlay" :style="video.thumbnail && `background-image: url(${video.thumbnail})`">
+    <div
+        class="before-start-overlay"
+        :style="presentation.thumbnail && `background-image: url(${presentation.thumbnail})`"
+    >
         <div class="overlay"></div>
         <button class="xxl circle white invisible bg-blur" @click="play">
             <i class="fas fa-play"></i>
@@ -8,10 +11,14 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'beforeStartOverlay',
-    props: ['video'],
+    computed: {
+        ...mapGetters('playPresentation', {
+            presentation: 'getPresentation',
+        }),
+    },
     methods: {
         ...mapActions('player', ['play']),
     },

@@ -31,7 +31,7 @@ export default {
 .variant-rail {
     .rail {
         display: flex;
-        overflow-x: scroll;
+        overflow-x: auto;
         padding-bottom: 8px;
         margin-bottom: -8px;
         width: 100%;

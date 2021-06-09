@@ -1,22 +1,21 @@
 <template>
     <div class="preview-list flex-list flex-v bg-blur">
-        <ProductPreview v-for="product in timingProducts" :key="product.id" />
+        <template v-if="currentTiming">
+            <PreviewListItem v-for="variant in currentTiming.variantList" :variant="variant" :key="variant.id" />
+        </template>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import ProductPreview from './ProductPreview'
+import PreviewListItem from './PreviewListItem'
 export default {
-    name: 'preview-list',
-    components: { ProductPreview },
+    name: 'PreviewList',
+    components: { PreviewListItem },
     computed: {
-        ...mapGetters('videoPlayer', {
-            timing: 'getCurrentTiming',
+        ...mapGetters('playPresentation', {
+            currentTiming: 'getCurrentTiming',
         }),
-        timingProducts() {
-            return this.timing ? [this.timing.product] : []
-        },
     },
 }
 </script>

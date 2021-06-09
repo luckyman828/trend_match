@@ -1,17 +1,24 @@
 <template>
-    <div class="watch-video-page" :class="[`desired-${desiredStatus}`, { 'recently-started': recentlyStarted }]">
-        <VideoPlayer :video="video" :autoplay="false" :hideTimeline="true">
+    <div
+        class="watch-video-page"
+        :class="[
+            `desired-${desiredStatus}`,
+            { 'recently-started': recentlyStarted },
+            { 'show-timing-list': showTimingList },
+        ]"
+    >
+        <VideoPlayer :video="video" :autoplay="false">
             <template v-slot:beforeStart>
                 <BeforeStartOverlay :video="video" />
             </template>
 
-            <VideoTitle :video="video" />
+            <PresentationTitle :presentation="presentation" />
             <div class="top-right-items flex-list">
                 <button
                     class="wishlist-count pill white w-xxs"
                     @click="
                         showSavedProductsDrawer = true
-                        savedProductsView = 'wishlist'
+                        savedProductsView = 'Wishlist'
                     "
                 >
                     <i class="far fa-heart"></i>
@@ -21,7 +28,7 @@
                     class="basket-count pill white w-xxs"
                     @click="
                         showSavedProductsDrawer = true
-                        savedProductsView = 'basket'
+                        savedProductsView = 'Basket'
                     "
                 >
                     <i class="far fa-shopping-bag"></i>
@@ -29,24 +36,34 @@
                 </button>
             </div>
 
-            <PreviewList v-if="currentTiming" />
-
-            <PlayerControls>
-                <template v-slot:center>
-                    <AddToWishlistButton buttonClass="white true-square" :disabled="!currentTiming" />
-                    <BaseButton buttonClass="white square" :disabled="!currentTiming">
-                        <i class="far fa-shopping-bag" />
+            <div class="bottom-center-items flex-list">
+                <AddToWishlistButton
+                    class="circle"
+                    :class="!currentTiming && 'disabled'"
+                    :disabled="!currentTiming"
+                    :variants="currentTiming && currentTiming.variantList"
+                />
+                <v-popover trigger="click" :autoHide="false" :disabled="!currentTiming" ref="addToBasketPopover">
+                    <BaseButtonV2 class="pill white" :disabled="!currentTiming">
+                        <i class="far fa-shopping-bag"></i>
                         <span>Add to basket</span>
-                    </BaseButton>
-                </template>
-            </PlayerControls>
+                    </BaseButtonV2>
+                    <AddToBasketPopover
+                        slot="popover"
+                        :variants="currentTiming && currentTiming.variantList"
+                        @hide="$refs.addToBasketPopover.hide()"
+                    />
+                </v-popover>
+            </div>
 
-            <ProductDetailsDrawer
-                :show="!!sidebarProduct"
-                :product="sidebarProduct"
-                @close="SET_SIDEBAR_PRODUCT(null)"
-            />
-            <SavedStylesDrawer
+            <PreviewList />
+
+            <PlayerControls class="player-controls" @show-timing-list="showTimingList = !showTimingList" />
+
+            <TimingListDrawer :show="showTimingList" @close="showTimingList = false" />
+
+            <ProductDetailsFlyin :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
+            <SavedStylesFlyin
                 :show="!!showSavedProductsDrawer"
                 :view.sync="savedProductsView"
                 @close="showSavedProductsDrawer = false"
@@ -56,29 +73,33 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../../../components/PLAY/VideoPlayer'
 import PlayerControls from '../../../../components/PLAY/PresentationPlayer/Desktop/PlayerControls'
 
 import BeforeStartOverlay from './BeforeStartOverlay'
-import VideoTitle from './VideoTitle'
+import PresentationTitle from './PresentationTitle'
 import PreviewList from './PreviewList'
-import AddToWishlistButton from './AddToWishlistButton'
+import AddToWishlistButton from '../AddToWishlistButton'
+import AddToBasketPopover from './AddToBasketPopover'
 
-import ProductDetailsDrawer from './ProductDetailsDrawer/'
-import SavedStylesDrawer from './SavedStylesDrawer/'
+import ProductDetailsFlyin from './ProductDetailsFlyin/'
+import SavedStylesFlyin from './SavedStylesFlyin/'
+import TimingListDrawer from './TimingListDrawer/'
 
 export default {
-    name: 'watchVideoPage',
+    name: 'watchPresentationPage',
     components: {
         VideoPlayer,
         PlayerControls,
         BeforeStartOverlay,
-        VideoTitle,
+        PresentationTitle,
         PreviewList,
-        ProductDetailsDrawer,
-        SavedStylesDrawer,
+        ProductDetailsFlyin,
+        SavedStylesFlyin,
         AddToWishlistButton,
+        TimingListDrawer,
+        AddToBasketPopover,
     },
     data: function() {
         return {
@@ -87,13 +108,16 @@ export default {
             showControls: true,
             showCart: false,
             showChatInput: false,
+            addToBasketVariant: null,
+            showTimingList: null,
         }
     },
     computed: {
         ...mapGetters('playPresentation', {
             video: 'getVideo',
+            presentation: 'getPresentation',
             videoTimings: 'getTimings',
-            sidebarProduct: 'getSidebarProduct',
+            pdpItem: 'getPdpItem',
             currentTimingIndex: 'getCurrentTimingIndex',
             currentTiming: 'getCurrentTiming',
         }),
@@ -111,24 +135,9 @@ export default {
         ...mapGetters('basket', {
             basket: 'getBasket',
         }),
-        currentTimingIsInWishlist() {
-            return this.currentTiming && this.wishlist.find(product => product.id == this.currentTiming.product.id)
-        },
     },
     methods: {
-        ...mapMutations('player', ['SET_DESIRED_STATUS']),
-        ...mapMutations('playPresentation', ['SET_SIDEBAR_PRODUCT']),
-        onAddToWishlist() {
-            // Check if we should add or remove
-            if (this.currentTimingIsInWishlist) {
-                // Remove
-                const index = this.wishlist.findIndex(product => product.id == this.currentTiming.product.id)
-                this.wishlist.splice(index, 1)
-            } else {
-                // Add
-                this.wishlist.push(this.currentTiming.product)
-            }
-        },
+        ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
     },
 }
 </script>
@@ -147,11 +156,39 @@ export default {
         position: absolute;
         right: 12px;
         top: 8px;
+        @include bg-blur;
+        padding: 8px;
+        border-radius: 52px;
+    }
+    .bottom-center-items {
+        position: absolute;
+        bottom: 48px;
+        margin: 0 auto;
+        @include bg-blur;
+        padding: 8px;
+        border-radius: 52px;
+        left: 50%;
+        transition: transform 0.2s ease-out;
+        transform: translateX(-50%);
+        z-index: 2;
+    }
+    .player-controls {
+        z-index: 2;
     }
     .wishlist-button {
         &.active {
             i {
                 font-weight: 900;
+            }
+        }
+    }
+    &.show-timing-list {
+        .bottom-center-items {
+            transform: translate(-50%, -216px);
+        }
+        &::v-deep {
+            .player-controls {
+                background: none;
             }
         }
     }

@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="action-list flex-list center-v">
-                    <AddToWishlistButton :variant="variant" />
+                    <AddToWishlistButton :variants="[variant]" />
                     <div class="button invisible ghost-hover dark circle">
                         <i class="fas fa-ellipsis-h"></i>
                     </div>
@@ -30,25 +30,28 @@
             <!-- Bottom row -->
             <div class="flex-list justify flex-end-v">
                 <div class="ui-square">
-                    <div class="flex-list flex-v xs">
+                    <div class="flex-list flex-v xs truncate">
                         <label>Color</label>
-                        <div class="ft-bd">{{ variant.name }}</div>
+                        <div class="ft-bd ft-12 truncate">{{ variant.name }}</div>
                     </div>
                 </div>
-                <div class="ui-square">
+                <div class="ui-square size-square">
                     <div class="flex-list flex-v xs">
                         <label>Size</label>
-                        <div class="ft-bd">{{ item.size }}</div>
+                        <div class="ft-bd ft-12">{{ item.size }}</div>
                     </div>
                 </div>
-                <div class="ui-square flex-list">
-                    <button class="sm light" @click="decrementQty">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <span class="ft-bd">{{ item.qty }}</span>
-                    <button class="sm light" @click="incrementQty">
-                        <i class="fas fa-plus"></i>
-                    </button>
+                <div class="ui-square flex-list justify quantity-selector pos-bot-right pad-sm">
+                    <div class="decrement flex-list center-v center-h" @click="decrementQty">
+                        <i class="fas fa-minus ft-color-soft"></i>
+                    </div>
+                    <div class="flex-list flex-v quantity-col space-min justify">
+                        <span class="ft-bd ft-color-soft ft-10">QTY</span>
+                        <span class="ft-bd">{{ item.qty }}</span>
+                    </div>
+                    <div class="increment sm light flex-list center-v center-h" @click="incrementQty">
+                        <i class="fas fa-plus ft-color-soft"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,7 +60,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import AddToWishlistButton from '../AddToWishlistButton'
+import AddToWishlistButton from '../../AddToWishlistButton'
 
 export default {
     name: 'basketItem',
@@ -95,6 +98,7 @@ export default {
     }
     .details {
         flex: 1;
+        overflow: hidden;
     }
     .brand {
         font-size: 10px;
@@ -112,6 +116,31 @@ export default {
     .old-price {
         text-decoration: line-through;
         opacity: 0.5;
+    }
+    .size-square {
+        min-width: 48px;
+    }
+    .quantity-selector {
+        .quantity-col {
+            padding: 4px 0;
+            height: 100%;
+        }
+        .decrement,
+        .increment {
+            height: 100%;
+            width: 16px;
+            transition: background 0.1s ease-in;
+            cursor: pointer;
+            &:hover {
+                background: $themeGreyBgHover;
+            }
+            &:active {
+                background: $themeGreyBgActive;
+            }
+        }
+        i {
+            font-size: 8px;
+        }
     }
 }
 </style>

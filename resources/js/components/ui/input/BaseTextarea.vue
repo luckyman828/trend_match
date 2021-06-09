@@ -21,7 +21,7 @@
 <script>
 export default {
     name: 'baseTextarea',
-    props: ['placeholder', 'value', 'disabled', 'readOnly', 'inheritStyles'],
+    props: ['placeholder', 'value', 'disabled', 'readOnly', 'inheritStyles', 'focusOnMount', 'selectOnFocus'],
     data() {
         return {
             oldVal: null,
@@ -53,6 +53,9 @@ export default {
         focus() {
             this.oldVal = this.value
             this.$refs.textarea.focus()
+            if (this.selectOnFocus) {
+                this.select()
+            }
         },
         select() {
             this.$refs.textarea.select()
@@ -67,6 +70,9 @@ export default {
     },
     mounted() {
         this.resize()
+        if (this.focusOnMount) {
+            this.focus()
+        }
     },
 }
 </script>

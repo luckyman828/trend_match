@@ -1,10 +1,12 @@
 <template>
-    <div class="product-preview flex-list flex-v min" v-if="product" @click="SET_SIDEBAR_PRODUCT(product)">
+    <div class="product-preview flex-list flex-v min" @click="SET_PDP_ITEM({ product: variant.product, variant })">
         <BaseImageSizer class="img-wrapper" fit="cover">
-            <BaseVariantImage :variant="product.variants[0]" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
         <div class="price-wrapper">
-            <span class="price">{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+            <span class="price"
+                >{{ variant.product.yourPrice.wholesale_price }} {{ variant.product.yourPrice.currency }}</span
+            >
         </div>
     </div>
 </template>
@@ -12,14 +14,10 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 export default {
-    name: 'productPreview',
-    computed: {
-        ...mapGetters('videoPlayer', {
-            product: 'getCurrentProduct',
-        }),
-    },
+    name: 'PreviewListItem',
+    props: ['variant'],
     methods: {
-        ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
+        ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
     },
 }
 </script>
@@ -30,7 +28,7 @@ export default {
 .product-preview {
     width: 80px;
     background: white;
-    border-radius: 2px;
+    border-radius: $borderRadiusSm;
     overflow: hidden;
     .img-wrapper {
         width: 100%;

@@ -66,13 +66,21 @@ import VariantRail from './VariantRail'
 import AddToBasketSelector from '../AddToBasketSelector'
 
 export default {
-    name: 'productDetailsDrawer',
+    name: 'play.productDetailsDrawer',
     components: { ImageRail, VariantRail, AddToBasketSelector },
-    props: ['show', 'product'],
+    props: ['show'],
     data: function() {
         return {
             currentVariant: null,
         }
+    },
+    computed: {
+        ...mapGetters('playPresentation', {
+            pdpItem: 'getPdpItem',
+        }),
+        product() {
+            return this.pdpItem && this.pdpItem.product
+        },
     },
     methods: {
         setCurrentVariant(variant) {
@@ -81,7 +89,9 @@ export default {
     },
     watch: {
         show(isVisible) {
-            if (isVisible) this.setCurrentVariant(this.product.variants[0])
+            if (isVisible) {
+                this.setCurrentVariant(this.pdpItem.variant ? this.pdpItem.variant : this.pdpItem.product.variants[0])
+            }
         },
     },
 }

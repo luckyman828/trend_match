@@ -8,10 +8,11 @@ export default {
         presentation: null,
         video: null,
         timings: [],
-        sidebarProduct: null,
         timingsReady: false,
+        pdpItem: null,
 
         // OLD
+        sidebarProduct: null,
         status: 'success',
         timingStatus: 'success',
         searchItemDragActive: false,
@@ -28,6 +29,7 @@ export default {
         getVideo: state => state.video,
         getTimings: state => state.timings,
         getSidebarProduct: state => state.sidebarProduct,
+        getPdpItem: state => state.pdpItem,
         getIsLive: state => false,
         getTimingsReady: state => state.timingsReady,
 
@@ -36,7 +38,10 @@ export default {
             const timings = getters.getTimings
             const timestamp = rootGetters['player/getTimestamp']
 
-            // Loop backwards through our timings to find the last match that is before our timestamp
+            // // Find the first timing that intersects our current timestamp
+            // const timingIndex = timings.findIndex(timing => timing.start < timestamp && timing.end > timestamp)
+
+            // // Loop backwards through our timings to find the last match that is before our timestamp
             let timingIndex = -1
             for (let i = timings.length - 1; i >= 0; i--) {
                 const timing = timings[i]
@@ -69,6 +74,7 @@ export default {
             if (!currentTiming) return
             return currentTiming.product
         },
+        getCurrentVariant: (state, getters) => getters.getCurrentProduct && getters.getCurrentProduct.variants[0],
 
         // OLD
         getCurrentVideoRootobject: state => state.currentVideo,
@@ -98,7 +104,6 @@ export default {
     actions: {
         async fetchPresentation({ dispatch, commit }, presentationId) {
             const presentation = await dispatch('files/fetchFile', presentationId, { root: true })
-            console.log('presentation', JSON.parse(JSON.stringify(presentation)))
             await dispatch('playPresentations/initPresentations', [presentation], { root: true })
             commit('SET_PRESENTATION', presentation)
 
@@ -152,11 +157,22 @@ export default {
                 return a.start > b.start ? 1 : -1
             })
 
+            // const timingsToPost = timings.map(timing => {
+            //     const cleanTiming = Object.assign({}, timing)
+            //     delete cleanTiming.id
+            //     delete cleanTiming.initDone
+            //     return cleanTiming
+            // })
+
+            // const videoToPost = Object.assign({}, video)
+            // delete videoToPost.urls
+            // delete videoToPost.status
 
             await axios
                 .post(apiUrl, {
                     video,
-                    timings: timings,
+                    timings,
+                    published: true,
                 })
                 .then(response => {
                     commit('SET_STATUS', 'success')
@@ -176,15 +192,18 @@ export default {
         },
         async addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
             commit('SET_TIMING_STATUS', 'adding')
+            if (!newTiming.start_at_ms) newTiming.start_at_ms = 0
+            if (!newTiming.end_at_ms) newTiming.end_at_ms = 5
+
             await dispatch('initTimings', [newTiming])
             const allTimings = getters.getTimings
             // First find out what index to give the new timing, so we insert it at it's correct spot
             // We will insert the new timing at the current timestamp
             let index = 0
-            const timestamp = rootGetters['videoPlayer/getTimestamp']
+            const timestamp = rootGetters['player/getTimestamp']
             // Set the desired `start` time equal to the timestamp
+
             const desiredDuration = Math.ceil((newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom))
-            console.log('desired duration', desiredDuration, newTiming.end, newTiming.start, getters.getTimelineZoom)
             newTiming.start = timestamp
             newTiming.end = newTiming.start + desiredDuration
 
@@ -198,17 +217,23 @@ export default {
                 index = prevTiming.index + 1
             }
 
-            const conflictingTiming = allTimings.find(
+            const conflictingTimings = allTimings.filter(
                 x =>
-                    (newTiming.start >= x.start && newTiming.start < x.end) ||
-                    (newTiming.end < x.end && newTiming.end > x.start)
+                    (newTiming.start >= x.start && newTiming.start < x.end) || // New timing start is inside another timing
+                    (newTiming.end < x.end && newTiming.end > x.start) || // New timing end is inside another timing
+                    (x.start > newTiming.start && x.end < newTiming.end) || // Another timing is entirely inside new timing
+                    (newTiming.start > x.start && newTiming.end < x.end) // New timing is entirely inside another timing
             )
+            const conflictingTiming = conflictingTimings.reduce((first, current) => {
+                return current.start < first.start ? current : first
+            }, conflictingTimings[0])
             const minDuration = 1
             if (conflictingTiming) {
                 // Place befoe
                 const placeBefore = newTiming.start < conflictingTiming.start
                 if (placeBefore) {
-                    const nextTiming = allTimings[newTiming.index + 1]
+                    // const nextTiming = allTimings[newTiming.index + 1]
+                    const nextTiming = conflictingTiming
                     newTiming.end = nextTiming.start
                 }
 
@@ -242,6 +267,18 @@ export default {
             await dispatch('updatePresentation')
             commit('SET_TIMING_STATUS', 'success')
         },
+        async updateTiming({ dispatch }, timing) {
+            const newVariantMaps = []
+            for (const variantMap of timing.productGroup.variantMaps) {
+                const newVariantMap = {
+                    product_id: variantMap.product_id,
+                    variant_id: variantMap.variant_id,
+                }
+                await dispatch('initVariantMaps', [newVariantMap])
+                newVariantMaps.push(newVariantMap)
+            }
+            timing.variants = newVariantMaps
+        },
         bumpConflictingTimings({ getters, dispatch }, newTiming) {
             // This function recursively bumps timings until there is space for all of them
             // It does nothing if my conflictin timings are found
@@ -260,24 +297,86 @@ export default {
             commit('REMOVE_TIMING', index)
             dispatch('updatePresentation')
         },
-        initTimings({ state, getters, rootGetters }, timings) {
-            timings.map(timing => {
+        removeTimings({ getters, commit, dispatch }, timings) {
+            for (const timing of timings) {
+                const index = getters.getTimings.findIndex(stateTiming => stateTiming.id == timing.id)
+                commit('REMOVE_TIMING', index)
+            }
+            dispatch('updatePresentation')
+        },
+        initVariantMaps({ rootGetters }, variantMaps) {
+            variantMaps.map(variantMap => {
+                Object.defineProperty(variantMap, 'product', {
+                    get() {
+                        const products = rootGetters['products/products']
+                        return products.find(product => product.id == variantMap.product_id)
+                    },
+                })
+                Object.defineProperty(variantMap, 'variant', {
+                    get() {
+                        return variantMap.product.variants.find(variant => variant.id == variantMap.variant_id)
+                    },
+                })
+            })
+        },
+        async initTimings({ state, getters, rootGetters, dispatch }, timings) {
+            for (const timing of timings) {
                 // Give the timing an ID
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++
-                if (!timing.product_ids) Vue.set(timing, 'product_ids', [])
+                if (!timing.variants) Vue.set(timing, 'variants', [])
 
-                Object.defineProperty(timing, 'products', {
+                Object.defineProperty(timing, 'type', {
                     get() {
-                        const products = rootGetters['products/products']
-                        return products.filter(product => timing.product_ids.includes(product.id))
+                        return !!parseInt(timing.product_group_id) ? 'Look' : 'Single'
                     },
                 })
+
+                Object.defineProperty(timing, 'productGroup', {
+                    get() {
+                        if (!timing.product_group_id) return
+                        return rootGetters['productGroups/getProductGroups'].find(
+                            group => group.id == timing.product_group_id
+                        )
+                    },
+                })
+
                 Object.defineProperty(timing, 'product', {
                     get() {
-                        return timing.products[0]
+                        if (timing.type == 'Single') {
+                            if (timing.variants.length <= 0) return
+                            const products = rootGetters['products/products']
+                            return products.find(product => product.id == timing.variants[0].product_id)
+                        }
+                        if (timing.type == 'Look') {
+                            if (timing.productGroup && timing.productGroup.variantMaps.length <= 0) return
+                            return timing.productGroup.variantMaps[0].product
+                        }
                     },
                 })
+                Object.defineProperty(timing, 'variant', {
+                    get() {
+                        if (timing.type == 'Single') {
+                            if (!timing.product) return
+                            return timing.product.variants.find(variant => variant.id == timing.variants[0].variant_id)
+                        }
+                        if (timing.type == 'Look') {
+                            if (timing.productGroup && timing.productGroup.variantMaps.length <= 0) return
+                            return timing.productGroup.variantMaps[0].variant
+                        }
+                    },
+                })
+                Object.defineProperty(timing, 'variantList', {
+                    get() {
+                        if (timing.type == 'Single') {
+                            return [timing.variant]
+                        }
+                        if (timing.type == 'Look') {
+                            return timing.productGroup.variantMaps.map(variantMap => variantMap.variant)
+                        }
+                    },
+                })
+
                 Object.defineProperty(timing, 'start', {
                     get() {
                         return timing.start_at_ms
@@ -340,13 +439,13 @@ export default {
                 })
                 Object.defineProperty(timing, 'isCurrent', {
                     get() {
-                        const currentTiming = rootGetters['videoPlayer/getCurrentTiming']
+                        const currentTiming = getters.getCurrentTiming
                         if (!currentTiming) return false
                         return currentTiming.id == timing.id
                     },
                 })
                 timing.initDone = true
-            })
+            }
         },
         getTimestampFromMouseEvent({ getters, rootGetters }, mouseEvent) {
             const mouseX = mouseEvent.clientX
@@ -354,7 +453,7 @@ export default {
             const railRect = rail.getBoundingClientRect()
             const adjustedX = mouseX - railRect.left + rail.scrollLeft
             const durationPerc = adjustedX / railRect.width
-            const timestamp = rootGetters['videoPlayer/getDuration'] * durationPerc
+            const timestamp = rootGetters['player/getDuration'] * durationPerc
             return timestamp
         },
     },
@@ -379,14 +478,17 @@ export default {
         REMOVE_TIMING(state, index) {
             state.timings.splice(index, 1)
         },
-        SET_SIDEBAR_PRODUCT(state, product) {
-            state.sidebarProduct = product
+        SET_PDP_ITEM(state, item) {
+            state.pdpItem = item
         },
         SET_TIMINGS_READY(state, payload) {
             state.timingsReady = payload
         },
 
         // OLD
+        SET_SIDEBAR_PRODUCT(state, product) {
+            state.sidebarProduct = product
+        },
 
         SET_SEARCH_ITEM_DRAG_ACTIVE(state, bool) {
             state.searchItemDragActive = bool

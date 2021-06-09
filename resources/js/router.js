@@ -322,6 +322,10 @@ const routes = [
             {
                 path: 'presentation/:presentationId/edit',
                 name: 'play.editPresentation',
+                meta: {
+                    hideSidebar: true,
+                    noScroll: true
+                },
                 component: () =>
                     import(/* webpackChunkName: "playEditPresentationPage" */ './pages/PLAYB2C/EditPresentationPage/'),
             },

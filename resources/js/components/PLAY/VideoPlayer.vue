@@ -1,7 +1,7 @@
 <template>
     <div class="player-wrapper" :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]">
         <video
-            :src="video.urls[quality ? quality : 'SD360P']"
+            :src="video.urls[desiredQuality ? desiredQuality : 'SD360P']"
             ref="player"
             class="player"
             tabindex="-1"
@@ -33,7 +33,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'videoPlayer',
-    props: ['video', 'autoplay', 'quality'],
+    props: ['video', 'autoplay'],
     data: function() {
         return {
             playerReady: false,
@@ -41,6 +41,7 @@ export default {
             playerStartedTester: false,
             lastTimestamp: null,
             videoTimer: null,
+            unhandledQualityChange: false,
         }
     },
     computed: {
@@ -56,6 +57,7 @@ export default {
             currentTiming: 'getCurrentTiming',
             desiredStatus: 'getDesiredStatus',
             playerStarted: 'getPlayerStarted',
+            desiredQuality: 'getDesiredQuality',
         }),
     },
     watch: {
@@ -64,9 +66,20 @@ export default {
                 this.onStartPlaying()
             }
         },
+        desiredQuality(newQuality) {
+            this.player.pause()
+            this.unhandledQualityChange = true
+        },
     },
     methods: {
-        ...mapActions('player', ['togglePlayerMuted', 'getCurrentTimestamp', 'togglePlaying', 'play']),
+        ...mapActions('player', [
+            'togglePlayerMuted',
+            'getCurrentTimestamp',
+            'togglePlaying',
+            'play',
+            'seekTo',
+            'pause',
+        ]),
         ...mapMutations('player', [
             'SET_PLAYER_REFERENCE',
             'SET_CURRENT_PLAYER_TIMESTAMP',
@@ -87,18 +100,27 @@ export default {
             this.SET_RECENTLY_STARTED(4000)
         },
         onPlayerReady(e, a) {
-            this.playerReady = true
-            const player = this.$refs.player
-            this.SET_PLAYER_REFERENCE(player)
-            // Pre-mute the player
-            if (['editVideoPresentation'].includes(this.$route.name)) {
-                this.togglePlayerMuted(true)
+            // If we started the player the first time
+            if (!this.playerReady) {
+                this.playerReady = true
+                const player = this.$refs.player
+                this.SET_PLAYER_REFERENCE(player)
+                // Pre-mute the player
+                if (['editVideoPresentation'].includes(this.$route.name)) {
+                    this.togglePlayerMuted(true)
+                }
+
+                // Save a timestamp
+                this.getVideoDuration()
+
+                this.addEventListeners()
+            } else if (this.unhandledQualityChange) {
+                this.seekTo(this.currentTimestamp)
+                if (this.desiredStatus == 'playing') {
+                    this.play()
+                }
+                this.unhandledQualityChange = false
             }
-
-            // Save a timestamp
-            this.getVideoDuration()
-
-            this.addEventListeners()
         },
         onPlayingStatus() {
             this.SET_DESIRED_STATUS('playing')

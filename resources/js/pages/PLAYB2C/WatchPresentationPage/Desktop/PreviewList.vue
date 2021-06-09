@@ -1,31 +1,112 @@
 <template>
-    <div class="preview-list flex-list flex-v bg-blur">
-        <ProductPreview v-for="product in timingProducts" :key="product.id" />
+    <div class="preview-list-wrapper">
+        <div class="preview-list bg-blur" ref="previewList">
+            <div class="rail flex-list flex-v" @scroll="onScroll">
+                <template v-if="currentTiming">
+                    <PreviewListItem
+                        v-for="variant in currentTiming.variantList"
+                        :variant="variant"
+                        :key="variant.id"
+                        ref="listItem"
+                    />
+                </template>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import ProductPreview from './ProductPreview'
+import PreviewListItem from './PreviewListItem'
 export default {
     name: 'preview-list',
-    components: { ProductPreview },
+    components: { PreviewListItem },
+    data() {
+        return {
+            currentTiming: null,
+        }
+    },
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('playPresentation', {
             timing: 'getCurrentTiming',
         }),
-        timingProducts() {
-            return this.timing ? [this.timing.product] : []
+    },
+    watch: {
+        timing(newVal, oldVal) {
+            if (!oldVal || !newVal || newVal.id != oldVal.id) {
+                this.onNewTiming(newVal)
+            }
         },
+    },
+    methods: {
+        async onNewTiming(newTiming) {
+            const animationDuration = 200
+            const el = this.$refs.previewList
+
+            // Add class fly-out
+            el.classList.add('fly-out')
+
+            // Wait a little
+            await this._delay(animationDuration)
+
+            // Set new timing
+            this.currentTiming = newTiming
+
+            // Add class fly-in
+            if (newTiming) {
+                // Wait a little before showing the new
+                await this._delay(100)
+                el.classList.remove('fly-out')
+            } else {
+                await this._delay(100)
+                el.classList.add('fly-out')
+            }
+        },
+        onScroll() {
+            // Hide
+            for (const listItem of this.$refs.listItem) {
+                listItem.hidePopover()
+            }
+        },
+    },
+    created() {
+        this.currentTiming = this.timing
     },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
+.preview-list-wrapper {
+    transition: transform $videoPauseTransition;
+    pointer-events: none !important;
+    .desired-paused &,
+    .recently-started & {
+        transform: translateY(60px);
+    }
+}
 .preview-list {
-    margin-left: auto;
+    top: 8px;
+    left: 16px;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 16px;
+    width: 128px;
+    pointer-events: all;
+    transition: transform 0.2s ease-out;
+    overflow: hidden;
+    max-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    &.fly-out {
+        transform: translateX(calc(-100% - 16px));
+    }
+    .rail {
+        overflow-y: scroll;
+        padding-right: 4px;
+        margin-right: -8px;
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    }
 }
 </style>

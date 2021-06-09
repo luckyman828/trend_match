@@ -2,10 +2,11 @@ const showContextMenuDirective = {}
 showContextMenuDirective.install = Vue => {
     Vue.directive('show-contextmenu', {
         bind: function(el, binding, vnode) {
-            el.clickEvent = function(event) {
+            el.triggerHandler = function(event) {
                 // Get the element of the binding
                 const contextMenu = vnode.context.$refs[binding.value.ref]
                 if (!contextMenu) return
+                event.preventDefault()
 
                 let offset = { x: 0, y: 0 }
                 const baseOffset = binding.value.offset ? binding.value.offset : 4
@@ -15,12 +16,15 @@ showContextMenuDirective.install = Vue => {
                 }
 
                 contextMenu.show(event, binding.value.item, offset)
+                if (binding.value.callback) binding.value.callback()
             }
 
-            el.addEventListener('click', el.clickEvent)
+            const eventTrigger = binding.value.trigger ? binding.value.trigger : 'click'
+            el.addEventListener(eventTrigger, el.triggerHandler)
         },
-        unbind: function(el) {
-            el.removeEventListener('click', el.clickEvent)
+        unbind: function(el, binding) {
+            const eventTrigger = binding.value.trigger ? binding.value.trigger : 'click'
+            el.removeEventListener(eventTrigger, el.triggerHandler)
         },
     })
 }

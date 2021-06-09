@@ -1,63 +1,76 @@
 <template>
-    <BaseFloatyBar
-        classes="add-to-basket-selector flex-list justify bg-blur"
-        :show="show"
-        :autoHide="autoHide"
-        @hide="onHide"
-    >
-        <AddToWishlistButton v-if="!hideWishlist" class="lg" />
+    <div class="add-to-basket-selector flex-list bg-blur">
+        <AddToWishlistButton class="white circle" :variants="[variant]" />
         <div class="flex-list justify equal-width flex-1">
-            <v-popover trigger="click" ref="sizePopover">
-                <button class="rounded lg white full-width">
+            <v-popover trigger="click" class="size-button">
+                <button class="white full-width pill">
                     <i class="far fa-ruler"></i>
                     <span v-if="selectedSize">Size: {{ selectedSize }}</span>
                     <span v-else>Choose size</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
-                <BaseSelectButtons
-                    v-if="item"
-                    header="Choose size"
+                <ChooseSizePopover
                     slot="popover"
-                    type="radio"
-                    :submitOnChange="true"
-                    :options="item.ean_sizes"
-                    optionNameKey="size"
-                    optionValueKey="size"
+                    class="size-selector"
                     v-model="selectedSize"
-                    @change="onChangeSize"
+                    :variant="variant"
+                    ref="sizeSelector"
                 />
             </v-popover>
-            <BaseButton
-                class="full-width"
-                buttonClass="dark rounded lg full-width"
-                :disabled="!selectedSize"
-                @click="onAddToBasket"
-            >
-                <i class="far fa-shopping-bag"></i>
-                <span>Add to basket</span>
-            </BaseButton>
+
+            <AddToBasketButton
+                class="add-to-basket-button"
+                :variant="variant"
+                baseClass="white"
+                buttonClass="pill full-width"
+                :size.sync="selectedSize"
+                @submit="onAddToBasket"
+            />
         </div>
-    </BaseFloatyBar>
+    </div>
 </template>
 
 <script>
-import { mapActions, mapMutations } from 'vuex'
-import AddToWishlistButton from './AddToWishlistButton'
+import { mapActions, mapGetters } from 'vuex'
+import AddToWishlistButton from '../AddToWishlistButton'
+import AddToBasketButton from '../AddToBasketButton'
+import ChooseSizePopover from '../ChooseSizePopover'
 
 export default {
     name: 'addToBasketSelector',
-    components: { AddToWishlistButton },
-    props: ['item', 'show', 'hideWishlist', 'autoHide'],
+    components: { AddToWishlistButton, ChooseSizePopover, AddToBasketButton },
+    props: ['variant', 'show', 'hideWishlist', 'autoHide'],
     data() {
         return {
             selectedSize: null,
         }
     },
+    computed: {
+        ...mapGetters('basket', {
+            basket: 'getBasket',
+        }),
+        ...mapGetters('wishlist', {
+            getVariantIsInWishlist: 'getVariantIsInWishlist',
+        }),
+        variantIsInWishlist() {
+            if (!this.variant) return
+            return this.getVariantIsInWishlist(this.variant)
+        },
+    },
+    watch: {
+        variant(newVal, oldVal) {
+            if (!oldVal || newVal.id != oldVal.id) {
+                this.presetSize()
+            }
+        },
+    },
     methods: {
+        ...mapActions('wishlist', ['toggleInWishlist']),
         ...mapActions('basket', ['addToBasket']),
         onAddToBasket() {
-            this.addToBasket({ variant: this.item, size: this.selectedSize })
-            this.onHide()
+            if (this.autoHide) {
+                this.onHide()
+            }
         },
         onHide() {
             this.selectedSize = null
@@ -67,16 +80,38 @@ export default {
             if (!this.autoHide) return
             this.onHide()
         },
-        onChangeSize(size) {
-            this.selectedSize = size
-            this.$nextTick(() => {
-                this.$refs.sizePopover.hide()
-            })
+        presetSize() {
+            if (!this.variant) return
+            // Preset the size that is in the basket
+            const itemInBasket = this.basket.find(item => item.variant.id == this.variant.id)
+            if (itemInBasket) {
+                this.selectedSize = itemInBasket.size
+                this.$refs.sizeSelector.selectedSize = itemInBasket.size
+            }
         },
+    },
+    mounted() {
+        this.presetSize()
     },
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+.add-to-basket-selector {
+    padding: 8px;
+    border-radius: 50px;
+    backdrop-filter: blur(8px) brightness(80%);
+    .size-selector {
+        &::v-deep {
+            .trigger {
+                width: 100%;
+            }
+        }
+    }
+    .size-button,
+    .add-to-basket-button {
+        display: block;
+    }
+}
 </style>

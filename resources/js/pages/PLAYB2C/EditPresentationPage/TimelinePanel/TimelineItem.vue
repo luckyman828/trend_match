@@ -4,16 +4,32 @@
         class="timeline-item"
         :style="style"
         :id="`timeline-item-${timing.id}`"
-        :class="[{ current: isCurrent }, { 'drag-caps': isDragging }]"
+        :class="[{ current: isCurrent }, { 'drag-caps': isDragging }, timing.type.toLowerCase()]"
         tabindex="0"
         @keydown.delete="onRemoveTiming"
     >
-        <div class="controls">
-            <button class="pill red sm" @click="onRemoveTiming">
-                <span>Delete</span>
+        <div class="controls flex-list space-sm justify">
+            <BaseButtonV2
+                class="look-button pill yellow xs"
+                @click="onEditLook"
+                :tooltip="timing.type == 'Look' ? 'Edit look' : 'Create look'"
+                targetAreaPadding="4px"
+            >
+                <i class="far fa-layer-group"></i>
+                <span v-if="timing.productGroup">{{ timing.productGroup.variantMaps.length }}</span>
+                <i v-else class="far fa-plus"></i>
+            </BaseButtonV2>
+            <BaseButtonV2
+                class="delete-button pill red xs"
+                tooltip="Delete timing"
+                targetAreaPadding="4px"
+                @click="onRemoveTiming"
+            >
+                <!-- <span class="truncate">Delete</span> -->
                 <i class="far fa-trash"></i>
-            </button>
+            </BaseButtonV2>
         </div>
+
         <div class="edge-drag-controls">
             <img
                 src="/assets/cursors/arrow-to-right-regular.svg"
@@ -41,7 +57,7 @@
         <div class="inner">
             <div class="img-wrapper">
                 <div class="img-sizer">
-                    <BaseVariantImage :variant="product.variants && product.variants[0]" size="sm" />
+                    <BaseVariantImage :variant="variant" size="sm" />
                 </div>
             </div>
             <div class="details">
@@ -58,7 +74,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'timelineItem',
     props: ['timing', 'index', 'dragActive', 'isDragged'],
@@ -72,15 +88,22 @@ export default {
         ...mapGetters('player', {
             videoDuration: 'getDuration',
             cursorTimestamp: 'getTimestamp',
-            currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('playPresentation', {
+            currentTiming: 'getCurrentTiming',
             zoom: 'getTimelineZoom',
             rail: 'getTimelineRail',
             snapThreshold: 'getSnapThreshold',
+            presentation: 'getPresentation',
         }),
+        ...mapGetters('productGroups', {
+            currentProductGroup: 'getCurrentProductGroup',
+        }),
+        variant() {
+            return this.timing.variant
+        },
         product() {
-            return this.timing.product
+            return this.variant.product
         },
         style() {
             const width = (this.timing.duration / this.videoDuration) * 100
@@ -102,8 +125,28 @@ export default {
     },
     methods: {
         ...mapActions('playPresentation', ['removeTiming', 'updatePresentation']),
+        ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap', 'insertOrUpdateProductGroup']),
+        ...mapMutations('productGroups', ['SET_CURRENT_GROUP']),
         onRemoveTiming() {
             this.removeTiming(this.index)
+        },
+        async onEditLook() {
+            if (this.currentProductGroup && this.currentProductGroup.id == this.timing.product_group_id) {
+                // Hide product group
+                this.SET_CURRENT_GROUP(null)
+            } else {
+                // Show product group
+                // If we don't already have a linked product group, create a new one
+                if (!this.timing.productGroup) {
+                    const productGroup = await this.instantiateBaseProductGroup()
+                    productGroup.name = 'Look: ' + this.timing.variant.product.name
+                    await this.addVariantMap({ productGroup, variant: this.timing.variant })
+                    await this.insertOrUpdateProductGroup({ fileId: this.presentation.id, productGroup })
+                    this.timing.product_group_id = productGroup.id
+                    this.updatePresentation()
+                }
+                this.SET_CURRENT_GROUP(this.timing.productGroup)
+            }
         },
         onMouseMoveCap(e, direction) {
             if (this.$el.classList.contains('dragged')) return
@@ -221,14 +264,28 @@ export default {
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    &.look {
+        .controls {
+            opacity: 1;
+        }
+    }
     .controls {
         position: absolute;
-        top: -14px;
-        right: 4px;
-        opacity: 0;
-        pointer-events: none;
-        transition: 0.1s ease-out;
+        left: 0;
         z-index: 2;
+        top: -16px;
+        transition: 0.1s ease-out;
+        opacity: 0;
+        width: 100%;
+        padding: 0 4px;
+        .look-button {
+            flex-shrink: 0;
+        }
+        .delete-button {
+            flex-shrink: 0;
+            opacity: 0;
+            transition: 0.1s ease-out;
+        }
     }
     &:focus,
     &:focus-within {
@@ -236,7 +293,8 @@ export default {
         // color: white;
         border-color: $primary;
         &:not(.dragged):not(.drag-caps) {
-            .controls {
+            .controls,
+            .controls .delete-button {
                 opacity: 1;
                 pointer-events: all;
             }

@@ -126,20 +126,36 @@ textarea {
 .ft-md {
     font-weight: 500;
 }
+.ft-8 {
+    font-size: 10px !important;
+}
+.ft-9 {
+    font-size: 10px !important;
+}
 .ft-10 {
-    font-size: 10px;
+    font-size: 10px !important;
 }
 .ft-12 {
-    font-size: 12px;
+    font-size: 12px !important;
 }
 .ft-14 {
-    font-size: 14px;
+    font-size: 14px !important;
 }
 .ft-16 {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 .ft-20 {
-    font-size: 20px;
+    font-size: 20px !important;
+}
+.ft-uppercase {
+    text-transform: uppercase;
+}
+.ft-lowercase {
+    text-transform: lowercase;
+}
+.ft-strike {
+    text-decoration: line-through;
+    opacity: 0.75;
 }
 .lh-min {
     line-height: 1;
@@ -150,8 +166,42 @@ textarea {
 .lh-sm {
     line-height: 1.4;
 }
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 // ---------- END FONTS
+
+// HELPERS
+.mg-bt-16 {
+    margin-bottom: 16px;
+}
+
+// END HELPERS
 
 .container {
     margin: auto;
@@ -276,6 +326,9 @@ textarea {
         }
     }
 }
+.drag-handle {
+    cursor: grab;
+}
 
 // NAVBAR
 .navbar {
@@ -398,6 +451,22 @@ input[type='submit'] {
         margin-left: 0 !important;
         margin-right: 0 !important;
     }
+    &.float-icon-hover {
+        i {
+            transition: transform 0.1s ease-in, opacity 0.1s ease-in;
+        }
+        &:not(.active) {
+            i {
+                opacity: 0.5;
+            }
+        }
+        &:hover {
+            i {
+                opacity: 1;
+                transform: translateY(-2px);
+            }
+        }
+    }
 
     // SIZES
     // Default
@@ -477,8 +546,8 @@ input[type='submit'] {
     }
 
     // COLORS
-    border-color: $bluegrey300;
-    background: $bluegrey300;
+    border-color: $bluegrey250;
+    background: $bluegrey250;
     color: $font;
     // color: $dark05;
     &:hover {
@@ -691,6 +760,10 @@ input[type='submit'] {
             border-bottom: solid 1px;
         }
     }
+}
+.true-square,
+.circle {
+    flex-shrink: 0;
 }
 .pill,
 .circle {
@@ -1101,6 +1174,11 @@ i {
         min-width: 0;
         .tooltip-inner {
             border: none;
+        }
+    }
+    &.pad-xs {
+        .popover-inner {
+            padding: 8px;
         }
     }
     &.invisible {
@@ -1696,7 +1774,8 @@ input::placeholder {
 // FLEX-LIST
 .flex-list {
     display: flex;
-    &.flex-1 {
+    &.flex-1,
+    > .flex-1 {
         flex: 1;
     }
     &.full-w,
@@ -1707,7 +1786,8 @@ input::placeholder {
     &.full-height {
         height: 100%;
     }
-    &.fill {
+    &.fill,
+    > .fill {
         flex-grow: 1;
     }
     &.equal-width {
@@ -1743,6 +1823,12 @@ input::placeholder {
     }
     &.flex-end-v {
         align-items: flex-end;
+    }
+    &.flex-start-h {
+        justify-content: flex-start;
+    }
+    &.flex-start-v {
+        align-items: flex-start;
     }
     &:not(.flex-v) {
         &.center-h {
@@ -1823,6 +1909,18 @@ input::placeholder {
         > *:not(:last-child) {
             margin-right: 0;
         }
+        &.flex-end-h {
+            align-items: flex-end;
+        }
+        &.flex-end-v {
+            justify-content: flex-end;
+        }
+        &.flex-start-h {
+            align-items: flex-start;
+        }
+        &.flex-start-v {
+            justify-content: flex-start;
+        }
         &.min,
         &.space-min {
             > *:not(:first-child) {
@@ -1889,7 +1987,7 @@ input::placeholder {
 @each $theme in $bg-themes {
     .bg-theme-#{nth($theme,1)} {
         background: nth($theme, 2);
-        &.interactable:not(.disabled) {
+        &.interactable {
             transition: background 0.2s ease-in;
             cursor: pointer;
             &:hover,
@@ -1908,9 +2006,11 @@ input::placeholder {
         }
         &.disabled {
             background: transparent;
+            transition: none;
+            cursor: default;
         }
         &.active,
-        &:active {
+        &.interactable:active {
             background: nth($theme, 4);
         }
         &.bg-theme-hover {
@@ -1920,6 +2020,10 @@ input::placeholder {
         }
         &.theme-border {
             border: solid 1px nth($theme, 5);
+        }
+        .color-ft-soft,
+        .ft-color-soft {
+            color: nth($theme, 8);
         }
     }
 }

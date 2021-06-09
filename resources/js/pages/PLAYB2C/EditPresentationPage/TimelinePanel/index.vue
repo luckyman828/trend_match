@@ -282,7 +282,6 @@ export default {
 
             if (timingConflictList.length > 0) {
                 const timingConflict = timingConflictList[0]
-                console.log('timings conflict', timingConflict, conflictThreshold, snapThreshold)
                 // Check if we are within our snap threshold. If so, simply snap. Else report an error
                 const snapToEnd =
                     desiredStart < timingConflict.end + conflictThreshold &&
@@ -328,7 +327,9 @@ export default {
             return conflicts
         },
         onDragEnd(e) {
-            if (this.newDragPosValid) this.saveNewPosition()
+            const dragEndPos = { x: e.clientX, y: e.clientY }
+            const posChanged = JSON.stringify(dragEndPos) != JSON.stringify(this.dragStartPos)
+            if (this.newDragPosValid && posChanged) this.saveNewPosition()
             // Remove the transform from the dragged element
             this.draggedEl.style.transform = ''
             // Reset our drag variables
@@ -354,6 +355,7 @@ export default {
             })
 
             // Save the change to the API
+            console.log('update presentation')
             this.updatePresentation()
         },
         getTimestampFromMouseX(mouseX) {

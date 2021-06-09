@@ -1,58 +1,66 @@
 <template>
-    <div class="player-controls" :class="{ hide: hideControls }">
-        <VideoTimeline v-if="playerReady && !isLive" />
-        <div class="main flex-list equal-width center-v">
-            <div class="left flex-list center-v space-lg">
-                <div class="flex-list space-xs">
-                    <!-- PLAY / PAUSE -->
-                    <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
-                        <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
-                    </button>
-                    <span
-                        v-else
-                        class="circle invisible ghost-hover"
-                        v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
-                    >
-                        <i class="fas fa-circle red"></i>
-                    </span>
+    <div class="player-controls flex-list justify space-md">
+        <div class="left flex-list">
+            <!-- PLAY / PAUSE -->
+            <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+                <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
+            </button>
+            <span
+                v-else
+                class="circle invisible ghost-hover"
+                v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
+            >
+                <i class="fas fa-circle red"></i>
+            </span>
 
-                    <!-- MUTE / UNMUTE -->
-                    <VolumeControl />
+            <!-- MUTE / UNMUTE -->
+            <VolumeControl />
 
-                    <!-- FULLSCREEN MODE -->
-                    <button
-                        class="invisible white circle ghost-hover"
-                        v-tooltip="{
-                            content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
-                            delay: { show: 500 },
-                        }"
-                        ref="buttonToClick"
-                        @click="toggleFullscreenMode"
-                    >
-                        <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
-                    </button>
-                </div>
-
-                <div class="time">
-                    <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
-                </div>
-
-                <div class="product-totals">
-                    <div class="pill dark sm">
-                        <span> {{ currentTimingIndex + 1 }} / {{ timings.length }} styles </span>
-                    </div>
-                </div>
-
-                <slot name="left" />
+            <div class="product-totals" @click="$emit('show-timing-list')">
+                <button class="pill invisible white ghost-hover">
+                    <i class="far fa-tshirt"></i>
+                    <span> {{ currentTimingIndex + 1 }} of {{ timings.length }} styles </span>
+                </button>
             </div>
 
-            <div class="center flex-list center-h center-v">
-                <slot name="center" />
-            </div>
+            <slot name="left" />
+        </div>
 
-            <div class="right flex-list flex-end-h center-v">
-                <slot name="right" />
+        <div class="timeline-wrapper fill flex-list flex-v auto-top">
+            <div class="time ft-10">
+                <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
             </div>
+            <VideoTimeline v-if="playerReady && !isLive" />
+        </div>
+
+        <div class="right flex-list">
+            <v-popover trigger="click" ref="qualitySelector">
+                <button class="invisible white circle ghost-hover">
+                    <i class="far fa-cog"></i>
+                </button>
+                <BaseSelectButtons
+                    header="Quality"
+                    slot="popover"
+                    type="radio"
+                    :submitOnChange="true"
+                    :options="Object.keys(video.urls)"
+                    :value="desiredQuality"
+                    @change="onChangeQuality"
+                />
+            </v-popover>
+
+            <!-- FULLSCREEN MODE -->
+            <button
+                class="invisible white circle ghost-hover"
+                v-tooltip="{
+                    content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
+                    delay: { show: 500 },
+                }"
+                ref="buttonToClick"
+                @click="toggleFullscreenMode"
+            >
+                <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
+            </button>
         </div>
     </div>
 </template>
@@ -84,8 +92,10 @@ export default {
             isPlaying: 'getIsPlaying',
             hideControls: 'getControlsHidden',
             playerReady: 'getPlayer',
+            desiredQuality: 'getDesiredQuality',
         }),
         ...mapGetters('playPresentation', {
+            video: 'getVideo',
             timings: 'getTimings',
             currentTimingIndex: 'getCurrentTimingIndex',
             product: 'getCurrentProduct',
@@ -93,7 +103,11 @@ export default {
     },
     methods: {
         ...mapActions('player', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapMutations('player', ['SET_CONTROLS_HIDDEN']),
+        ...mapMutations('player', ['SET_CONTROLS_HIDDEN', 'SET_DESIRED_QUALITY']),
+        onChangeQuality(newQuality) {
+            this.SET_DESIRED_QUALITY(newQuality)
+            this.$refs.qualitySelector.hide()
+        },
         toggleFullscreenMode() {
             if (this.fullscreenModeActive) {
                 this.onExitFullscreen()
@@ -167,31 +181,35 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .player-controls {
-    pointer-events: all;
-    height: $heightPlayerControls;
-    width: 100%;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    color: white;
     position: absolute;
     left: 0;
+    right: 0;
     bottom: 0;
-    transform: none;
-    transition: transform 0.1s ease-out;
-    &.hide {
-        transform: translateY(100%);
-    }
-    .timeline {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-    }
-    .main {
-        background: $dark100;
-        height: 100%;
-        padding: 8px 20px 8px;
+    padding: 8px 16px;
+    background: linear-gradient(180deg, transparent 0%, black 100%) 0% 0% no-repeat padding-box;
+    color: white;
+    width: 100%;
+    overflow: hidden;
+
+    // TIMELINE
+    &::v-deep {
+        .timeline {
+            .target-area {
+                transform: translateY(-50%);
+                width: 100%;
+            }
+            .knob {
+                display: none;
+            }
+            .timeline-wrapper {
+                background: rgba(white, 16%);
+                .rail {
+                    height: 4px;
+                    border-radius: 2px;
+                    background: white;
+                }
+            }
+        }
     }
 }
 </style>
