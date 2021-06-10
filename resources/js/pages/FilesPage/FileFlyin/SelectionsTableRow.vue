@@ -68,7 +68,12 @@
                 </div>
             </td>
             <td class="budget">
-                <v-popover trigger="click" @apply-show="onShowBudgetInput" ref="budgetInputPopover">
+                <v-popover
+                    trigger="click"
+                    @apply-show="onShowBudgetInput"
+                    ref="budgetInputPopover"
+                    :disabled="!userHasEditAccess"
+                >
                     <button v-if="userHasEditAccess" class="ghost editable sm">
                         <span>{{ selection.budget || 'Set budget' | thousandSeparated }}</span>
                     </button>
