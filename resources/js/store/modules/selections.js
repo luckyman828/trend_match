@@ -266,6 +266,8 @@ export default {
                 type: 'Normal',
                 currency: null,
                 user_count: 0,
+                direct_user_count: 0,
+                inherit_user_count: 0,
                 team_count: 0,
                 children: [],
                 visible_from: null,
