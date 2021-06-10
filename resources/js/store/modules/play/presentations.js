@@ -6,10 +6,12 @@ export default {
 
     state: {
         presentations: [],
+        presentationsFilteredBySearch: [],
     },
 
     getters: {
         getPresentations: state => state.presentations,
+        getPresentationsFilteredBySearch: state => state.presentationsFilteredBySearch,
         getCurrentPresentation: (state, getters, rootState, rootGetters) =>
             rootGetters['playPresentation/getPresentation'],
     },
@@ -87,6 +89,9 @@ export default {
         },
         INSERT_PRESENTATION(state, presentation) {
             state.presentations.push(presentation)
+        },
+        SET_PRESENTATIONS_FILTERED_BY_SEARCH(state, presentations) {
+            state.presentationsFilteredBySearch = presentations
         },
     },
 }

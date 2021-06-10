@@ -21,7 +21,7 @@ export default {
     },
     computed: {
         ...mapGetters('playPresentations', {
-            presentations: 'getPresentations',
+            presentations: 'getPresentationsFilteredBySearch',
         }),
     },
     methods: {

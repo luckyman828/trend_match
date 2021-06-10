@@ -255,6 +255,18 @@ $desktop-width: 920px;
     }
 }
 
+@mixin desktop-md {
+    @media (min-width: #{$screenSm}) {
+        @content;
+    }
+}
+
+@mixin desktop-lg {
+    @media (min-width: #{$screenMd}) {
+        @content;
+    }
+}
+
 // VIDEO & ANIMATION
 $videoPauseTransition: 0.2s ease-out;
 

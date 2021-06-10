@@ -1,8 +1,21 @@
 <template>
     <Portal to="navbar">
-        <div class="navbar-files flex-list justify">
-            <div class="items-left"></div>
-            <div class="item-right flex-list">
+        <div class="navbar-files flex-list equal-width">
+            <div class="items-left truncate">
+                <img v-if="workspace.logo" :src="workspace.logo" alt="workspace logo" class="logo" />
+                <div v-else class="text-logo truncate ft-16 ft-bd ft-uppercase">{{ workspace.title }}</div>
+            </div>
+            <div class="items-center center-h">
+                <BaseSearchFieldV2
+                    class="search"
+                    :arrayToSearch="allPresentations"
+                    v-model="presentationsFilteredBySearch"
+                    :searchKey="['name']"
+                    placeholderText="Search for Presentation"
+                    :hotkeyEnabled="true"
+                />
+            </div>
+            <div class="item-right flex-list flex-end-h">
                 <BaseButton
                     buttonClass="dark pill"
                     :disabled="authUserWorkspaceRole != 'Admin'"
@@ -38,7 +51,21 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('workspaces', {
+            authUserWorkspaceRole: 'authUserWorkspaceRole',
+            workspace: 'getCurrentWorkspace',
+        }),
+        ...mapGetters('playPresentations', {
+            allPresentations: 'getPresentations',
+        }),
+        presentationsFilteredBySearch: {
+            get() {
+                return this.$store.getters['playPresentations/getPresentationsFilteredBySearch']
+            },
+            set(value) {
+                this.$store.commit('playPresentations/SET_PRESENTATIONS_FILTERED_BY_SEARCH', value)
+            },
+        },
     },
     methods: {
         ...mapActions('playPresentations', ['instantiateBasePresentation', 'insertPresentation']),
@@ -64,6 +91,9 @@ export default {
     > * {
         display: flex;
         align-items: center;
+    }
+    .search {
+        min-width: 232px;
     }
 }
 </style>

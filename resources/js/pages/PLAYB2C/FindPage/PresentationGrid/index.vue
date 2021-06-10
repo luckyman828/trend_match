@@ -154,6 +154,12 @@ export default {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-gap: 16px;
+    @include desktop-md {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    @include desktop-lg {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
     .card-sizer {
         height: 0;
         width: 100%;
