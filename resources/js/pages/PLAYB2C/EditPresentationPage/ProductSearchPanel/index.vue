@@ -4,12 +4,12 @@
             <BaseSearchFieldV2
                 :searchKey="['datasource_id', 'title', 'eans', 'name']"
                 placeholderText="Search for Style or Look"
-                :arraysToSearch="{ items, looks }"
+                :arraysToSearch="arraysToSearch"
                 v-model="filteredBySearch"
                 :hotkeyEnabled="true"
             />
         </div>
-        <div class="filters flex-list justify">
+        <div class="filters flex-list justify center-v">
             <BaseSegmentedControl
                 :options="[
                     { label: 'All', value: 'All', count: filteredBySearch.items.length },
@@ -19,6 +19,13 @@
                 theme="light"
                 activeClass="white"
             />
+            <ProductFilters v-slot="slotProps">
+                <button class="invisible pill primary ghost-hover" @click="slotProps.toggle()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                    <span class="pill xxs primary p-lg">{{ slotProps.activeFilterCount }}</span>
+                </button>
+            </ProductFilters>
         </div>
         <RecycleScroller
             :key="currentTab"
@@ -89,10 +96,11 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SearchListItem from './SearchListItem'
 import SearchListLook from './SearchListLook'
 import EditLookPopover from './EditLookPopover'
+import ProductFilters from './ProductFilters'
 
 export default {
     name: 'ProductSearchPanel',
-    components: { SearchListItem, SearchListLook, EditLookPopover },
+    components: { SearchListItem, SearchListLook, EditLookPopover, ProductFilters },
     data: function() {
         return {
             currentTab: 'All',
@@ -102,7 +110,7 @@ export default {
     },
     computed: {
         ...mapGetters('products', {
-            items: 'getProducts',
+            items: 'getProductsFiltered',
         }),
         ...mapGetters('productGroups', {
             currentLook: 'getCurrentProductGroup',
@@ -112,6 +120,9 @@ export default {
             presentation: 'getPresentation',
             timings: 'getTimings',
         }),
+        arraysToSearch() {
+            return { items: this.items, looks: this.looks }
+        },
     },
     methods: {
         ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap', 'deleteProductGroup']),

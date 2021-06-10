@@ -803,6 +803,28 @@ input[type='submit'] {
     &.w-xl {
         width: 32px * 6;
     }
+    &.p-none,
+    &.p-min {
+        padding: 0;
+    }
+    &.p-xxs {
+        padding: 0 calc(4px / 4);
+    }
+    &.p-xs {
+        padding: 0 calc(4px / 2);
+    }
+    &.p-sm {
+        padding: 0 calc(4px * 1);
+    }
+    &.p-md {
+        padding: 0 calc(4px * 2);
+    }
+    &.p-lg {
+        padding: 0 calc(4px * 4);
+    }
+    &.p-xl {
+        padding: 0 calc(4px * 8);
+    }
     @each $size in $button-sizes {
         &.#{nth($size,1)} {
             min-width: nth($size, 2);
@@ -824,21 +846,26 @@ input[type='submit'] {
             &.w-xl {
                 width: nth($size, 2) * 6;
             }
-            // > i {
-            //     &:first-child {
-            //         margin-left: nth($size, 4) * 1.5;
-            //     }
-            //     &:last-child {
-            //         margin-right: nth($size, 4) * 1.5;
-            //     }
-            // }
+
             padding: 0 nth($size, 4);
-            // > *:first-child {
-            //     margin-left: nth($size, 4);
-            // }
-            // > *:last-child {
-            //     margin-right: nth($size, 4);
-            // }
+            &.p-xxs {
+                padding: 0 calc(#{nth($size, 4)} / 4);
+            }
+            &.p-xs {
+                padding: 0 calc(#{nth($size, 4)} / 2);
+            }
+            &.p-sm {
+                padding: 0 calc(#{nth($size, 4)} * 1);
+            }
+            &.p-md {
+                padding: 0 calc(#{nth($size, 4)} * 2);
+            }
+            &.p-lg {
+                padding: 0 calc(#{nth($size, 4)} * 4);
+            }
+            &.p-xl {
+                padding: 0 calc(#{nth($size, 4)} * 8);
+            }
         }
     }
 }

@@ -59,6 +59,10 @@ export default {
             // Emit the result when a change to the provided array occours
             this.$emit('input', this.getResult())
         },
+        arraysToSearch: function(newVal, oldVal) {
+            // Emit the result when a change to the provided array occours
+            this.$emit('input', this.getResult())
+        },
     },
     computed: {},
     methods: {
@@ -223,7 +227,6 @@ export default {
             // Search in multiple arrays
             if (this.arraysToSearch && typeof this.arraysToSearch == 'object') {
                 const arrayKeys = Object.keys(this.arraysToSearch)
-                console.log('this is the case', arrayKeys, this.arraysToSearch)
                 const objectToReturn = {}
                 for (const key of arrayKeys) {
                     const array = this.arraysToSearch[key]

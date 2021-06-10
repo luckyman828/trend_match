@@ -1404,7 +1404,7 @@ export default {
                             return product
                         },
                     })
-                    
+
                     Object.defineProperty(variant, 'yourPrice', {
                         get: function() {
                             return product.yourPrice

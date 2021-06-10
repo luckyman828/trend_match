@@ -134,7 +134,7 @@ export default {
                     icon: 'far fa-filter',
                     type: 'array',
                     scope: 'product',
-                    apps: ['select', 'buy'],
+                    apps: ['select', 'buy', 'play'],
                 },
                 {
                     key: 'delivery_dates',
@@ -144,7 +144,7 @@ export default {
                     scope: 'product',
                     optionNameKey: 'name',
                     optionValueKey: 'value',
-                    apps: ['select', 'buy'],
+                    apps: ['select', 'buy', 'play'],
                 },
                 {
                     key: 'brand',
@@ -152,7 +152,7 @@ export default {
                     icon: 'far fa-building',
                     type: 'array',
                     scope: 'product',
-                    apps: ['select', 'buy'],
+                    apps: ['select', 'buy', 'play'],
                 },
                 {
                     key: 'buying_group',
