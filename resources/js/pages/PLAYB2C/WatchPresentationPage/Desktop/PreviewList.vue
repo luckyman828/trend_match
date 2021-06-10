@@ -1,6 +1,6 @@
 <template>
     <div class="preview-list-wrapper">
-        <div class="preview-list bg-blur" ref="previewList">
+        <div class="preview-list bg-blur fly-out" ref="previewList">
             <div class="rail flex-list flex-v" @scroll="onScroll">
                 <template v-if="currentTiming">
                     <PreviewListItem
@@ -69,8 +69,8 @@ export default {
             }
         },
     },
-    created() {
-        this.currentTiming = this.timing
+    mounted() {
+        this.onNewTiming(this.timing)
     },
 }
 </script>
