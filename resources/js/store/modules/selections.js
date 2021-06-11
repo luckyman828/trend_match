@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 import router from '../../router'
 
 export default {
@@ -1187,6 +1188,9 @@ export default {
                 if (!selection.children) {
                     Vue.set(selection, 'children', [])
                 }
+                if (!selection.denied_users) {
+                    Vue.set(selection, 'denied_users', [])
+                }
 
                 if (!selection.your_roles) {
                     Vue.set(selection, 'your_roles', [])
@@ -1200,6 +1204,25 @@ export default {
                     get: () => {
                         if (!selection.users) return []
                         return selection.users.filter(user => user.roles.includes('Denied'))
+                    },
+                })
+                Object.defineProperty(selection, 'inheritedUsers', {
+                    get: () => {
+                        if (!selection.users) return []
+                        return selection.users.filter(
+                            user =>
+                                user.inherits &&
+                                user.inherits.find(heritage => heritage.inherit_from_ancestor_id != 0) &&
+                                user.job == 'Approval'
+                        )
+                    },
+                })
+                Object.defineProperty(selection, 'directUsers', {
+                    get: () => {
+                        if (!selection.users) return []
+                        return selection.users.filter(
+                            user => !selection.inheritedUsers.find(inheritedUser => inheritedUser.id == user.id)
+                        )
                     },
                 })
 

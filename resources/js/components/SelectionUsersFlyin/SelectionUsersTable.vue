@@ -7,7 +7,7 @@
             loadingMsg="loading users"
             errorMsg="error loading users"
             :errorCallback="() => initData()"
-            :items="currentUsersTableTab == 'Members' ? selection.users : selection.denied_users"
+            :items="usersToDisplay"
             itemKey="id"
             :itemSize="50"
             :selected.sync="selected"
@@ -21,7 +21,7 @@
             <template v-slot:tabs>
                 <BaseTableTab
                     label="Members"
-                    :count="selection.users ? selection.users.length : 0"
+                    :count="selection.direct_user_count ? selection.direct_user_count : 0"
                     modelValue="Members"
                     v-model="currentUsersTableTab"
                     @change="selected = []"
@@ -33,6 +33,13 @@
                     v-model="currentUsersTableTab"
                     @change="selected = []"
                 />
+                <BaseTableTab
+                    label="Inherited"
+                    :count="selection.inherit_user_count ? selection.inherit_user_count : 0"
+                    modelValue="Inherited"
+                    v-model="currentUsersTableTab"
+                    @change="selected = []"
+                />
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers"
@@ -40,14 +47,14 @@
                 >
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader
-                    v-if="currentUsersTableTab == 'Members'"
+                    v-if="currentUsersTableTab != 'Excluded'"
                     :sortKey="'role'"
                     :currentSortKey="sortKey"
                     @sort="sortUsers"
                     >Role</BaseTableHeader
                 >
                 <BaseTableHeader
-                    v-if="currentUsersTableTab == 'Members'"
+                    v-if="currentUsersTableTab != 'Excluded'"
                     :sortKey="'job'"
                     :currentSortKey="sortKey"
                     @sort="sortUsers"
@@ -125,6 +132,33 @@
                             <span>Add user</span>
                         </button>
                     </td>
+                </BaseTableInnerRow>
+
+                <!-- Inherited Users -->
+                <BaseTableInnerRow v-if="currentUsersTableTab == 'Inherited'">
+                    <td class="title">
+                        <i class="fas fa-user"></i>
+                        <span>{{ rowProps.item.name }}</span>
+                    </td>
+                    <td class="email">{{ rowProps.item.email }}</td>
+                    <td class="role">
+                        <BaseButtonV2 v-if="userHasEditAccess" class="ghost editable sm" :disabled="true">
+                            <span>{{ rowProps.item.role }}</span>
+                        </BaseButtonV2>
+                        <span v-else>{{ rowProps.item.role }}</span>
+                    </td>
+                    <td class="job">
+                        <BaseButtonV2
+                            v-if="userHasEditAccess"
+                            class="ghost editable sm"
+                            :disabled="true"
+                            disabledTooltip="The Approval job is inherited by selections. To give the user another job, change their job on the master selection first."
+                        >
+                            <span>{{ rowProps.item.job }}</span>
+                        </BaseButtonV2>
+                        <span v-else>{{ rowProps.item.job }}</span>
+                    </td>
+                    <td class="action"></td>
                 </BaseTableInnerRow>
             </template>
             <template v-slot:footer>
@@ -348,6 +382,13 @@ export default {
                 .sort((a, b) => {
                     if (a.id == this.authUser.id) return -1
                 })
+        },
+        usersToDisplay() {
+            return this.currentUsersTableTab == 'Excluded'
+                ? this.selection.denied_users
+                : this.currentUsersTableTab == 'Inherited'
+                ? this.selection.inheritedUsers
+                : this.selection.directUsers
         },
     },
     methods: {
