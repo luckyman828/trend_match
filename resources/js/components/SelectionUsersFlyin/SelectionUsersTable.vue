@@ -21,7 +21,7 @@
             <template v-slot:tabs>
                 <BaseTableTab
                     label="Members"
-                    :count="selection.direct_user_count ? selection.direct_user_count : 0"
+                    :count="selection.directUsers.length"
                     modelValue="Members"
                     v-model="currentUsersTableTab"
                     @change="selected = []"
@@ -35,7 +35,7 @@
                 />
                 <BaseTableTab
                     label="Inherited"
-                    :count="selection.inherit_user_count ? selection.inherit_user_count : 0"
+                    :count="selection.inheritedUsers.length"
                     modelValue="Inherited"
                     v-model="currentUsersTableTab"
                     @change="selected = []"
