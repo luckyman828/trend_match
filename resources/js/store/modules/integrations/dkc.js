@@ -134,12 +134,12 @@ export default {
                     company: 'DkCompanyVejle',
                 },
                 {
-                    name: 'Ichi',
+                    name: 'ICHI',
                     code: 'IH',
                     company: 'DkCompanyVejle',
                 },
                 {
-                    name: 'Ichi Accessories',
+                    name: 'ICHI Accessories',
                     code: 'IA',
                     company: 'DkCompanyVejle',
                 },
