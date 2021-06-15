@@ -1393,6 +1393,7 @@ export default {
                         Vue.set(variant, 'imageIndex', 0)
                     }
                     Vue.set(variant, 'index', variantIndex)
+                    Vue.set(variant, 'product_id', product.id)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
                     if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])

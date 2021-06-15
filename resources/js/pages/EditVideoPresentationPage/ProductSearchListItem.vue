@@ -55,7 +55,7 @@ export default {
                 id: null,
                 start_at_ms: 0,
                 end_at_ms: this.videoDuration / 12,
-                product_id: this.product.id,
+                variants: [product.variants[0]],
             }
             this.addTiming({ newTiming })
         },

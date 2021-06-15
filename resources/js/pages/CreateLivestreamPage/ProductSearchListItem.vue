@@ -67,7 +67,7 @@ export default {
             const newTiming = {
                 start_at_ms: newStart,
                 end_at_ms: Math.ceil(this.videoDuration + 60),
-                product_id: this.product.id,
+                variants: [this.product.variants[0]],
             }
             await this.addTiming({ newTiming })
             this.broadcastProduct({ product: this.product })

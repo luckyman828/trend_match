@@ -85,6 +85,8 @@ export default {
             const fileVideo = await this.fetchFileVideo(fileId)
             this.SET_CURRENT_VIDEO(fileVideo)
 
+            console.log('everytghing fetched!')
+
             if (this.presentationIsActive) {
                 // Fetch the currently presented product
                 this.SET_VIDEO_TYPE('live')

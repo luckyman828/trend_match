@@ -68,11 +68,12 @@ export default {
         },
         cart() {
             const cartProducts = []
-            this.timings.map(timing => {
-                const alreadyAdded = cartProducts.find(x => x.id == timing.product.id)
-                if (alreadyAdded) return
-                cartProducts.push(timing.product)
-            })
+            // this.timings.map(timing => {
+            //     console.log('add products to cart', timing)
+            //     const alreadyAdded = cartProducts.find(x => x.id == timing.product.id)
+            //     if (alreadyAdded) return
+            //     cartProducts.push(timing.product)
+            // })
             return cartProducts
         },
         actionGroups() {

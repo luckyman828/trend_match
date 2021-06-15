@@ -162,7 +162,7 @@ export default {
             'SET_TIMELINE_EL',
             'SET_TIMELINE_ZOOM',
         ]),
-        ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent', 'updateCurrentVideo']),
+        ...mapActions('videoPresentation', ['getTimestampFromMouseEvent', 'updateCurrentVideo']),
         ...mapActions('videoPlayer', ['seekTo']),
         onTimelineMousedown(e) {
             this.timelineClickOrigin = true
