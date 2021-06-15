@@ -159,6 +159,23 @@ export default {
                     },
                 })
 
+                // Work quantity inputs
+                product.quantityInputs.map(quantityInput => {
+                    Object.defineProperty(quantityInput, 'sizes', {
+                        get() {
+                            if (quantityInput.variant_size)
+                                return [{ size: quantityInput.variant_size, quantity: quantityInput.quantity }]
+                            if (quantityInput.assortment) {
+                                const assortment = product.assortments.find(
+                                    assortment => assortment.name == quantityInput.assortment
+                                )
+                                if (assortment) return assortment.sizes
+                            }
+                            return []
+                        },
+                    })
+                })
+
                 product.alignments.map(alignment => {
                     // Add default variant action to alignments
                     product.variants.map(async variant => {
@@ -394,8 +411,6 @@ export default {
                         return product.id
                     },
                 })
-
-                // START Backwards-compatability
             })
         },
     },

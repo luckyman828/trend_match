@@ -176,6 +176,42 @@ export default {
                         { name: 'Variant Total', key: 'variants.quantity' },
                     ],
                 },
+                {
+                    name: 'Size QTY Export',
+                    rowKeys: [
+                        {
+                            key: 'variants',
+                            rowFilters: [],
+                            children: [
+                                {
+                                    key: 'deliveries',
+                                    rowFilters: [],
+                                    children: [{ key: 'quantityInputs', children: [{ key: 'sizes' }] }],
+                                },
+                            ],
+                        },
+                    ],
+                    headers: [
+                        { name: 'Brand', key: 'brand' },
+                        { name: 'Season', key: 'extra_data.season' },
+                        { name: 'Style Number', key: 'datasource_id' },
+                        { name: 'Style Name', key: 'name' },
+                        { name: 'Color Name', key: 'variants.color' },
+                        { name: 'Color Code', key: 'variants.variant' },
+                        { name: 'Labels', key: 'variants.labels' },
+                        { name: 'Comments', key: 'comments.content' },
+                        { name: 'Variant Name', key: 'variants.name' },
+                        { name: 'Delivery', key: 'variants.deliveries.delivery_date' },
+                        { name: 'Delivery Total', key: 'variants.deliveries.quantity' },
+                        { name: 'Size', key: 'variants.deliveries.quantityInputs.sizes.size' },
+                        {
+                            name: 'Size Quantity',
+                            key: 'variants.deliveries.quantityInputs.sizes.quantity',
+                            filters: [{ values: ['', 0], type: 'exclude' }],
+                        },
+                        { name: 'Variant Total', key: 'variants.quantity' },
+                    ],
+                },
             ],
         }
     },
