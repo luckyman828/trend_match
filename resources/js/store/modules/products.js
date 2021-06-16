@@ -93,6 +93,7 @@ export default {
             const openTicketsOnly = rootGetters['productFilters/openTicketsOnly']
             const hideCompleted = rootGetters['productFilters/hideCompleted']
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
+            const styleOptionOnly = rootGetters['productFilters/styleOptionOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
@@ -294,6 +295,13 @@ export default {
                     product => !product.variants.find(variant => variant.pictures.find(picture => !!picture.url))
                 )
                 productsToReturn = filteredByNoImages
+            }
+            // Filter by style option
+            if (styleOptionOnly) {
+                const filteredByStyleOption = productsToReturn.filter(
+                    product => !product.variants.find(variant => variant.style_option_id)
+                )
+                productsToReturn = filteredByStyleOption
             }
 
             // Filter by actions

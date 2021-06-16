@@ -1209,11 +1209,8 @@ export default {
                 Object.defineProperty(selection, 'inheritedUsers', {
                     get: () => {
                         if (!selection.users) return []
-                        return selection.users.filter(
-                            user =>
-                                user.inherits &&
-                                user.inherits.find(heritage => heritage.inherit_from_ancestor_id != 0) &&
-                                user.job == 'Approval'
+                        return selection.users.filter(user =>
+                            ['Ancestor', 'TeamAncestor'].includes(user.inherit_source)
                         )
                     },
                 })
