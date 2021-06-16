@@ -229,7 +229,7 @@
                     >
                         <span>
                             <span v-if="selected.length > 1"><u>R</u>emove / <u>E</u>xclude </span>
-                            <span v-else-if="contextUser.inherit_from_teams"><u>E</u>xclude </span>
+                            <span v-else-if="contextUser.inherit_source == 'Team'"><u>E</u>xclude </span>
                             <span v-else><u>R</u>emove </span>
                             User{{ selected.length > 1 ? 's' : '' }}
                         </span>

@@ -664,7 +664,7 @@ export default {
             const usersToDeny = []
             const usersToRemove = []
             users.forEach(user => {
-                if (user.inherit_from_teams) {
+                if (user.inherit_source == 'Team') {
                     usersToDeny.push(user)
                 } else {
                     usersToRemove.push(user)
@@ -1203,20 +1203,34 @@ export default {
                         return selection.users.filter(user => user.roles.includes('Denied'))
                     },
                 })
-                Object.defineProperty(selection, 'inheritedUsers', {
-                    get: () => {
-                        if (!selection.users) return []
-                        return selection.users.filter(user =>
-                            ['Ancestor', 'TeamAncestor'].includes(user.inherit_source)
-                        )
-                    },
-                })
                 Object.defineProperty(selection, 'directUsers', {
                     get: () => {
-                        if (!selection.users) return []
-                        return selection.users.filter(
-                            user => !selection.inheritedUsers.find(inheritedUser => inheritedUser.id == user.id)
-                        )
+                        let users = []
+                        if (!selection.users) return users
+                        selection.users.map(user => {
+                            if (
+                                !['Ancestor', 'TeamAncestor'].includes(user.inherit_source) &&
+                                !users.find(x => x.id == user.id)
+                            ) {
+                                users.push(user)
+                            }
+                        })
+                        return users
+                    },
+                })
+                Object.defineProperty(selection, 'inheritedUsers', {
+                    get: () => {
+                        let users = []
+                        if (!selection.users) return users
+                        selection.users.map(user => {
+                            if (
+                                !selection.directUsers.find(directUser => directUser.id == user.id) &&
+                                !users.find(x => x.id == user.id)
+                            ) {
+                                users.push(user)
+                            }
+                        })
+                        return users
                     },
                 })
                 Object.defineProperty(selection, 'user_count', {
