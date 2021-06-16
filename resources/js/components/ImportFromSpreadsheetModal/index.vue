@@ -156,7 +156,7 @@ export default {
             }
             this.currentScreenIndex = 3
         },
-        async onSubmit(newProducts) {
+        async onSubmit(newProducts, mappedfields) {
             this.uploadInProgress = true
             this.submitStatus = 'Applying update strategy'
 
@@ -194,11 +194,11 @@ export default {
                     // STRATEGY: REPLACE
                     if (strategy == 'replace') {
                         // If the strategy is replace, simply overwrite all the existing key values with our new values
+                        delete product[key]
                         Vue.set(product, key, newProduct[key])
                         return
                     }
-
-                    this.setKeyValue(newProduct, product, key, strategy)
+                    this.setKeyValue(newProduct, product, key, strategy, mappedfields)
                 })
             })
 
@@ -244,7 +244,7 @@ export default {
             this.onClose()
             this.onReset()
         },
-        setKeyValue(srcProduct, targetProduct, key, strategy) {
+        setKeyValue(srcProduct, targetProduct, key, strategy, mappedfields) {
             // console.log(
             //     'set key value',
             //     JSON.parse(JSON.stringify(srcProduct)),
@@ -302,10 +302,30 @@ export default {
                             if (key == 'variants' && !this.uploadStrategy.updateExistingVariants) {
                                 return
                             }
+                            if (key == 'variants') {
+                                // Remove color/variant from variants if the field is disabled
+                                const colorDisabled = mappedfields.find(
+                                    field => field.scope == 'variants' && field.name == 'color' && !field.enabled
+                                )
+                                if (colorDisabled) {
+                                    console.log('remove color')
+                                    newArrayItem.color = null
+                                }
+                                const variantDisabled = mappedfields.find(
+                                    field => field.scope == 'variants' && field.name == 'variant' && !field.enabled
+                                )
+                                if (variantDisabled) {
+                                    console.log('remove variant')
+                                    newArrayItem.variant = null
+                                }
+                                if (colorDisabled || variantDisabled) {
+                                    newArrayItem.name = null
+                                }
+                            }
 
                             Object.keys(existingArrayItem).map(itemKey => {
                                 // Call this function recursively (it doens't matter that it isnt actually a product)
-                                this.setKeyValue(newArrayItem, existingArrayItem, itemKey, strategy)
+                                this.setKeyValue(newArrayItem, existingArrayItem, itemKey, strategy, mappedfields)
                             })
                             return
                         }
@@ -330,7 +350,7 @@ export default {
                 const srcObject = srcProduct[key]
                 const targetObject = targetProduct[key]
                 Object.keys(srcObject).map(itemKey => {
-                    this.setKeyValue(srcObject, targetObject, itemKey, strategy)
+                    this.setKeyValue(srcObject, targetObject, itemKey, strategy, mappedfields)
                 })
                 return
             }
@@ -338,7 +358,7 @@ export default {
             // Ready to just set the object value
             if (
                 (strategy == 'add' && !targetProduct[key]) || // If strategy is add, only add if the current value is null
-                (strategy == 'smart' && srcProduct[key] != null) // If the strategy is smart, replace/add unless we don't have a new value
+                (strategy == 'smart' && srcProduct[key] != null && srcProduct[key] != '') // If the strategy is smart, replace/add unless we don't have a new value
             ) {
                 targetProduct[key] = srcProduct[key]
             }

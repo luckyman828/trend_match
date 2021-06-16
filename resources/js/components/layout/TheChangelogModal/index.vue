@@ -1,6 +1,88 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Lace: Brickred"
+            date="June 2021: The Jobs Release"
+            featuredImgUrl="/images/blog/undraw_Work_chat_re_qes4.svg"
+        >
+            <template v-slot:lead>
+                <p>
+                    This release is mainly focused on updating SELECT. This release introduces a feature we have been
+                    aching to implement for a very long time; the split from selection roles to roles and jobs. More
+                    about this below.
+                </p>
+            </template>
+            <template v-slot:body>
+                <h2>SELECT</h2>
+                <h3>Jobs</h3>
+                <p>Until this point what a user does on a selection has been determined by their role.</p>
+                <p>The following pattern was followed:</p>
+                <ul>
+                    <li>Role: Owner => Job = Alignment</li>
+                    <li>Role: Member => Job = Feeeback</li>
+                    <li>Role: Approver => Job = Approval</li>
+                </ul>
+                <p>This has now changed so you can decide a users <i>role</i> and <i>job</i> indepedently.</p>
+                <p>
+                    This is especially great in cases where you want many users to collaborate around alignment (job =
+                    Alignment), but you don't want everyone to have edit access for the selection (role = Member)
+                </p>
+                <p>
+                    This should give you more flexibility in the way you setup your selections, and make it easier
+                    at-a-glance of the selection users to determine who does what.
+                </p>
+
+                <h3>Improved Selection-Team linking</h3>
+                <p>
+                    A team can now be used to determine the role and job for the users of a selection added via that
+                    team.
+                </p>
+                <p>
+                    What this means, is that you can add a team to a selection. The users on that team then get
+                    automatically added to that selection.
+                </p>
+                <p>
+                    Changing a team-members role or job will also update their role/job on the selections on which the
+                    team has been added.
+                </p>
+                <p>You are however, still able to overwrite a users role/job for each individual selection.</p>
+                <p>
+                    The result should be a much smarter system, saving you the trouble of updating user roles/jobs in
+                    multiple places, while still keeping the flexibility of the old system.
+                </p>
+
+                <h2>General Tweaks & Fixes</h2>
+                <ul>
+                    <li>
+                        Fixed an issue where you weren't able to update existing products by uploading from spreadsheet
+                        when you had variant EAN or variant delivery date mapped and checked.
+                    </li>
+                    <li>Fixed an issue where selection links, would sometimes lead to the wrong selection.</li>
+                    <li>
+                        Fixed a bug where you couldn't set the delivery date on a newly created product, without saving
+                        it first.
+                    </li>
+                    <li>
+                        The edit-product fly-in should no longer show the "Really discard this product?" dialog, after
+                        viewing products newly created through import-from-spreadsheet.
+                    </li>
+                    <li>
+                        Fixed joining a presentation through a link, on a user with no name set, would cause the page to
+                        load infinitely.
+                    </li>
+                    <li>Minor style tweaks.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Jersey: Blush"
             date="May 2021 Release"
             featuredImgUrl="/images/blog/undraw_Dev_focus_re_6iwt.svg"

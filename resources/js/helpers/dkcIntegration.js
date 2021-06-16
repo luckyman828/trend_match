@@ -288,7 +288,6 @@ async function instantiateBuyProducts(products) {
                   variant.assortments &&
                       variant.assortments.map(assortment => {
                           // Sort assortment sizes in a logical order
-                          console.log('assortment', assortment)
                           const assortmentSizes = !assortment.assortment_variants
                               ? []
                               : assortment.assortment_variants.sort((a, b) => {

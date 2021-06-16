@@ -192,6 +192,8 @@ export default {
             ]
             // Filter our filters
             const filteredFilters = response.filter(filter => {
+                // Filter out based on app
+                if (!filter.apps.includes(rootGetters['kollektApps/getCurrentApp'].name)) return false
                 // Check if the workspace has labels
                 const labels = rootGetters['workspaces/getAvailableProductLabels']
                 const hasLabels = labels && labels.length > 0

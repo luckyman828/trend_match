@@ -132,7 +132,8 @@ export default {
                         : // : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
                         this.variant.product.extra_data.topBottom == 'Bottom' &&
                           this.variant.product.category == 'Jeans' &&
-                          brandWeights[sizeType].bottomsIn
+                          brandWeights[sizeType].bottomsIn &&
+                          this.variant.sizes.find(size => parseInt(size.size) % 2)
                         ? 'bottomsIn'
                         : 'standard'
                 const weights = brandWeights[sizeType][sizeSubType]

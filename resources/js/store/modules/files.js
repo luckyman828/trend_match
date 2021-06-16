@@ -472,7 +472,6 @@ export default {
                 .catch(() => {})
         },
         async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
-            console.log('sync external images')
             return new Promise(async (resolve, reject) => {
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
