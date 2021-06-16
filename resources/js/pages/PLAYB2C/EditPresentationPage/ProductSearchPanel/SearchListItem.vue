@@ -2,6 +2,7 @@
     <div class="drag-wrapper item-wrapper" :key="product.id">
         <div
             class="search-list-item drag-item flex-list bg-theme-white theme-border"
+            :class="{ 'look-open': currentLook }"
             tabindex="0"
             @keydown.enter="onAddTiming"
         >
@@ -60,7 +61,7 @@
                 <!-- Not editing look -->
                 <template v-if="!currentLook">
                     <BaseButton
-                        buttonClass="circle"
+                        buttonClass="circle invisible"
                         targetAreaPadding="4px"
                         @click="$emit('create-look', variant)"
                         tabindex="-1"
@@ -69,7 +70,7 @@
                         <i class="far fa-layer-group yellow"></i>
                     </BaseButton>
                     <BaseButton
-                        buttonClass="invisible circle ghost-hover"
+                        buttonClass="invisible circle"
                         targetAreaPadding="4px"
                         @click="onAddTiming"
                         tabindex="-1"
@@ -97,9 +98,9 @@
                         nestedIconLeft: 'fas fa-check pos-top pos-right white',
                     }"
                     :activeHoverState="{
-                        class: 'yellow',
+                        class: 'red',
                         iconLeft: 'far fa-layer-group white',
-                        nestedIconLeft: 'fas fa-times pos-top pos-right red',
+                        nestedIconLeft: 'fas fa-times pos-top pos-right',
                         tooltip: 'Remove from look',
                     }"
                 >
@@ -178,6 +179,18 @@ export default {
     padding: 8px;
     position: relative;
     height: 114px;
+    &:not(.look-open) {
+        &:hover,
+        &:active {
+            .action-list {
+                &::v-deep {
+                    button {
+                        background: $themeLightBgHover;
+                    }
+                }
+            }
+        }
+    }
     .image {
         width: 72px;
         border-radius: $borderRadiusMd;

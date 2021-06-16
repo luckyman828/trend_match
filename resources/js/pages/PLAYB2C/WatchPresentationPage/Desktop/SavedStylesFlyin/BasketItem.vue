@@ -36,12 +36,15 @@
                     </div>
                 </div>
                 <!-- SIZE -->
-                <div class="flex-list flex-v space-sm">
-                    <div class="ft-12 ft-color-soft ft-md">Size</div>
-                    <div class="square color">
-                        <span class="ft-bd">{{ item.size }}</span>
+                <v-popover trigger="click">
+                    <div class="flex-list flex-v space-sm">
+                        <div class="ft-12 ft-color-soft ft-md">Size</div>
+                        <div class="square color">
+                            <span class="ft-bd">{{ item.size }}</span>
+                        </div>
                     </div>
-                </div>
+                    <ChooseSizePopover slot="popover" :variant="item.variant" ref="sizeSelector" v-model="item.size" />
+                </v-popover>
             </div>
 
             <!-- ACTIONS  -->
@@ -71,10 +74,11 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
+import ChooseSizePopover from '../../ChooseSizePopover'
 
 export default {
     name: 'basketItem',
-    components: { AddToWishlistButton },
+    components: { AddToWishlistButton, ChooseSizePopover },
     props: ['item'],
     computed: {
         ...mapGetters('basket', {

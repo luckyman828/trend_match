@@ -175,7 +175,6 @@ export default {
                 })
                 .then(response => {
                     // Make sure the timings have an ID
-                    console.log('update video', response.data)
                     if (response.data.timings) {
                         response.data.timings.map((responseTiming, index) => {
                             Vue.set(timings[index], 'id', responseTiming.id)

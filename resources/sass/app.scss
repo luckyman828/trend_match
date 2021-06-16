@@ -594,7 +594,7 @@ input[type='submit'] {
                     color: nth($color, 2);
                 }
             }
-            &.ghost {
+            &.ghost:not(.#{nth($color,1)}-hover) {
                 &:not(.ghost-hover):hover,
                 .button-hover-trigger:hover &:not(.ghost-hover) {
                     border-color: nth($color, 2);
@@ -620,55 +620,6 @@ input[type='submit'] {
                     color: nth($color, 2);
                 }
             }
-            // // Shapes in shapes
-            // button:not(.text-link),
-            // .button,
-            // .square,
-            // .true-square,
-            // .pill,
-            // .circle,
-            // input[type='submit'] {
-            //     border-color: nth($color, 4);
-            //     background: rgba(nth($color, 4), nth($color, 6));
-            //     color: nth($color, 2);
-            //     i {
-            //         color: nth($color, 2);
-            //     }
-            //     &.invisible,
-            //     &.ghost {
-            //         color: nth($color, 4);
-            //         i {
-            //             color: nth($color, 4);
-            //         }
-            //     }
-            //     &.ghost {
-            //         &:not(.ghost-hover):hover,
-            //         .button-hover-trigger:hover &:not(.ghost-hover) {
-            //             border-color: nth($color, 4);
-            //             background: rgba(nth($color, 4), nth($color, 6));
-            //             color: nth($color, 2);
-            //             i {
-            //                 color: nth($color, 2);
-            //             }
-            //             i.context {
-            //                 background: nth($color, 3);
-            //             }
-            //         }
-            //     }
-            //     &.ghost {
-            //         border-color: nth($color, 4);
-            //     }
-            //     &.ghost-hover:hover,
-            //     .button-hover-trigger:hover &.ghost-hover {
-            //         background: transparent;
-            //         color: nth($color, 4);
-            //         border-color: nth($color, 4);
-            //         i {
-            //             color: nth($color, 4);
-            //         }
-            //     }
-            // }
-            // // End shapes in shapes
         }
         &.#{nth($color,1)}-hover:hover,
         .button-hover-trigger:hover &.#{nth($color,1)}-hover {
@@ -697,16 +648,17 @@ input[type='submit'] {
             color: $font;
         }
     }
-    &.ghost,
+
     &.ghost-hover {
         &:hover,
         .button-hover-trigger:hover & {
-            // padding: 0;
             border: solid 2px $primary;
-            // i:not(.fa-times):not(.fa-ellipsis-h) {
-            //     font-weight: 900;
-            // }
         }
+    }
+    &.ghost:hover,
+    .button-hover-trigger:hover &.ghost {
+        background: $bluegrey250;
+        border: solid 2px $bluegrey250;
     }
     &.invisible {
         font-weight: 500;
@@ -1846,33 +1798,33 @@ input::placeholder {
         }
     }
     &.flex-end-h,
-    > .flex-end-h {
+    > :not(.flex-list).flex-end-h {
         justify-content: flex-end;
     }
     &.flex-end-v,
-    > .flex-end-v {
+    > :not(.flex-list).flex-end-v {
         align-items: flex-end;
     }
     &.flex-start-h,
-    > .flex-start-h {
+    > :not(.flex-list).flex-start-h {
         justify-content: flex-start;
     }
     &.flex-start-v,
-    > .flex-start-v {
+    > :not(.flex-list).flex-start-v {
         align-items: flex-start;
     }
     &:not(.flex-v) {
         &.center-h,
-        > .center-h {
+        > :not(.flex-list).center-h {
             justify-content: center;
         }
         &.center,
         &.center-v,
-        > .center-v {
+        > :not(.flex-list).center-v {
             align-items: center;
         }
         &.justify,
-        > .justify {
+        > :not(.flex-list).justify {
             justify-content: space-between;
         }
     }
@@ -1929,15 +1881,15 @@ input::placeholder {
     &.flex-v {
         flex-direction: column;
         &.center-h,
-        > .center-h {
+        > :not(.flex-list).center-h {
             align-items: center;
         }
         &.center-v,
-        > .center-v {
+        > :not(.flex-list).center-v {
             justify-content: center;
         }
         &.justify,
-        > .justify {
+        > :not(.flex-list).justify {
             justify-content: space-between;
         }
         > *:not(:first-child) {
@@ -1947,19 +1899,19 @@ input::placeholder {
             margin-right: 0;
         }
         &.flex-end-h,
-        > .flex-end-h {
+        > :not(.flex-list).flex-end-h {
             align-items: flex-end;
         }
         &.flex-end-v,
-        > .flex-end-v {
+        > :not(.flex-list).flex-end-v {
             justify-content: flex-end;
         }
         &.flex-start-h,
-        > .flex-start-h {
+        > :not(.flex-list).flex-start-h {
             align-items: flex-start;
         }
         &.flex-start-v,
-        > .flex-start-v {
+        > :not(.flex-list).flex-start-v {
             justify-content: flex-start;
         }
         &.min,

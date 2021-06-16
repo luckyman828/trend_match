@@ -3,7 +3,7 @@
         <div class="main">
             <div class="left">
                 <div class="button-list flex-list">
-                    <button class="invisible white circle ghost-hover" @click="togglePlaying">
+                    <button class="invisible white circle white-hover" @click="togglePlaying">
                         <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                     </button>
                     <VolumeControl />

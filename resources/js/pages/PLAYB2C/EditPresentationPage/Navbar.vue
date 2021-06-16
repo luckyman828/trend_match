@@ -35,7 +35,7 @@
                         <span>More</span>
                     </button>
                     <button class="pill dark" @click="showPublishModal = true">
-                        <i class="far fa-paper-plane"></i>
+                        <i class="fal fa-paper-plane"></i>
                         <span>Publish</span>
                     </button>
                 </div>

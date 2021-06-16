@@ -21,7 +21,7 @@
                         <i class="fas fa-trash"></i>
                     </button>
                     <button class="circle invisible ghost-hover sm drag-handle" v-if="look.variantMaps.length > 1">
-                        <i class="far fa-grip-vertical"></i>
+                        <i class="fas fa-grip-vertical"></i>
                     </button>
                 </div>
             </div>
