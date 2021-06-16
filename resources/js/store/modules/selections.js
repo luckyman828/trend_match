@@ -1206,10 +1206,8 @@ export default {
                 Object.defineProperty(selection, 'inheritedUsers', {
                     get: () => {
                         if (!selection.users) return []
-                        return selection.users.filter(
-                            user =>
-                                ['Ancestor', 'TeamAncestor'].includes(user.inherit_source) &&
-                                ['None', 'Approval'].includes(user.job)
+                        return selection.users.filter(user =>
+                            ['Ancestor', 'TeamAncestor'].includes(user.inherit_source)
                         )
                     },
                 })

@@ -554,6 +554,9 @@ export default {
     created() {
         this.initData(true)
     },
+    destroyed() {
+        this.$emit('destroyed')
+    },
 }
 </script>
 
