@@ -595,6 +595,7 @@ export default {
                     selection: this.contextSelection,
                     users: usersToAdd.map(user => {
                         user.role = 'Owner'
+                        user.job = 'Alignment'
                         return user
                     }),
                     ignoreRole: false,
