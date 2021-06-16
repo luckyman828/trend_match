@@ -266,9 +266,6 @@ export default {
                 name: 'New selection',
                 type: 'Normal',
                 currency: null,
-                user_count: 0,
-                direct_user_count: 0,
-                inherit_user_count: 0,
                 team_count: 0,
                 children: [],
                 visible_from: null,
@@ -1209,8 +1206,10 @@ export default {
                 Object.defineProperty(selection, 'inheritedUsers', {
                     get: () => {
                         if (!selection.users) return []
-                        return selection.users.filter(user =>
-                            ['Ancestor', 'TeamAncestor'].includes(user.inherit_source)
+                        return selection.users.filter(
+                            user =>
+                                ['Ancestor', 'TeamAncestor'].includes(user.inherit_source) &&
+                                ['None', 'Approval'].includes(user.job)
                         )
                     },
                 })
@@ -1221,6 +1220,15 @@ export default {
                             user => !selection.inheritedUsers.find(inheritedUser => inheritedUser.id == user.id)
                         )
                     },
+                })
+                Object.defineProperty(selection, 'user_count', {
+                    get: () => selection.users.length,
+                })
+                Object.defineProperty(selection, 'direct_user_count', {
+                    get: () => selection.directUsers.length,
+                })
+                Object.defineProperty(selection, 'inherited_user_count', {
+                    get: () => selection.inheritedUsers.length,
                 })
 
                 // Visible
@@ -1514,17 +1522,11 @@ export default {
         },
         setSelectionUsers(state, { selection, users }) {
             Vue.set(selection, 'users', users)
-            Vue.set(selection, 'user_count', users.length)
 
-            Vue.set(selection, 'direct_user_count', selection.directUsers.length)
-            Vue.set(selection, 'inherit_user_count', selection.inheritedUsers.length)
             // Also update the selection if it exists in our state
             const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) {
                 Vue.set(stateSelection, 'users', users)
-                Vue.set(stateSelection, 'user_count', users.length)
-                Vue.set(stateSelection, 'direct_user_count', selection.directUsers.length)
-                Vue.set(stateSelection, 'inherit_user_count', selection.inheritedUsers.length)
             }
         },
         SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive, presentationGroupId }) {

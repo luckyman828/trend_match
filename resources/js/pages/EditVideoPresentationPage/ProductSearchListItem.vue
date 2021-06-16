@@ -55,10 +55,13 @@ export default {
                 id: null,
                 start_at_ms: 0,
                 end_at_ms: this.videoDuration / 12,
-                variants: [product.variants[0]],
+                variants: [this.product.variants[0]],
             }
             this.addTiming({ newTiming })
         },
+    },
+    created() {
+        console.log('created')
     },
 }
 </script>

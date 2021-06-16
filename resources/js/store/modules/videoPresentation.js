@@ -178,6 +178,12 @@ export default {
                     timings: video.timings,
                 })
                 .then(response => {
+                    // Make sure the timings have an ID
+                    if (response.data.timings) {
+                        response.data.timings.map((responseTiming, index) => {
+                            Vue.set(video.timings[index], 'id', responseTiming.id)
+                        })
+                    }
                     commit('SET_STATUS', 'success')
                 })
                 .catch(err => {
