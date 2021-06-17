@@ -131,11 +131,15 @@ export default {
             return !!nextVariants.find(x => x.pictures.find(picture => !!picture.url))
         },
         onResyncBestsellerImages() {
-            const products = this.productsEligibleForResync.map(product =>
+            const products = this.productsEligibleForResync
+            products.map(product =>
                 product.variants.map(variant => {
-                    if (variant.style_option_id) {
+                    if (
+                        variant.style_option_id &&
+                        typeof variant.style_option_id == 'string' &&
+                        variant.style_option_id.search('REF') >= 0
+                    ) {
                         variant.style_option_id = variant.style_option_id.slice(4)
-                        return true
                     }
                 })
             )
