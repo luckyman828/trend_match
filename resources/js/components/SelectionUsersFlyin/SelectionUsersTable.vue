@@ -485,12 +485,12 @@ export default {
             // If so, set the currency for all the selected users
             const usersToUpdate = this.selected.length > 0 ? this.selected : [this.contextUser]
 
-            const updateUserCountOnDescendants = (selection, incrementAmount) => {
-                selection.user_count += incrementAmount
-                selection.children.map(child => {
-                    updateUserCountOnDescendants(child, incrementAmount)
-                })
-            }
+            // const updateUserCountOnDescendants = (selection, incrementAmount) => {
+            //     selection.user_count += incrementAmount
+            //     selection.children.map(child => {
+            //         updateUserCountOnDescendants(child, incrementAmount)
+            //     })
+            // }
 
             const usersToPost = usersToUpdate
                 .filter(user => {
@@ -498,20 +498,20 @@ export default {
                     return true
                 })
                 .map(user => {
-                    const oldJob = user.job
-                    const newJob = baseUser.job
+                    // const oldJob = user.job
+                    // const newJob = baseUser.job
                     // If new job if Approval - add +1 to the user count to all descendant selections
-                    if (newJob == 'Approval' && oldJob != 'Approval') {
-                        this.selection.children.map(child => {
-                            updateUserCountOnDescendants(child, 1)
-                        })
-                    }
+                    // if (newJob == 'Approval' && oldJob != 'Approval') {
+                    //     this.selection.children.map(child => {
+                    //         updateUserCountOnDescendants(child, 1)
+                    //     })
+                    // }
                     // If the old was Approval - subtract -1 from the user count of all descendant selections
-                    if (oldJob == 'Approval' && newJob != 'Approval') {
-                        this.selection.children.map(child => {
-                            updateUserCountOnDescendants(child, -1)
-                        })
-                    }
+                    // if (oldJob == 'Approval' && newJob != 'Approval') {
+                    //     this.selection.children.map(child => {
+                    //         updateUserCountOnDescendants(child, -1)
+                    //     })
+                    // }
 
                     user.job = baseUser.job
                     return user

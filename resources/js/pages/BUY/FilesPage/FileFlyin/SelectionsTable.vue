@@ -742,7 +742,6 @@ export default {
                         : 'New Selection',
                 type,
                 currency: null,
-                user_count: 0,
                 team_count: 0,
                 children: [],
                 visible_from: null,
