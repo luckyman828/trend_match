@@ -476,7 +476,7 @@ export default {
                         .then(response => {
                             // Add the created ID to the products
                             productChunk.map(product => {
-                                product.id = response.data.added_product_id_map[product.datasource_id]
+                                Vue.set(product, 'id', response.data.added_product_id_map[product.datasource_id])
                             })
                             // Start image sync job
                             const syncJobId = response.data.download_image_progress_id
