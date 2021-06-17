@@ -207,16 +207,25 @@ export default {
     },
 
     actions: {
-        async fetchProducts({ rootGetters }, { seasons, brands, progressCallback }) {
+        async fetchProducts({ rootGetters }, { seasons, brands, currencies, progressCallback }) {
             let pageCount = 0
             let pagesProcessed = 0
             let products = []
+
+            console.log('fetch products', currencies)
+
             await Promise.all(
                 await seasons.map(async season => {
                     await Promise.all(
                         await brands.map(async brand => {
                             // first fetch number of pages
-                            const pageApiUrl = `/dkc-adapter/season-products/page-count?season_code=${season.code}&company=${brand.company}&brand=${brand.code}`
+                            const pageApiUrl = `/dkc-adapter/season-products/page-count?season_code=${
+                                season.code
+                            }&company=${brand.company}&brand=${brand.code}${
+                                currencies ? `&cf=${currencies.join('|')}` : ''
+                            }`
+                            console.log('fetch products', currencies, pageApiUrl)
+
                             await axios.get(pageApiUrl).then(response => {
                                 pageCount += response.data.count
                                 if (progressCallback) progressCallback({ total: pageCount, done: pagesProcessed })
@@ -224,7 +233,11 @@ export default {
 
                             for (let pageIndex = 1; pageIndex <= pageCount; pageIndex++) {
                                 // Fetch a page at a time
-                                const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${brand.company}&brand=${brand.code}&page=${pageIndex}`
+                                const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${
+                                    brand.company
+                                }&brand=${brand.code}${
+                                    currencies ? `&cf=${currencies.join('|')}` : ''
+                                }&page=${pageIndex}`
                                 await axios
                                     .get(apiUrl)
                                     .then(response => {
