@@ -45,6 +45,12 @@ export default {
             return getters.currentWorkspace ? getters.currentWorkspace.role : 'Undefined'
         },
         getAuthUserWorkspaceRole: (state, getters) => getters.authUserWorkspaceRole,
+        getAuthUserAppRole: (state, getters, rootState, rootGetters) => {
+            const currentApp = rootGetters['kollektApps/getCurrentApp']
+            if (!getters.getCurrentWorkspace || !currentApp) return
+            const appRole = getters.getCurrentWorkspace.apps.find(app => app.name == currentApp.name)
+            return appRole ? appRole.role : 'None'
+        },
         getRealWorkspaceRole: (state, getters) => {
             if (!getters.currentWorkspace) return 'Undefined'
             return getters.currentWorkspace.role
@@ -309,6 +315,7 @@ export default {
         async initWorkspaces({}, workspaces) {
             workspaces.map(workspace => {
                 if (!workspace.feature_flags) Vue.set(workspace, 'feature_flags', [])
+                if (!workspace.apps) Vue.set(workspace, 'apps', [])
                 // Object.defineProperty(workspace, 'logoUrl', {
                 //     get: function() {
                 //         return `${Vue.$cdnBaseUrl}/workspaces/${workspace.id}/logo.jpg`

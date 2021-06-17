@@ -315,6 +315,11 @@ const routes = [
                 component: () => import(/* webpackChunkName: "playFind" */ './pages/PLAYB2C/FindPage/'),
             },
             {
+                path: 'users',
+                name: 'play.users',
+                component: () => import(/* webpackChunkName: "playFind" */ './pages/PLAYB2C/UsersPage/'),
+            },
+            {
                 path: 'file/:fileId/video',
                 name: 'play.fileVideo',
                 component: () => import(/* webpackChunkName: "playFileVideoPage" */ './pages/PLAYB2C/FileVideoPage/'),
@@ -324,7 +329,7 @@ const routes = [
                 name: 'play.editPresentation',
                 meta: {
                     hideSidebar: true,
-                    noScroll: true
+                    noScroll: true,
                 },
                 component: () =>
                     import(/* webpackChunkName: "playEditPresentationPage" */ './pages/PLAYB2C/EditPresentationPage/'),

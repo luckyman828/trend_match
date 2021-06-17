@@ -2,6 +2,7 @@
     <TheSidebar>
         <template slot="top">
             <SidebarItem label="Find" :to="{ name: 'play.find' }" iconClass="fas fa-folder" />
+            <SidebarItem label="Users" :to="{ name: 'play.users' }" iconClass="fas fa-user" />
         </template>
     </TheSidebar>
 </template>
