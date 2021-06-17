@@ -222,7 +222,7 @@ export default {
                             const pageApiUrl = `/dkc-adapter/season-products/page-count?season_code=${
                                 season.code
                             }&company=${brand.company}&brand=${brand.code}${
-                                currencies ? `&cf=${currencies.join('|')}` : ''
+                                currencies ? `&currency=${currencies.join('|')}` : ''
                             }`
                             console.log('fetch products', currencies, pageApiUrl)
 
@@ -236,7 +236,7 @@ export default {
                                 const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${
                                     brand.company
                                 }&brand=${brand.code}${
-                                    currencies ? `&cf=${currencies.join('|')}` : ''
+                                    currencies ? `&currency=${currencies.join('|')}` : ''
                                 }&page=${pageIndex}`
                                 await axios
                                     .get(apiUrl)
@@ -269,13 +269,13 @@ export default {
             console.log('pnew products', newProducts)
             return newProducts
         },
-        async fetchProductsById({ rootGetters }, { productIds, company, season }) {
+        async fetchProductsById({ rootGetters }, { productIds, company, season, currencies }) {
             let products = []
             await Promise.all(
                 productIds.map(async productId => {
                     const apiUrl = `/dkc-adapter/get-product?product_no=${productId}&company=${company.code}${
                         season ? `&season_code=${season}` : ''
-                    }`
+                    }${currencies ? `&currency=${currencies.join('|')}` : ''}`
                     await axios
                         .get(apiUrl)
                         .then(response => {
@@ -295,13 +295,13 @@ export default {
             const newProducts = await instantiateDKCProducts(products, app)
             return newProducts
         },
-        async fetchProductsByEAN({ rootGetters }, { EANs, company, season }) {
+        async fetchProductsByEAN({ rootGetters }, { EANs, company, season, currencies }) {
             let products = []
             await Promise.all(
                 EANs.map(async ean => {
                     const apiUrl = `/dkc-adapter/find-ean?ean_code=${ean}&company=${company.code}${
                         season ? `&season_code=${season}` : ''
-                    }`
+                    }${currencies ? `&currency=${currencies.join('|')}` : ''}`
                     await axios
                         .get(apiUrl)
                         .then(async response => {
