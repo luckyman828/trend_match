@@ -21,6 +21,7 @@ export default {
         },
         getCurrentPresentationDetails: (state, getters) =>
             state.presentations.find(x => x.id == getters.getCurrentPresentationId),
+        getActivePresentationDetails: (state, getters) => state.activePresentationDetails,
         getCurrentProductId: state =>
             state.activePresentationDetails &&
             state.activePresentationDetails.product &&
@@ -65,6 +66,7 @@ export default {
             })
         },
         async fetchPresentationDetails({ commit }, presentationId) {
+            console.log('fetch presentation details')
             const apiUrl = `presentation/${presentationId}`
             let presentationDetails
             await axios.get(apiUrl).then(response => {
@@ -73,6 +75,7 @@ export default {
                 commit('SET_CURRENT_PRESENTATION_ID', presentationDetails.id)
                 commit('INSERT_PRESENTATION', presentationDetails)
             })
+            console.log('set presentation detail')
             return presentationDetails
         },
     },
