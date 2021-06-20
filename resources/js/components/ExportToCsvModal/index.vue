@@ -401,10 +401,10 @@ export default {
                         )
                         if (this.exportInputLabels) {
                             headers.push(
-                            `${chapterName}${origin.selection.name} - ${
-                                origin.user ? origin.user.name : 'Anonymous'
-                            } (Labels)`
-                        )
+                                `${chapterName}${origin.selection.name} - ${
+                                    origin.user ? origin.user.name : 'Anonymous'
+                                } (Labels)`
+                            )
                         }
                         // if (this.exportQuantity) {
                         //     headers.push(
@@ -486,16 +486,6 @@ export default {
                                     currentRow.push(originAction.labels.join(', '))
                                 }
                             }
-
-                            // if (this.exportQuantity) {
-                            //     if (!originAction) {
-                            //         currentRow.push(...['', ''])
-                            //     } else {
-                            //         const quantity = originAction.quantity ? originAction.quantity : 0
-                            //         currentRow.push(quantity)
-                            //         currentRow.push(quantity * productPriceWhs)
-                            //     }
-                            // }
                         }
 
                         if (this.exportRequests) {
@@ -545,22 +535,12 @@ export default {
                             currentRow.push(originFeedback ? originFeedback.action : 'None')
 
                             if (this.exportInputLabels) {
-                                if (!originAction) {
+                                if (!originFeedback) {
                                     currentRow.push('')
                                 } else {
-                                    currentRow.push(originAction.labels.join(', '))
+                                    currentRow.push(originFeedback.labels.join(', '))
                                 }
                             }
-
-                            // if (this.exportQuantity) {
-                            //     if (!originFeedback) {
-                            //         currentRow.push(...['', ''])
-                            //     } else {
-                            //         const quantity = originFeedback.quantity ? originFeedback.quantity : 0
-                            //         currentRow.push(quantity)
-                            //         currentRow.push(quantity * productPriceWhs)
-                            //     }
-                            // }
                         }
 
                         if (this.exportComments) {
