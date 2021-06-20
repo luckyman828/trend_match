@@ -151,8 +151,9 @@
                         <BaseButtonV2
                             v-if="userHasEditAccess"
                             class="ghost editable sm"
-                            :disabled="true"
+                            :disabled="rowProps.item.job == 'Approval'"
                             disabledTooltip="The Approval job is inherited by selections. To give the user another job, change their job on the master selection first."
+                            @click="showJobContext($event, rowProps.item)"
                         >
                             <span>{{ rowProps.item.job }}</span>
                         </BaseButtonV2>
@@ -448,15 +449,17 @@ export default {
             const contextMenu = this.$refs.contextMenuAddUsers
             contextMenu.show(e)
         },
-        onAddUsersToSelection(usersToAdd) {
-            this.addUsersToSelection({ selection: this.selection, users: usersToAdd })
+        async onAddUsersToSelection(usersToAdd) {
+            await this.addUsersToSelection({ selection: this.selection, users: usersToAdd })
+            this.fetchSelection({ selectionId: this.selection.id, addToState: false })
         },
-        onReAddUsersToSelection(usersToAdd) {
+        async onReAddUsersToSelection(usersToAdd) {
             // this.reAddUsersToSelection({selection: this.selection, users: usersToAdd})
-            this.addUsersToSelection({ selection: this.selection, users: usersToAdd })
+            await this.addUsersToSelection({ selection: this.selection, users: usersToAdd })
             this.selected = []
+            this.fetchSelection({ selectionId: this.selection.id, addToState: false })
         },
-        onUpdateSelectionUsersRole() {
+        async onUpdateSelectionUsersRole() {
             // Define the user to base the new role to set on
             const baseUser = this.userToEdit
             // Check if we have a selection of users
@@ -469,16 +472,17 @@ export default {
                 })
             } else usersToPost = [baseUser]
             // Update users
-            this.updateSelectionUsers({ selection: this.selection, users: usersToPost })
+            await this.updateSelectionUsers({ selection: this.selection, users: usersToPost })
 
             // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
             const authUser = usersToPost.find(x => x.id == this.authUser.id)
             if (authUser) {
                 this.selection.your_role = authUser.role
-                this.UPDATE_SELECTION(this.selection)
+                await this.UPDATE_SELECTION(this.selection)
             }
+            this.fetchSelection({ selectionId: this.selection.id, addToState: false })
         },
-        onUpdateSelectionUsersJob() {
+        async onUpdateSelectionUsersJob() {
             // Define the user to base the new job to set on
             const baseUser = this.userToEdit
             // Check if we have a selection of users
@@ -518,14 +522,15 @@ export default {
                 })
 
             // Update users
-            this.updateSelectionUsers({ selection: this.selection, users: usersToPost })
+            await this.updateSelectionUsers({ selection: this.selection, users: usersToPost })
 
             // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
             const authUser = usersToPost.find(x => x.id == this.authUser.id)
             if (authUser) {
                 this.selection.your_job = authUser.job
-                this.UPDATE_SELECTION(this.selection)
+                await this.UPDATE_SELECTION(this.selection)
             }
+            this.fetchSelection({ selectionId: this.selection.id, addToState: false })
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
@@ -533,7 +538,7 @@ export default {
 
             this.sortArray(this.usersFilteredBySearch, method, key)
         },
-        onRemoveUsers(user) {
+        async onRemoveUsers(user) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed user
             let usersToRemove
@@ -542,8 +547,9 @@ export default {
             } else {
                 usersToRemove = [user]
             }
-            this.removeUsersFromSelection({ selection: this.selection, users: usersToRemove })
+            await this.removeUsersFromSelection({ selection: this.selection, users: usersToRemove })
             this.selected = []
+            this.fetchSelection({ selectionId: this.selection.id, addToState: false })
         },
         onSendSelectionLink(users) {
             // Filter out users whose role is not Member

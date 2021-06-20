@@ -1208,10 +1208,33 @@ export default {
                         let users = []
                         if (!selection.users) return users
                         selection.users.map(user => {
-                            if (
-                                !['Ancestor', 'TeamAncestor'].includes(user.inherit_source) &&
-                                !users.find(x => x.id == user.id)
-                            ) {
+                            // Test if there is an existing user
+                            const existingUser = users.find(x => x.id == user.id)
+                            if (existingUser) {
+                                // Roles
+                                if (user.role == 'Owner') {
+                                    existingUser.role = 'Owner'
+                                }
+                                if (!['Ancestor', 'TeamAncestor'].includes(user.inherit_source)) {
+                                    // Check if the exising ranks higher
+                                    if (!['Approval'].includes(existingUser.job) && ['Approval'].includes(user.job)) {
+                                        existingUser.job = user.job
+                                    }
+                                    if (
+                                        !['Approval', 'Alignment'].includes(existingUser.job) &&
+                                        ['Approval', 'Alignment'].includes(user.job)
+                                    ) {
+                                        existingUser.job = user.job
+                                    }
+                                    if (
+                                        !['Approval', 'Alignment', 'Feedback'].includes(existingUser.job) &&
+                                        ['Approval', 'Alignment', 'Feedback'].includes(user.job)
+                                    ) {
+                                        existingUser.job = user.job
+                                    }
+                                }
+                            }
+                            if (!existingUser) {
                                 users.push(user)
                             }
                         })
