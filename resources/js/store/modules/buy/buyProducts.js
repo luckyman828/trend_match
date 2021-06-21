@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import compareSizes from '../../../helpers/compareSizes'
 
 export default {
     namespaced: true,
@@ -169,7 +170,11 @@ export default {
                                 const assortment = product.assortments.find(
                                     assortment => assortment.name == quantityInput.assortment
                                 )
-                                if (assortment) return assortment.sizes
+                                if (assortment)
+                                    return assortment.sizes.map(assortmentSize => ({
+                                        size: assortmentSize.size,
+                                        quantity: assortmentSize.quantity * assortment.pcs,
+                                    }))
                             }
                             return []
                         },
@@ -352,15 +357,25 @@ export default {
                                     return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
                                 },
                             })
-                            // deliveryObj.getQtyDetail = qtyDetail =>
-                            //     deliveryObj.quantityInputs.find(qtyInput => {
-                            //         if (qtyDetail.deliveryDate && qtyInput.delivery_date != qtyDetail.deliveryDate)
-                            //             return false
-                            //         if (qtyDetail.size && qtyInput.variant_size != qtyDetail.size) return false
-                            //         if (qtyDetail.assortment && qtyInput.assortment != qtyDetail.assortment)
-                            //             return false
-                            //         return true
-                            //     })
+                            Object.defineProperty(deliveryObj, 'sizeQuantities', {
+                                get() {
+                                    return deliveryObj.quantityInputs.reduce((sizeQuantities, quantityInput) => {
+                                        quantityInput.sizes.map(size => {
+                                            const existingSize = sizeQuantities.find(x => x.size == size.size)
+                                            if (existingSize) {
+                                                existingSize.quantity += parseInt(size.quantity)
+                                            } else {
+                                                sizeQuantities.push({
+                                                    size: size.size,
+                                                    quantity: parseInt(size.quantity),
+                                                })
+                                            }
+                                        })
+                                        return sizeQuantities.sort((a, b) => compareSizes(a.size, b.size))
+                                    }, [])
+                                },
+                            })
+
                             return deliveryObj
                         })
                     )

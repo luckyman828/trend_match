@@ -186,7 +186,8 @@ export default {
                                 {
                                     key: 'deliveries',
                                     rowFilters: [],
-                                    children: [{ key: 'quantityInputs', children: [{ key: 'sizes' }] }],
+                                    // children: [{ key: 'quantityInputs', children: [{ key: 'sizes' }] }],
+                                    children: [{ key: 'sizeQuantities' }],
                                 },
                             ],
                         },
@@ -203,10 +204,16 @@ export default {
                         { name: 'Variant Name', key: 'variants.name' },
                         { name: 'Delivery', key: 'variants.deliveries.delivery_date' },
                         { name: 'Delivery Total', key: 'variants.deliveries.quantity' },
-                        { name: 'Size', key: 'variants.deliveries.quantityInputs.sizes.size' },
+                        // { name: 'Size', key: 'variants.deliveries.quantityInputs.sizes.size' },
+                        // {
+                        //     name: 'Size Quantity',
+                        //     key: 'variants.deliveries.quantityInputs.sizes.quantity',
+                        //     filters: [{ values: ['', 0], type: 'exclude' }],
+                        // },
+                        { name: 'Size', key: 'variants.deliveries.sizeQuantities.size' },
                         {
                             name: 'Size Quantity',
-                            key: 'variants.deliveries.quantityInputs.sizes.quantity',
+                            key: 'variants.deliveries.sizeQuantities.quantity',
                             filters: [{ values: ['', 0], type: 'exclude' }],
                         },
                         { name: 'Variant Total', key: 'variants.quantity' },
