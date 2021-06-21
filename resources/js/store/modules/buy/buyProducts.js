@@ -236,6 +236,11 @@ export default {
                             })
                         },
                     })
+                    Object.defineProperty(assortment, 'sizeQuantities', {
+                        get() {
+                            return assortment.sizes
+                        },
+                    })
                     // QTY INPUT
                     Object.defineProperty(assortment, 'quantityInputs', {
                         get() {
@@ -263,6 +268,46 @@ export default {
                                 : Math.round(assortment.quantity / assortment.box_size)
                         },
                     })
+                    Vue.set(
+                        assortment,
+                        'deliveries',
+                        assortment.delivery_dates.map(delivery_date => {
+                            // Instantiate an assortment delivery object
+                            const deliveryObj = { delivery_date }
+                            Object.defineProperty(deliveryObj, 'quantityInputs', {
+                                get() {
+                                    return assortment.quantityInputs.filter(
+                                        input => input.delivery_date == delivery_date
+                                    )
+                                },
+                            })
+                            Object.defineProperty(deliveryObj, 'quantity', {
+                                get() {
+                                    return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                                },
+                            })
+                            Object.defineProperty(deliveryObj, 'sizeQuantities', {
+                                get() {
+                                    return deliveryObj.quantityInputs.reduce((sizeQuantities, quantityInput) => {
+                                        quantityInput.sizes.map(size => {
+                                            const existingSize = sizeQuantities.find(x => x.size == size.size)
+                                            if (existingSize) {
+                                                existingSize.quantity += parseInt(size.quantity)
+                                            } else {
+                                                sizeQuantities.push({
+                                                    size: size.size,
+                                                    quantity: parseInt(size.quantity),
+                                                })
+                                            }
+                                        })
+                                        return sizeQuantities.sort((a, b) => compareSizes(a.size, b.size))
+                                    }, [])
+                                },
+                            })
+
+                            return deliveryObj
+                        })
+                    )
                     // Find a specific qty detail belonging to the assortment
                     assortment.getQtyDetail = qtyDetail =>
                         assortment.quantityInputs.find(qtyInput => {
@@ -375,6 +420,11 @@ export default {
                                     }, [])
                                 },
                             })
+                            // // Attach assortments to the delivery obj
+                            // Vue.set(deliveryObj, 'assortments', () => {
+                            //     // const deliveryObj = { delivery_date }
+                            //     return variant.assortments
+                            // })
 
                             return deliveryObj
                         })

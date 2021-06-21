@@ -32,11 +32,11 @@
                 <div class="size-list flex-list" v-dragscroll v-horizontal-scroll>
                     <div
                         class="size-list-item ui-square white sm flex-list flex-v"
-                        v-for="(sizeObj, index) in assortment.sizes"
+                        v-for="(sizeObj, index) in currentAssortment.sizeQuantities"
                         :key="index"
                     >
                         <div class="size-label ft-10">{{ sizeObj.size }}</div>
-                        <div class="size-label ft-12 ft-bd">{{ sizeObj[qtyKey] }}</div>
+                        <div class="size-label ft-12 ft-bd">{{ sizeObj.quantity }}</div>
                     </div>
                 </div>
 
@@ -113,8 +113,16 @@ export default {
         actionWriteAccess() {
             return this.writeAccess && this.writeAccess.actions
         },
-        qtyKey() {
-            return !this.assortment.quantity || this.showSizes ? 'quantity' : 'currentQuantity'
+        currentAssortment() {
+            return !this.deliveryAssortment.quantity || this.showSizes ? this.assortment : this.deliveryAssortment
+        },
+        deliveryAssortment() {
+            return this.assortment.deliveries.find(delivery => delivery.delivery_date == this.deliveryDate)
+        },
+    },
+    watch: {
+        deliveryDate() {
+            this.localQuantity = this.deliveryAssortment.quantity
         },
     },
     methods: {
@@ -136,8 +144,8 @@ export default {
             // Make sure the new QTY is divisible by the size of it
             if (this.assortment.box_size) {
                 const newQty =
-                    Math.round(this.assortment.quantity / this.assortment.box_size) * this.assortment.box_size
-                if (newQty != this.assortment.quantity) {
+                    Math.round(this.deliveryAssortment.quantity / this.assortment.box_size) * this.assortment.box_size
+                if (newQty != this.deliveryAssortment.quantity) {
                     this.SHOW_SNACKBAR({
                         type: 'info',
                         iconClass: 'far fa-info-circle',
@@ -158,7 +166,7 @@ export default {
             alignment.action = 'In'
             this.variant.selectionAlignment.feedback = 'In'
             this.updateAlignments([alignment])
-            this.localQuantity = this.assortment.quantity
+            this.localQuantity = this.deliveryAssortment.quantity
         },
         onClearQty() {
             this.localQuantity = 0
@@ -186,7 +194,7 @@ export default {
         },
     },
     created() {
-        this.localQuantity = this.assortment.quantity
+        this.localQuantity = this.deliveryAssortment.quantity
     },
 }
 </script>
