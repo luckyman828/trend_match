@@ -1013,6 +1013,7 @@ export default {
                 productIsNew = true
                 const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
                 productToUpload.variants = []
+                delete productToUpload.variantsRaw
                 await this.insertProducts({
                     file: this.currentFile,
                     products: [productToUpload],
