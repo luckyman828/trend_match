@@ -1215,7 +1215,10 @@ export default {
                                 if (user.role == 'Owner') {
                                     existingUser.role = 'Owner'
                                 }
-                                if (!['Ancestor', 'TeamAncestor'].includes(user.inherit_source)) {
+                            }
+                            // Direct users
+                            if (!['Ancestor', 'TeamAncestor'].includes(user.inherit_source)) {
+                                if (existingUser) {
                                     // Check if the exising ranks higher
                                     if (!['Approval'].includes(existingUser.job) && ['Approval'].includes(user.job)) {
                                         existingUser.job = user.job
@@ -1232,10 +1235,9 @@ export default {
                                     ) {
                                         existingUser.job = user.job
                                     }
+                                } else {
+                                    users.push(user)
                                 }
-                            }
-                            if (!existingUser) {
-                                users.push(user)
                             }
                         })
                         return users

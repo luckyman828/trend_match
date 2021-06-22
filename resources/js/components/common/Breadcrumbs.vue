@@ -37,7 +37,10 @@ export default {
         ...mapActions('files', ['setCurrentFolder']),
         onGoToHome() {
             const toName = this.routeRoot ? `${this.routeRoot.name}` : 'files'
-            if (this.$route.name != toName) this.$router.push({ name: toName })
+            const routeName = this.$route.name
+            if (routeName != toName && !(toName == 'select' && routeName == 'files')) {
+                this.$router.push({ name: toName })
+            }
             this.setCurrentFolder(null)
         },
     },
