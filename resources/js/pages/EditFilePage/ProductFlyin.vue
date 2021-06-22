@@ -36,7 +36,12 @@
                                 :class="{ disabled: !saveActive }"
                                 @click="saveActive && onUpdateProduct()"
                             >
-                                <i class="far fa-save"> </i><span>Save</span>
+                                <i class="far fa-save"></i>
+                                <span v-if="!updatingProduct">Save</span>
+                                <template v-else>
+                                    <span>Saving</span>
+                                    <BaseLoader />
+                                </template>
                             </button>
                         </div>
                     </div>
@@ -996,8 +1001,6 @@ export default {
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
-            // Prepare the file to fit the database schema
-            const vm = this
             this.updatingProduct = true
 
             const productToEdit = this.productToEdit
@@ -1035,7 +1038,6 @@ export default {
             let variantError = false
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
-                const editVariant = this.productToEdit.variants[i]
                 for (let i = 0; i < variant.pictures.length; i++) {
                     const picture = variant.pictures[i]
                     if (picture.imageToUpload) {
