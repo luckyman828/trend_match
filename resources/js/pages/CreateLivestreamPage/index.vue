@@ -44,18 +44,33 @@ export default {
         ...mapActions('products', ['fetchProducts']),
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree']),
         ...mapActions('videoPresentation', ['fetchFileVideo']),
+        ...mapActions('presentation', ['fetchPresentationDetails']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
+        ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async fetchData() {
             this.loadingData = true
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
-            this.fetchFile(fileId)
             this.fetchProducts({ fileId })
+            const file = await this.fetchFile(fileId)
             const selections = await this.fetchSelections({ fileId })
             await this.createSelectionTree(selections)
 
-            this.SET_CURRENT_VIDEO(null)
+            const presentationId = this.$route.params.presentationId
+            if (presentationId && file.video_count > 0) {
+                const presentation = await this.fetchPresentationDetails(presentationId)
+                await this.fetchSelectionProducts(presentation.selections[0])
+                this.SET_CURRENT_SELECTIONS([presentation.selections[0]])
+
+                const video = await this.fetchFileVideo(fileId)
+                this.SET_CURRENT_VIDEO(video)
+                this.fetchVideoComments({ video })
+            } else {
+                this.SET_CURRENT_VIDEO(null)
+            }
 
             this.loadingData = false
         },

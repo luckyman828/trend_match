@@ -10,7 +10,7 @@
                         v-model="videoUrl"
                         placeholder="Your video URL"
                         :focusOnMount="true"
-                        @submit="onSetVideoByURL"
+                        @submit="onSetVideoByURL()"
                     />
                     <p class="example">Example: https://vimeo.com/123456789</p>
                 </div>
@@ -73,7 +73,7 @@
 
                 <button
                     class="primary full-width lg"
-                    @click="onSetVideoByURL"
+                    @click="onSetVideoByURL()"
                     :disabled="submitDisabled"
                     disabledTooltip="Please enter a valid URL"
                 >
@@ -136,7 +136,7 @@ export default {
     data: function() {
         return {
             videoUrl: '',
-            editModeActive: true,
+            editModeActive: false,
             selectionToPresentFrom: null,
             selectionsToPresent: [],
         }
@@ -149,7 +149,7 @@ export default {
             currentVideo: 'getCurrentVideo',
         }),
         ...mapGetters('products', {
-            allProducts: ['getProducts'],
+            allProducts: 'getProducts',
         }),
         ...mapGetters('videoPlayer', {
             isDragging: 'getTimelineKnobIsBeingDragged',
@@ -160,8 +160,8 @@ export default {
             selections: 'getSelections',
             availableSelections: 'getSelectionsAvailableForPresentation',
         }),
-        ...mapGetters('products', {
-            allProducts: ['getProducts'],
+        ...mapGetters('presentation', {
+            presentation: 'getActivePresentationDetails',
         }),
         playerReady() {
             return this.provider && this.videoId
@@ -179,7 +179,10 @@ export default {
         async onSetVideoByURL() {
             if (await this.$refs.confirmGoLiveDialog.confirm()) {
                 // Start a presentation with all the selections of the file
-                await this.startPresentation({ selections: this.selectionsToPresent })
+
+                const presentation = await this.startPresentation({ selections: this.selectionsToPresent })
+                this.$router.replace({ path: `${this.$route.path}/${presentation.id}` })
+
                 if (
                     !this.allProducts[0].selectionInputList.find(x => x.selection_id == this.selectionToPresentFrom.id)
                 ) {

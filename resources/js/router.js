@@ -232,7 +232,7 @@ const routes = [
                     import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
             },
             {
-                path: 'file/:fileId/livestream/create',
+                path: 'file/:fileId/livestream/create/:presentationId?',
                 name: 'createLivestream',
                 meta: {
                     root: 'select',

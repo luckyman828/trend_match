@@ -143,6 +143,7 @@ export default {
             }
         },
         async onEndLivestream() {
+            console.log('end the livestream maybe', this.presentationId)
             if (this.presentationId) {
                 // End the current presentation
                 await this.stopPresentation({ presentationId: this.presentationId })
