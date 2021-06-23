@@ -1,6 +1,6 @@
 <template>
     <div class="request-label-list" v-close-popover v-observe-visibility="visibilityChanged">
-        <div class="label-list-item flex-list" @click="removeLabel">
+        <div v-if="!enabledFeatures.force_ticket_labels" class="label-list-item flex-list" @click="removeLabel">
             <span>#0</span>
             <span>Remove label</span>
         </div>
@@ -24,6 +24,9 @@ export default {
     computed: {
         ...mapGetters('requests', {
             availableRequestLabels: 'getAvailableRequestLabels',
+        }),
+        ...mapGetters('workspaces', {
+            enabledFeatures: 'getEnabledFeatures',
         }),
     },
     methods: {
