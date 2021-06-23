@@ -1,5 +1,5 @@
 <template>
-    <div class="selections-table-row">
+    <div class="selections-table-row" :data-selection-name="selection.name">
         <tr
             class="selection bg-theme-white bg-theme-hover"
             :class="[
