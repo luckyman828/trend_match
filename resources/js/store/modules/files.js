@@ -669,6 +669,14 @@ export default {
                         return file.parent.name
                     },
                 })
+                Object.defineProperty(file, 'swipeOnVariants', {
+                    get: function() {
+                        return file.product_display == 'MobileFlattenVariant'
+                    },
+                    set: function(swipeOnVariants) {
+                        file.product_display = swipeOnVariants ? 'MobileFlattenVariant' : 'Normal'
+                    },
+                })
                 Vue.set(file, 'broadcastChannels', [])
                 file.isInitialized = true
                 file.initDone = true
