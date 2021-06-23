@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'requestInputArea',
     props: ['request', 'disabled', 'disabledTooltip', 'selectionInput', 'selectOnActivate'],
@@ -85,6 +85,9 @@ export default {
         ...mapGetters('selections', {
             ticketModeActive: 'getTicketModeActive',
         }),
+        ...mapGetters('workspaces', {
+            enabledFeatures: 'getFeatureFlags',
+        }),
         labelsFiltered() {
             // Get the current label string
             const requestContent = this.request.content
@@ -102,6 +105,7 @@ export default {
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onShowLabelList(e) {
             this.showLabelList = true
         },
@@ -116,12 +120,17 @@ export default {
             const requestContent = this.request.content
             const labelRegex = new RegExp(/#[^ ]*/)
             const labelStringMatches = labelRegex.exec(requestContent)
-            const stringStart = requestContent.slice(0, labelStringMatches.index)
-            const stringEnd = requestContent.slice(labelStringMatches.index + labelStringMatches[0].length)
-            this.request.content = stringStart + stringEnd
+            if (labelStringMatches) {
+                const stringStart = requestContent.slice(0, labelStringMatches.index)
+                const stringEnd = requestContent.slice(labelStringMatches.index + labelStringMatches[0].length)
+                this.request.content = stringStart + stringEnd
+            }
 
             // Hide the label list
             this.showLabelList = false
+            this.$nextTick(() => {
+                this.$refs.requestField.resize()
+            })
         },
         removeLabel(index) {
             this.request.labels.splice(index, 1)
@@ -179,6 +188,13 @@ export default {
         },
         async onSubmit(e) {
             if (e) e.preventDefault()
+            console.log(this.enabledFeatures, this.request.labels)
+            if (this.enabledFeatures.includes('force_ticket_labels') && this.request.labels.length <= 0) {
+                console.log('no labels. Cancelling')
+                // this.SHOW_SNACKBAR({ msg: 'Please add a label before posting.', type: 'info' })
+                this.onShowLabelList()
+                return
+            }
             if (this.submitDisabled) return
 
             // Set submitting to true
@@ -211,6 +227,9 @@ export default {
             this.writeActive = false
             document.activeElement.blur()
         },
+    },
+    created() {
+        console.log('created')
     },
 }
 </script>
