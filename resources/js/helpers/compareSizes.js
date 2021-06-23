@@ -1,6 +1,6 @@
 export default (sizeA, sizeB) => {
     const isNumerical = isFinite(sizeA)
-    if (isNumerical) return parseInt(b) - parseInt(a)
+    if (isNumerical) return parseInt(sizeB) - parseInt(sizeA)
 
     // Alphanumeric
     const aCode = sizeA.toLowerCase()
