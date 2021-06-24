@@ -211,7 +211,10 @@ export default {
         ...mapGetters('selections', {
             quantityEnabled: 'getQuantityModeActive',
         }),
-        ...mapGetters('products', ['productsFiltered', 'getSelectedProducts', 'getCurrentViewProductsFiltered']),
+        ...mapGetters('selectionProducts', {
+            products: 'getProducts',
+        }),
+        ...mapGetters('products', ['getFilteredProducts', 'getSelectedProducts', 'getCurrentViewProductsFiltered']),
         ...mapGetters('productFilters', ['getFilterSelectionIds']),
         ...mapGetters('selectionProducts', ['getSelections']),
         ...mapGetters('files', ['currentFile']),
@@ -222,6 +225,9 @@ export default {
                 ? this.productsFiltered
                 : this.getCurrentViewProductsFiltered
             return products
+        },
+        productsFiltered() {
+            return this.getFilteredProducts(this.products)
         },
         selectionsToExport() {
             if (this.getFilterSelectionIds.length <= 0) return this.getSelections
