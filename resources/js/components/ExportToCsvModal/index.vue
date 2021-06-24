@@ -269,9 +269,7 @@ export default {
             }
             if (this.exportType == 'dump') {
                 this.exportTemplate = this.generateCsvDumpTemplate()
-                // console.log('Dump template', this.exportTemplate)
                 this.exportCSVByTemplate()
-                // this.exportCsvDump()
                 return
             }
             // START HEADERS
