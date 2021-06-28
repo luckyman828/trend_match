@@ -72,8 +72,31 @@ export default {
                 })
             return products
         },
+        async updateQuantity({ dispatch }, { alignment, variantId, deliveryDate, size, assortment, quantity }) {
+            if (!alignment) return
+            const existingQuantityDetail = alignment.quantity_details.find(detail => {
+                if (variantId && detail.variant_id != variantId) return false
+                if (deliveryDate && detail.delivery_date != deliveryDate) return false
+                if (size && detail.variant_size != size) return false
+                if (assortment && detail.assortment != assortment) return false
+                return true
+            })
+            if (existingQuantityDetail) {
+                existingQuantityDetail.quantity = quantity
+            } else {
+                const newQuantityInput = {
+                    variant_id: variantId,
+                    delivery_date: deliveryDate,
+                    variant_size: size,
+                    assortment,
+                    quantity,
+                }
+                await dispatch('initQuantityInputs', { quantityInputs: [newQuantityInput], product: alignment.product })
+                alignment.quantity_details.push(newQuantityInput)
+            }
+        },
         async initProducts({ getters, dispatch, rootGetters }, { products, selectionId }) {
-            products.map(product => {
+            products.map(async product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
 
@@ -90,6 +113,8 @@ export default {
 
                 // Custom Props
                 if (!product.extra_data) Vue.set(product, 'extra_data', {})
+
+                Vue.set(product, 'currentDeliveryDate', product.delivery_dates[0])
 
                 // ---- START PRICES ----
                 // Currency
@@ -160,26 +185,7 @@ export default {
                     },
                 })
 
-                // Work quantity inputs
-                product.quantityInputs.map(quantityInput => {
-                    Object.defineProperty(quantityInput, 'sizes', {
-                        get() {
-                            if (quantityInput.variant_size)
-                                return [{ size: quantityInput.variant_size, quantity: quantityInput.quantity }]
-                            if (quantityInput.assortment) {
-                                const assortment = product.assortments.find(
-                                    assortment => assortment.name == quantityInput.assortment
-                                )
-                                if (assortment)
-                                    return assortment.sizes.map(assortmentSize => ({
-                                        size: assortmentSize.size,
-                                        quantity: assortmentSize.quantity * assortment.pcs,
-                                    }))
-                            }
-                            return []
-                        },
-                    })
-                })
+                await dispatch('initQuantityInputs', { quantityInputs: product.quantityInputs, product })
 
                 product.alignments.map(alignment => {
                     // Add default variant action to alignments
@@ -474,6 +480,28 @@ export default {
                 Object.defineProperty(product, 'product_id', {
                     get() {
                         return product.id
+                    },
+                })
+            })
+        },
+        async initQuantityInputs({}, { quantityInputs, product }) {
+            // Work quantity inputs
+            quantityInputs.map(quantityInput => {
+                Object.defineProperty(quantityInput, 'sizes', {
+                    get() {
+                        if (quantityInput.variant_size)
+                            return [{ size: quantityInput.variant_size, quantity: quantityInput.quantity }]
+                        if (quantityInput.assortment) {
+                            const assortment = product.assortments.find(
+                                assortment => assortment.name == quantityInput.assortment
+                            )
+                            if (assortment)
+                                return assortment.sizes.map(assortmentSize => ({
+                                    size: assortmentSize.size,
+                                    quantity: assortmentSize.quantity * assortment.pcs,
+                                }))
+                        }
+                        return []
                     },
                 })
             })

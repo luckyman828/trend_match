@@ -46,8 +46,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import { getWeightedSplit } from '../../../../helpers/sizeSplit'
 import variantImage from '../../../../mixins/variantImage'
 import { getVariantBackgroundStyle } from '../../../../helpers/dkcIntegration'
-import generateAssortmentCombinations from '../../../../helpers/generateAssortmentCombinations'
-import findBestAssortmentCombination from '../../../../helpers/findBestAssortmentCombination'
+import findBestAssortmentCombination from '../../../../helpers/findBestAssortmentCombinationDiffMinimize'
 import dkcSizeSplit from '../../../../assets/dkc/sizeSplit.json'
 
 export default {
@@ -109,9 +108,19 @@ export default {
             }
             return { name: 'no weights found', weights: [] }
         },
+        variantQuantity() {
+            return this.variant.quantity
+        },
+    },
+    watch: {
+        variantQuantity(newVal) {
+            console.log('new quantiy')
+            this.localQuantity = newVal
+        },
     },
     methods: {
-        ...mapMutations('products', ['SET_QUANTITY']),
+        ...mapActions('buyProducts', ['updateQuantity']),
+        ...mapActions('actions', ['updateAlignments']),
         onEnter() {
             document.activeElement.blur()
         },
@@ -132,11 +141,10 @@ export default {
                 precision,
                 attemptCount
             )
-
-            if (!result.combination) console.log('result', result, 'desired sizesplit', sizeSplit)
+            if (!result.combination) return
 
             // Loop through the assortments in the generated combination and set their quantities
-            Object.keys(result.combination).map(assortmentName => {
+            for (const assortmentName of Object.keys(result.combination)) {
                 // Find the assortment
                 const assortment = this.variant.assortments.find(assortment => assortment.name == assortmentName)
                 if (!assortment) {
@@ -145,81 +153,19 @@ export default {
                 }
                 const pcs = result.combination[assortmentName]
                 const newQty = parseInt(assortment.box_size) * pcs
-                this.SET_QUANTITY({
+                await this.updateQuantity({
                     alignment: this.variant.selectionAlignment.productAlignment,
                     variantId: this.variant.id,
                     assortment: assortment.name,
-                    deliveryDate: this.variant.delivery_dates[0],
+                    deliveryDate: this.variant.product.currentDeliveryDate,
                     quantity: newQty,
                 })
-            })
-
-            // // Generate assortments combinations
-            // const precision = 5
-            // console.log('size split', sizeSplit)
-            // const combinations = generateAssortmentCombinations(this.variant.assortments, newQty, precision)
-            // console.log('combinations', combinations)
-
-            // // Find the best combination
-            // const result = combinations.reduce(
-            //     (best, current) => {
-            //         const currentSizeSplit = {}
-            //         let boxCount = 0
-            //         // Calculate the sizesplit of the combination
-            //         Object.keys(current).map(assortmentName => {
-            //             // Find the assortment
-            //             const assortment = this.variant.assortments.find(
-            //                 assortment => assortment.name == assortmentName
-            //             )
-            //             if (!assortment) {
-            //                 console.log('something has gone wrong')
-            //                 return
-            //             }
-            //             const pcs = current[assortmentName]
-            //             // Count how many assortments are in the combination
-            //             boxCount += pcs
-
-            //             // Add the size split contribution from this assortment
-            //             assortment.sizeQuantities.map(sizeQuantity => {
-            //                 // check if we have already added this size to our current size split
-            //                 const alreadyAdded = currentSizeSplit[sizeQuantity.size] != null
-            //                 if (alreadyAdded) {
-            //                     currentSizeSplit[sizeQuantity.size] += parseInt(sizeQuantity.quantity * pcs)
-            //                 } else {
-            //                     currentSizeSplit[sizeQuantity.size] = parseInt(sizeQuantity.quantity * pcs)
-            //                 }
-            //             })
-            //         })
-
-            //         // Calculate the total difference between the desired sizesplit and the actual
-            //         let diff = 0
-            //         for (const currentSizeName of Object.keys(currentSizeSplit)) {
-            //             const matchingSize = sizeSplit.find(x => x.name == currentSizeName)
-            //             const desiredQuantity = matchingSize ? matchingSize.qty : 0
-            //             diff += Math.abs(currentSizeSplit[currentSizeName] - desiredQuantity)
-            //         }
-
-            //         // Test if the current combination is better than the current best
-            //         if (diff < best.diff || (diff == best.diff && boxCount < best.boxCount)) {
-            //             return { diff, boxCount, combination: current }
-            //         } else {
-            //             return best
-            //         }
-            //     },
-            //     { diff: 999, boxCount: 999, combination: null }
-            // )
-
-            // console.log('result', result)
-
-            // sizeSplit.map(sizeObj => {
-            //     this.SET_QUANTITY({
-            //         alignment: this.variant.selectionAlignment.productAlignment,
-            //         variantId: this.variant.id,
-            //         size: sizeObj.name,
-            //         deliveryDate: this.varaint.delivery_dates[0],
-            //         quantity: sizeObj.qty,
-            //     })
-            // })
+            }
+            if (!this.variant.selectionAlignment) return
+            const alignment = this.variant.selectionAlignment.productAlignment
+            alignment.action = 'In'
+            this.variant.selectionAlignment.feedback = 'In'
+            this.updateAlignments([alignment])
         },
     },
     created() {
