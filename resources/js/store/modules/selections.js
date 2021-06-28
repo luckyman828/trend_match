@@ -266,6 +266,8 @@ export default {
                 name: 'New selection',
                 type: 'Normal',
                 currency: null,
+                users: [],
+                teams: [],
                 team_count: 0,
                 children: [],
                 visible_from: null,

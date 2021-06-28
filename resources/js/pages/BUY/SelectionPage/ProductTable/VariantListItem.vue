@@ -9,6 +9,16 @@
                 <div class="size-list flex-list">
                     <div
                         class="size-list-item ui-square white sm flex-list flex-v"
+                        v-tooltip="{
+                            content:
+                                sizeWeights &&
+                                `${sizeWeights.name}<br>Weight: ${
+                                    sizeWeights.weights.find(x => x.name == sizeObj.size)
+                                        ? sizeWeights.weights.find(x => x.name == sizeObj.size).weight
+                                        : 'not found'
+                                }`,
+                            delay: { show: 500 },
+                        }"
                         v-for="(sizeObj, index) in variant.sizes"
                         :key="index"
                     >

@@ -493,7 +493,9 @@ export default {
                             return [{ size: quantityInput.variant_size, quantity: quantityInput.quantity }]
                         if (quantityInput.assortment) {
                             const assortment = product.assortments.find(
-                                assortment => assortment.name == quantityInput.assortment
+                                assortment =>
+                                    assortment.name == quantityInput.assortment &&
+                                    assortment.variant_ids.includes(quantityInput.variant_id)
                             )
                             if (assortment)
                                 return assortment.sizes.map(assortmentSize => ({
