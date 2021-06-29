@@ -40,10 +40,15 @@
                     <div class="flex-list flex-v space-sm">
                         <div class="ft-12 ft-color-soft ft-md">Size</div>
                         <div class="square color">
-                            <span class="ft-bd">{{ item.size }}</span>
+                            <span class="ft-bd">{{ item.sizeDetail.size }}</span>
                         </div>
                     </div>
-                    <ChooseSizePopover slot="popover" :variant="item.variant" ref="sizeSelector" v-model="item.size" />
+                    <ChooseSizePopover
+                        slot="popover"
+                        :variant="item.variant"
+                        ref="sizeSelector"
+                        v-model="item.sizeDetail"
+                    />
                 </v-popover>
             </div>
 

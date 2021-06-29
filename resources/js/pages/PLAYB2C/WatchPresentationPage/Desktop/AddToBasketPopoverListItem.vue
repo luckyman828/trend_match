@@ -31,16 +31,16 @@
                 <v-popover trigger="click">
                     <button class="dark ghost full-width pill sm">
                         <i class="far fa-ruler"></i>
-                        <span v-if="selectedSize">Size: {{ selectedSize }}</span>
+                        <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
                         <span v-else>Choose size</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <ChooseSizePopover slot="popover" :variant="variant" v-model="selectedSize" />
+                    <ChooseSizePopover slot="popover" :variant="variant" v-model="selectedSizeDetail" />
                 </v-popover>
                 <AddToBasketButton
                     buttonClass="pill sm w-lg"
                     :variant="variant"
-                    :size="selectedSize"
+                    :sizeDetail="selectedSizeDetail"
                     textStyle="short"
                 />
             </div>
@@ -58,7 +58,7 @@ export default {
     props: ['variant'],
     data() {
         return {
-            selectedSize: this.variant.ean_sizes[0].size,
+            selectedSizeDetail: this.variant.ean_sizes[0],
         }
     },
 }

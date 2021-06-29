@@ -38,7 +38,7 @@
                 <div class="ui-square size-square">
                     <div class="flex-list flex-v xs">
                         <label>Size</label>
-                        <div class="ft-bd ft-12">{{ item.size }}</div>
+                        <div class="ft-bd ft-12">{{ item.sizeDetail.size }}</div>
                     </div>
                 </div>
                 <div class="ui-square flex-list justify quantity-selector pos-bot-right pad-sm">

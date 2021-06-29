@@ -7,7 +7,6 @@
         :submitOnChange="true"
         :options="variant.ean_sizes"
         optionNameKey="size"
-        optionValueKey="size"
         v-model="selectedSize"
         @change="onChangeSize"
     />

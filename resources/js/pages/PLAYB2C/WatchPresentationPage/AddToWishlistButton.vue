@@ -1,5 +1,9 @@
 <template>
-    <button class="add-to-wishlist" :class="isInWishlist ? 'active red' : 'white'" @click="onAddToWishlist">
+    <button
+        class="add-to-wishlist"
+        :class="isInWishlist ? 'active red' : theme != 'invisible' && 'white'"
+        @click="onAddToWishlist"
+    >
         <i class="fa-heart ft-12" style="margin-top: 1px;" :class="isInWishlist ? 'fas' : 'far'"></i>
     </button>
 </template>
@@ -8,7 +12,7 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'addToWishlistButton',
-    props: ['variants'],
+    props: ['variants', 'theme'],
     computed: {
         ...mapGetters('wishlist', {
             getVariantIsInWishlist: 'getVariantIsInWishlist',

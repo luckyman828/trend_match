@@ -593,7 +593,7 @@ export default {
                 color: null,
                 variant: null,
                 delivery_dates: [],
-                ean_sizes: [],
+                ean_sizes: [], // {ean, quantity, ref_id, size}
                 extra_data: {},
                 min_order: null,
                 labels: [],

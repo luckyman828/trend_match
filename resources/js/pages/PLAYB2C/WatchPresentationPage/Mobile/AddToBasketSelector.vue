@@ -10,7 +10,7 @@
             <v-popover trigger="click" ref="sizePopover" class="size-button">
                 <button class="pill lg white full-width">
                     <i class="far fa-ruler"></i>
-                    <span v-if="selectedSize">Size: {{ selectedSize }}</span>
+                    <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
                     <span v-else>Choose size</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -23,14 +23,14 @@
                     :options="item.ean_sizes"
                     optionNameKey="size"
                     optionValueKey="size"
-                    v-model="selectedSize"
+                    v-model="selectedSizeDetail"
                     @change="onChangeSize"
                 />
             </v-popover>
             <BaseButton
                 class="full-width add-button"
                 buttonClass="dark pill lg full-width"
-                :disabled="!selectedSize"
+                :disabled="!selectedSizeDetail"
                 @click="onAddToBasket"
             >
                 <i class="far fa-shopping-bag"></i>
@@ -50,25 +50,25 @@ export default {
     props: ['item', 'show', 'hideWishlist', 'autoHide'],
     data() {
         return {
-            selectedSize: null,
+            selectedSizeDetail: null,
         }
     },
     methods: {
         ...mapActions('basket', ['addToBasket']),
         onAddToBasket() {
-            this.addToBasket({ variant: this.item, size: this.selectedSize })
+            this.addToBasket({ variant: this.item, sizeDetail: this.selectedSizeDetail })
             this.onHide()
         },
         onHide() {
-            this.selectedSize = null
+            this.selectedSizeDetail = null
             this.$emit('hide')
         },
         onClickOutside() {
             if (!this.autoHide) return
             this.onHide()
         },
-        onChangeSize(size) {
-            this.selectedSize = size
+        onChangeSize(sizeDetail) {
+            this.selectedSizeDetail = sizeDetail
             this.$nextTick(() => {
                 this.$refs.sizePopover.hide()
             })

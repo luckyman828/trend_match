@@ -1,18 +1,18 @@
 <template>
     <div class="add-to-basket-selector flex-list bg-blur">
-        <AddToWishlistButton class="white circle" :variants="[variant]" />
+        <AddToWishlistButton class="circle" :variants="[variant]" />
         <div class="flex-list justify equal-width flex-1">
             <v-popover trigger="click" class="size-button">
                 <button class="white full-width pill">
                     <i class="far fa-ruler"></i>
-                    <span v-if="selectedSize">Size: {{ selectedSize }}</span>
+                    <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
                     <span v-else>Choose size</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <ChooseSizePopover
                     slot="popover"
                     class="size-selector"
-                    v-model="selectedSize"
+                    v-model="selectedSizeDetail"
                     :variant="variant"
                     ref="sizeSelector"
                 />
@@ -23,7 +23,7 @@
                 :variant="variant"
                 baseClass="white"
                 buttonClass="pill full-width"
-                :size.sync="selectedSize"
+                :sizeDetail.sync="selectedSizeDetail"
                 @submit="onAddToBasket"
             />
         </div>
@@ -42,7 +42,7 @@ export default {
     props: ['variant', 'show', 'hideWishlist', 'autoHide'],
     data() {
         return {
-            selectedSize: null,
+            selectedSizeDetail: null,
         }
     },
     computed: {
@@ -85,8 +85,8 @@ export default {
             // Preset the size that is in the basket
             const itemInBasket = this.basket.find(item => item.variant.id == this.variant.id)
             if (itemInBasket) {
-                this.selectedSize = itemInBasket.size
-                this.$refs.sizeSelector.selectedSize = itemInBasket.size
+                this.selectedSizeDetail = itemInBasket.selectedSizeDetail
+                this.$refs.sizeSelector.selectedSizeDetail = itemInBasket.selectedSizeDetail
             }
         },
     },

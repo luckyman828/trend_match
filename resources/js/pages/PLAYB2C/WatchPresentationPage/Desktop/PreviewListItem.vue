@@ -15,7 +15,11 @@
             </div>
         </div>
         <div class="action-list flex-list space-xs" slot="popover">
-            <AddToWishlistButton :variants="[variant]" class="invisible true-square float-icon-hover" />
+            <AddToWishlistButton
+                :variants="[variant]"
+                class="invisible true-square float-icon-hover"
+                theme="invisible"
+            />
             <AddToBasketButton
                 :variant="variant"
                 textStyle="none"

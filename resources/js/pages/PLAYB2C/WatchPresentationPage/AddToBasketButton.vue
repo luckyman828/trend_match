@@ -1,5 +1,5 @@
 <template>
-    <v-popover trigger="click" :disabled="!variant || !!variantAddedToBasket || !!size">
+    <v-popover trigger="click" :disabled="!variant || !!variantAddedToBasket || !!sizeDetail">
         <BaseStateAlternatingButton
             :buttonClass="[buttonClass, variantAddedToBasket && 'active']"
             :active="variantAddedToBasket"
@@ -23,7 +23,7 @@
             :disabled="!variant"
             @click="
                 localVariant = variant
-                variantAddedToBasket ? onRemoveFromBasket(localVariant) : size && onAddToBasket(size)
+                variantAddedToBasket ? onRemoveFromBasket(localVariant) : sizeDetail && onAddToBasket(sizeDetail)
             "
         />
         <ChooseSizePopover slot="popover" :variant="localVariant" ref="sizeSelector" @submit="onAddToBasket" />
@@ -44,7 +44,7 @@ export default {
         'baseClass',
         'activeClass',
         'activeHoverClass',
-        'size',
+        'sizeDetail',
         'resetOnSubmit',
     ],
     data() {
@@ -59,23 +59,26 @@ export default {
         }),
         variantAddedToBasket() {
             if (!this.variant) return false
-            return this.getItemIsInBasket({ variant: this.variant, size: this.size })
+            return this.getItemIsInBasket({
+                variant: this.variant,
+                sizeDetail: this.sizeDetail,
+            })
         },
     },
     methods: {
         ...mapActions('basket', ['addToBasket', 'removeFromBasket']),
-        onAddToBasket(size) {
-            this.addToBasket({ variant: this.localVariant, size })
+        onAddToBasket(sizeDetail) {
+            this.addToBasket({ variant: this.localVariant, sizeDetail })
             if (this.resetOnSubmit) {
                 this.$refs.sizeSelector.reset()
             }
-            this.$emit('update:size', size)
+            this.$emit('update:sizeDetail', sizeDetail)
             this.$emit('submit')
         },
         onRemoveFromBasket(variant) {
             // Use a timeout here to avoid this event from triggering the popover
             setTimeout(() => {
-                this.removeFromBasket({ variant, size: this.size })
+                this.removeFromBasket({ variant, sizeDetail: this.sizeDetail })
                 if (this.resetOnSubmit) {
                     this.$refs.sizeSelector.reset()
                 }
