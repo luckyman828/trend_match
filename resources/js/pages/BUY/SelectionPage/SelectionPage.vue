@@ -1,37 +1,41 @@
 <template>
     <div class="selection-page">
         <!-- Access denied -->
-        <template v-if="!selection.your_role">
+        <template v-if="!selection.your_job || selection.your_job == 'None'">
             <p>You don't have access to this selection</p>
             <div class="admin-action-list flex-list" v-if="authUserWorkspaceRole == 'Admin'">
-                <button class="primary ghost" @click="onJoinSelection('Owner')">
+                <button class="primary ghost" @click="onJoinSelection('Feedback')">
                     <i class="far fa-user-shield"></i>
-                    <span>Join as Owner</span>
+                    <span>Join Feedback</span>
                 </button>
-                <button class="primary ghost" @click="onJoinSelection('Member')">
+                <button class="primary ghost" @click="onJoinSelection('Alignment')">
                     <i class="far fa-user-plus"></i>
-                    <span>Join as Member</span>
+                    <span>Join Alignment</span>
+                </button>
+                <button v-if="selection.type == 'Master'" class="primary ghost" @click="onJoinSelection('Approval')">
+                    <i class="far fa-user-plus"></i>
+                    <span>Join Approval</span>
                 </button>
             </div>
 
             <template v-if="getIsSystemAdmin">
                 <h3>System Admin: View as</h3>
                 <div class="admin-action-list flex-list">
-                    <button class="primary ghost" @click="onViewSelectionAsRole('Owner')">
+                    <button class="primary ghost" @click="onViewSelectionAsJob('Alignment')">
                         <i class="far fa-user-shield"></i>
-                        <span>View as Owner</span>
+                        <span>View as Alignment</span>
                     </button>
-                    <button class="primary ghost" @click="onViewSelectionAsRole('Member')">
+                    <button class="primary ghost" @click="onViewSelectionAsJob('Feedback')">
                         <i class="far fa-user"></i>
-                        <span>View as Member</span>
+                        <span>View as Feedback</span>
                     </button>
                     <button
                         class="primary ghost"
                         v-if="selection.type == 'Master'"
-                        @click="onViewSelectionAsRole('Approver')"
+                        @click="onViewSelectionAsJob('Approval')"
                     >
                         <i class="far fa-user-clock"></i>
-                        <span>View as Approver</span>
+                        <span>View as Approval</span>
                     </button>
                 </div>
             </template>
@@ -75,7 +79,7 @@ export default {
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
-            currentSelectionRealRole: 'getCurrentSelectionRealRole',
+            currentSelectionRealJob: 'getCurrentSelectionRealJob',
         }),
         ...mapGetters('auth', ['authUser', 'getIsSystemAdmin']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
@@ -86,14 +90,15 @@ export default {
         ...mapActions('actions', ['initActions', 'insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         ...mapActions('comments', ['initComments']),
         ...mapActions('selections', ['addUsersToSelection']),
-        ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
-        onViewSelectionAsRole(role) {
-            this.SET_CURRENT_SELECTION_REAL_ROLE(this.selection.your_role)
-            this.selection.your_role = role
+        ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_JOB']),
+        onViewSelectionAsJob(job) {
+            this.SET_CURRENT_SELECTION_REAL_JOB(this.selection.your_job)
+            this.selection.your_job = job
         },
-        async onJoinSelection(role) {
+        async onJoinSelection(job) {
             const user = JSON.parse(JSON.stringify(this.authUser))
-            user.role = role
+            user.job = job
+            user.role = 'Member'
             await this.addUsersToSelection({ selection: this.selection, users: [user], ignoreRole: false })
             this.$router.go()
         },
@@ -160,7 +165,7 @@ export default {
     },
     destroyed() {
         this.disconnectSignalR()
-        if (this.currentSelectionRealRole) this.onViewSelectionAsRole(this.currentSelectionRealRole)
+        if (this.currentSelectionRealRole) this.onViewSelectionAsJob(this.currentSelectionRealJob)
     },
 }
 </script>

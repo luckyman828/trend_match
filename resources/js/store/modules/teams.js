@@ -21,10 +21,6 @@ export default {
                 description:
                     'The owner aligns selections and can make requests. Also manages the team and can add/remove users',
             },
-            {
-                role: 'Approver',
-                description: 'Replies to requests',
-            },
         ],
         workspaceFetchedFromId: null,
     },
@@ -210,11 +206,12 @@ export default {
             const usersCopy = JSON.parse(JSON.stringify(users))
             const usersToPush = usersCopy.map(x => {
                 x.role = 'Member'
+                x.job = 'Feedback'
                 return x
             })
             // Format our users for our request body
             const usersToPost = users.map(user => {
-                return { id: user.id, role: 'Member' }
+                return { id: user.id, role: 'Member', job: 'Feedback' }
             })
 
             let success

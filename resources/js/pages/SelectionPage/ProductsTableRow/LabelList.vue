@@ -6,6 +6,7 @@
                 { 'primary-hover': hasWriteAccess },
                 { own: product.yourLabels.includes(labelInput.label) },
                 product.yourLabels.includes(labelInput.label) ? 'dark' : '',
+                { disabled: !hasWriteAccess },
             ]"
             v-for="labelInput in product.labelInput"
             :key="labelInput.label"
@@ -96,7 +97,7 @@ export default {
         },
         hasWriteAccess() {
             const userWriteAccess = this.getUserWriteAccess(this.selection, this.product)
-            return userWriteAccess && userWriteAccess.actions
+            return userWriteAccess && userWriteAccess.actions.hasAccess
         },
     },
     methods: {
@@ -110,6 +111,7 @@ export default {
             return this.availableLabels.indexOf(label)
         },
         toggleVote(label) {
+            if (!this.hasWriteAccess) return
             const labelIndex = this.product.yourLabels.findIndex(yourLabel => yourLabel == label)
             if (labelIndex < 0) {
                 this.product.yourLabels.push(label)

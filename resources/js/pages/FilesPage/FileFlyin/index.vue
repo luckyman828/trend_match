@@ -80,12 +80,12 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin" />
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin" ref="selectionsTable" />
 
                 <SelectionUsersFlyin
                     :selection="currentSelection"
                     :show="SelectionUsersFlyinVisible"
-                    @close="SelectionUsersFlyinVisible = false"
+                    @close="onCloseSelectionUsersFlyin"
                 />
             </div>
 
@@ -148,6 +148,10 @@ export default {
         showSelectionUsersFlyin(selection) {
             this.SET_CURRENT_SELECTIONS([selection])
             this.SelectionUsersFlyinVisible = true
+        },
+        onCloseSelectionUsersFlyin() {
+            this.SelectionUsersFlyinVisible = false
+            this.$refs.selectionsTable.initData(true)
         },
         showEditorsFlyin() {
             this.showFileEditorsFlyin = true

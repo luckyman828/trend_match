@@ -52,7 +52,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile']),
+        ...mapActions('files', ['insertOrUpdateFile', 'instantiateBaseFile']),
         ...mapMutations('files', ['INSERT_FILE', 'SET_VIEW_NEW_FILE']),
         async onSubmit() {
             const newFile = await this.onNewFile()
@@ -63,13 +63,11 @@ export default {
             }
         },
         async onNewFile() {
-            const newFile = {
-                id: 0,
-                name: this.fileName.length > 0 ? this.fileName : 'New file',
-                type: 'File',
-                parent_id: this.folder ? this.folder.id : 0,
-                workspace_id: this.workspace.id,
-            }
+            const newFile = await this.instantiateBaseFile()
+            newFile.id = 0
+            newFile.name = this.fileName.length > 0 ? this.fileName : 'New file'
+            newFile.parent_id = this.folder ? this.folder.id : 0
+
             await this.insertOrUpdateFile({ file: newFile })
             this.fileName = ''
             return newFile

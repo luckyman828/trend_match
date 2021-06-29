@@ -162,9 +162,9 @@ export default {
         hasTicketControl() {
             if (this.request.product.is_completed) return false
             return (
-                ['Owner', 'Approver'].includes(this.request.selection.your_role) ||
-                this.getCurrentSelection.your_role == 'Approver' ||
-                (this.getCurrentSelection.type == 'Master' && this.getCurrentSelection.your_role == 'Owner')
+                ['Alignment', 'Approval'].includes(this.request.selection.your_job) ||
+                this.getCurrentSelection.your_job == 'Approval' ||
+                (this.getCurrentSelection.type == 'Master' && this.getCurrentSelection.your_job == 'Alignment')
             )
         },
     },

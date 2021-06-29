@@ -25,7 +25,7 @@
                 </BaseButton>
                 <BaseButton
                     v-else
-                    class="stop-current"
+                    class="stop-current true-square"
                     buttonClass="square primary"
                     targetAreaPadding="20px"
                     tabindex="-1"
@@ -54,7 +54,7 @@ export default {
             currentTiming: 'getCurrentTiming',
         }),
         isCurrent() {
-            return this.currentTiming && this.currentTiming.product_id == this.product.id
+            return this.currentTiming && this.currentTiming.product && this.currentTiming.product.id == this.product.id
         },
     },
     methods: {
@@ -67,7 +67,7 @@ export default {
             const newTiming = {
                 start_at_ms: newStart,
                 end_at_ms: Math.ceil(this.videoDuration + 60),
-                product_id: this.product.id,
+                variants: [this.product.variants[0]],
             }
             await this.addTiming({ newTiming })
             this.broadcastProduct({ product: this.product })

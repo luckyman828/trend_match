@@ -36,7 +36,12 @@
                                 :class="{ disabled: !saveActive }"
                                 @click="saveActive && onUpdateProduct()"
                             >
-                                <i class="far fa-save"> </i><span>Save</span>
+                                <i class="far fa-save"></i>
+                                <span v-if="!updatingProduct">Save</span>
+                                <template v-else>
+                                    <span>Saving</span>
+                                    <BaseLoader />
+                                </template>
                             </button>
                         </div>
                     </div>
@@ -876,6 +881,7 @@ export default {
             'deleteImages',
             'deleteProducts',
             'initProducts',
+            'instantiateNewProductVariant',
         ]),
         ...mapMutations('products', ['setCurrentProduct']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
@@ -957,28 +963,16 @@ export default {
                 this.$emit('closeSingle')
             }
         },
-        onAddVariant() {
-            const newVariant = {
-                id: this.$uuid.v4(),
-                name: 'Unnamed',
-                style_option_id: null,
-                color: null,
-                variant: null,
-                image: null,
-                blob_id: null,
-                sizes: [],
-                images: [],
-                pictures: [
-                    {
-                        url: null,
-                        name: null,
-                    },
-                ],
-                imageIndex: 0,
-                ean: null,
-                ean_sizes: [],
-                extra_data: {},
-            }
+        async onAddVariant() {
+            const newVariant = await this.instantiateNewProductVariant()
+            newVariant.name = 'Unnamed'
+            newVariant.color = 'Unnamed'
+            newVariant.blob_id = null
+            newVariant.imageIndex = 0
+            newVariant.pictures.push({
+                url: null,
+                name: null,
+            })
 
             Object.defineProperty(newVariant, 'currentImg', {
                 get: function() {
@@ -1007,8 +1001,6 @@ export default {
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
-            // Prepare the file to fit the database schema
-            const vm = this
             this.updatingProduct = true
 
             const productToEdit = this.productToEdit
@@ -1021,6 +1013,7 @@ export default {
                 productIsNew = true
                 const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
                 productToUpload.variants = []
+                delete productToUpload.variantsRaw
                 await this.insertProducts({
                     file: this.currentFile,
                     products: [productToUpload],
@@ -1046,7 +1039,6 @@ export default {
             let variantError = false
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
-                const editVariant = this.productToEdit.variants[i]
                 for (let i = 0; i < variant.pictures.length; i++) {
                     const picture = variant.pictures[i]
                     if (picture.imageToUpload) {

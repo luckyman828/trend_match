@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import compareSizes from '../../../helpers/compareSizes'
 
 export default {
     namespaced: true,
@@ -159,6 +160,29 @@ export default {
                     },
                 })
 
+                // Work quantity inputs
+                product.quantityInputs.map(quantityInput => {
+                    Object.defineProperty(quantityInput, 'sizes', {
+                        get() {
+                            if (quantityInput.variant_size)
+                                return [{ size: quantityInput.variant_size, quantity: quantityInput.quantity }]
+                            if (quantityInput.assortment) {
+                                const assortment = product.assortments.find(
+                                    assortment =>
+                                        assortment.name == quantityInput.assortment &&
+                                        assortment.variant_ids.includes(quantityInput.variant_id)
+                                )
+                                if (assortment)
+                                    return assortment.sizes.map(assortmentSize => ({
+                                        size: assortmentSize.size,
+                                        quantity: assortmentSize.quantity * assortment.pcs,
+                                    }))
+                            }
+                            return []
+                        },
+                    })
+                })
+
                 product.alignments.map(alignment => {
                     // Add default variant action to alignments
                     product.variants.map(async variant => {
@@ -214,6 +238,11 @@ export default {
                             })
                         },
                     })
+                    Object.defineProperty(assortment, 'sizeQuantities', {
+                        get() {
+                            return assortment.sizes
+                        },
+                    })
                     // QTY INPUT
                     Object.defineProperty(assortment, 'quantityInputs', {
                         get() {
@@ -241,6 +270,46 @@ export default {
                                 : Math.round(assortment.quantity / assortment.box_size)
                         },
                     })
+                    Vue.set(
+                        assortment,
+                        'deliveries',
+                        assortment.delivery_dates.map(delivery_date => {
+                            // Instantiate an assortment delivery object
+                            const deliveryObj = { delivery_date }
+                            Object.defineProperty(deliveryObj, 'quantityInputs', {
+                                get() {
+                                    return assortment.quantityInputs.filter(
+                                        input => input.delivery_date == delivery_date
+                                    )
+                                },
+                            })
+                            Object.defineProperty(deliveryObj, 'quantity', {
+                                get() {
+                                    return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                                },
+                            })
+                            Object.defineProperty(deliveryObj, 'sizeQuantities', {
+                                get() {
+                                    return deliveryObj.quantityInputs.reduce((sizeQuantities, quantityInput) => {
+                                        quantityInput.sizes.map(size => {
+                                            const existingSize = sizeQuantities.find(x => x.size == size.size)
+                                            if (existingSize) {
+                                                existingSize.quantity += parseInt(size.quantity)
+                                            } else {
+                                                sizeQuantities.push({
+                                                    size: size.size,
+                                                    quantity: parseInt(size.quantity),
+                                                })
+                                            }
+                                        })
+                                        return sizeQuantities.sort((a, b) => compareSizes(a.size, b.size))
+                                    }, [])
+                                },
+                            })
+
+                            return deliveryObj
+                        })
+                    )
                     // Find a specific qty detail belonging to the assortment
                     assortment.getQtyDetail = qtyDetail =>
                         assortment.quantityInputs.find(qtyInput => {
@@ -335,15 +404,30 @@ export default {
                                     return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
                                 },
                             })
-                            // deliveryObj.getQtyDetail = qtyDetail =>
-                            //     deliveryObj.quantityInputs.find(qtyInput => {
-                            //         if (qtyDetail.deliveryDate && qtyInput.delivery_date != qtyDetail.deliveryDate)
-                            //             return false
-                            //         if (qtyDetail.size && qtyInput.variant_size != qtyDetail.size) return false
-                            //         if (qtyDetail.assortment && qtyInput.assortment != qtyDetail.assortment)
-                            //             return false
-                            //         return true
-                            //     })
+                            Object.defineProperty(deliveryObj, 'sizeQuantities', {
+                                get() {
+                                    return deliveryObj.quantityInputs.reduce((sizeQuantities, quantityInput) => {
+                                        quantityInput.sizes.map(size => {
+                                            const existingSize = sizeQuantities.find(x => x.size == size.size)
+                                            if (existingSize) {
+                                                existingSize.quantity += parseInt(size.quantity)
+                                            } else {
+                                                sizeQuantities.push({
+                                                    size: size.size,
+                                                    quantity: parseInt(size.quantity),
+                                                })
+                                            }
+                                        })
+                                        return sizeQuantities.sort((a, b) => compareSizes(a.size, b.size))
+                                    }, [])
+                                },
+                            })
+                            // // Attach assortments to the delivery obj
+                            // Vue.set(deliveryObj, 'assortments', () => {
+                            //     // const deliveryObj = { delivery_date }
+                            //     return variant.assortments
+                            // })
+
                             return deliveryObj
                         })
                     )
@@ -394,8 +478,6 @@ export default {
                         return product.id
                     },
                 })
-
-                // START Backwards-compatability
             })
         },
     },

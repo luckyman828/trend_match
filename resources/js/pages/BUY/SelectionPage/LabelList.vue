@@ -110,6 +110,7 @@ export default {
         onRemoveLabel(index) {
             this.labelArray.splice(index, 1)
             this.onLabelChange(this.labelArray)
+            this.onUpdateProduct()
         },
         onLabelChange(newLabels) {
             if (this.isVariant) {

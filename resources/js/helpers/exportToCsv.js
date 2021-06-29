@@ -26,6 +26,7 @@ export default function exportToCsv(filename, rows) {
     }
 }
 export function generateCSVRowsFromTemplate(products, template, preferredCurrency) {
+    console.log('generate csv rows from template', products, template)
     const rows = []
 
     // Add headers

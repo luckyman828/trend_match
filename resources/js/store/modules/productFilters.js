@@ -14,6 +14,7 @@ export default {
         unreadOnly: false,
         hideCompleted: false,
         noImagesOnly: false,
+        styleOptionOnly: false,
         filterTicketLabels: [],
         filterSelectionIds: [],
         productActionFilter: 'overview',
@@ -41,6 +42,7 @@ export default {
                 (getters.hideCompleted ? 1 : 0) +
                 (getters.openTicketsOnly ? 1 : 0) +
                 (getters.noImagesOnly ? 1 : 0) +
+                (getters.styleOptionOnly ? 1 : 0) +
                 getters.getProductFilters.reduce((total, filter) => {
                     return (total += filter.selected.length)
                 }, 0)
@@ -63,6 +65,7 @@ export default {
         openTicketsOnly: state => state.openTicketsOnly,
         hideCompleted: state => state.hideCompleted,
         noImagesOnly: state => state.noImagesOnly,
+        styleOptionOnly: state => state.styleOptionOnly,
         getProductActionFilter: state => state.productActionFilter,
         availableCategories(state, getters, rootState, rootGetters) {
             const products = rootGetters['products/getProducts']
@@ -168,7 +171,7 @@ export default {
                     icon: 'far fa-tag',
                     type: 'array',
                     scope: 'product',
-                    apps: ['select', 'buy'],
+                    apps: ['buy'],
                 },
                 {
                     key: 'variants.labels',
@@ -178,9 +181,19 @@ export default {
                     scope: 'variant',
                     apps: ['buy'],
                 },
+                {
+                    key: 'selectionInputList.actions.labels',
+                    displayName: 'Action label',
+                    icon: 'far fa-tag',
+                    type: 'array',
+                    scope: 'product',
+                    apps: ['select'],
+                },
             ]
             // Filter our filters
             const filteredFilters = response.filter(filter => {
+                // Filter out based on app
+                if (!filter.apps.includes(rootGetters['kollektApps/getCurrentApp'].name)) return false
                 // Check if the workspace has labels
                 const labels = rootGetters['workspaces/getAvailableProductLabels']
                 const hasLabels = labels && labels.length > 0
@@ -188,6 +201,17 @@ export default {
                 return true
             })
             filters.push(...filteredFilters)
+
+            if (rootGetters['workspaces/getFeatureFlags'].includes('bestseller_style_option')) {
+                filters.push({
+                    key: `variants.style_option_id`,
+                    displayName: 'Style option ID',
+                    icon: 'far fa-tshirt',
+                    type: 'array',
+                    scope: 'variant',
+                    apps: ['select', 'buy'],
+                })
+            }
 
             // Get custom field filters
             const customFields = rootGetters['workspaces/getCustomProductFields']
@@ -281,6 +305,9 @@ export default {
         SET_NO_IMAGES_ONLY(state, boolean) {
             state.noImagesOnly = boolean
         },
+        SET_STYLE_OPTION_ONLY(state, boolean) {
+            state.styleOptionOnly = boolean
+        },
         SET_BUY_VIEW(state, buyView) {
             state.buyView = buyView
         },
@@ -293,6 +320,7 @@ export default {
             state.filterTicketLabels = []
             state.hideCompleted = false
             state.noImagesOnly = false
+            state.styleOptionOnly = false
             // state.filterSelectionIds = []
             state.productActionFilter = 'overview'
             state.openTicketsOnly = false

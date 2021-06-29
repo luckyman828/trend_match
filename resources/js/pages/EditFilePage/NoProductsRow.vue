@@ -104,8 +104,6 @@ export default {
             .pill {
                 background: none;
                 color: white;
-                border-width: 1px;
-                padding: 0 1px;
                 i {
                     color: white;
                     font-weight: 400;

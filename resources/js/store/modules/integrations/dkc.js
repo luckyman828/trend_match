@@ -134,12 +134,12 @@ export default {
                     company: 'DkCompanyVejle',
                 },
                 {
-                    name: 'Ichi',
+                    name: 'ICHI',
                     code: 'IH',
                     company: 'DkCompanyVejle',
                 },
                 {
-                    name: 'Ichi Accessories',
+                    name: 'ICHI Accessories',
                     code: 'IA',
                     company: 'DkCompanyVejle',
                 },
@@ -207,16 +207,25 @@ export default {
     },
 
     actions: {
-        async fetchProducts({ commit }, { seasons, brands, progressCallback }) {
+        async fetchProducts({ rootGetters }, { seasons, brands, currencies, progressCallback }) {
             let pageCount = 0
             let pagesProcessed = 0
             let products = []
+
+            console.log('fetch products', currencies)
+
             await Promise.all(
                 await seasons.map(async season => {
                     await Promise.all(
                         await brands.map(async brand => {
                             // first fetch number of pages
-                            const pageApiUrl = `/dkc-adapter/season-products/page-count?season_code=${season.code}&company=${brand.company}&brand=${brand.code}`
+                            const pageApiUrl = `/dkc-adapter/season-products/page-count?season_code=${
+                                season.code
+                            }&company=${brand.company}&brand=${brand.code}${
+                                currencies ? `&currency=${currencies.join('|')}` : ''
+                            }`
+                            console.log('fetch products', currencies, pageApiUrl)
+
                             await axios.get(pageApiUrl).then(response => {
                                 pageCount += response.data.count
                                 if (progressCallback) progressCallback({ total: pageCount, done: pagesProcessed })
@@ -224,7 +233,11 @@ export default {
 
                             for (let pageIndex = 1; pageIndex <= pageCount; pageIndex++) {
                                 // Fetch a page at a time
-                                const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${brand.company}&brand=${brand.code}&page=${pageIndex}`
+                                const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${
+                                    brand.company
+                                }&brand=${brand.code}${
+                                    currencies ? `&currency=${currencies.join('|')}` : ''
+                                }&page=${pageIndex}`
                                 await axios
                                     .get(apiUrl)
                                     .then(response => {
@@ -250,17 +263,19 @@ export default {
                 console.dir(err)
             })
             // Now we have the products, let's turn them into Kollekt style products.
-            const newProducts = await instantiateDKCProducts(products)
+            // Figure out what the current app is
+            const app = rootGetters['kollektApps/getCurrentApp'].name
+            const newProducts = await instantiateDKCProducts(products, app)
             console.log('pnew products', newProducts)
             return newProducts
         },
-        async fetchProductsById({}, { productIds, company, season }) {
+        async fetchProductsById({ rootGetters }, { productIds, company, season, currencies }) {
             let products = []
             await Promise.all(
                 productIds.map(async productId => {
                     const apiUrl = `/dkc-adapter/get-product?product_no=${productId}&company=${company.code}${
                         season ? `&season_code=${season}` : ''
-                    }`
+                    }${currencies ? `&currency=${currencies.join('|')}` : ''}`
                     await axios
                         .get(apiUrl)
                         .then(response => {
@@ -275,16 +290,18 @@ export default {
                 console.log('error when fetching products', err.response)
             })
             // Now we have the products, let's turn them into Kollekt style products.
-            const newProducts = await instantiateDKCProducts(products)
+            // Figure out what the current app is
+            const app = rootGetters['kollektApps/getCurrentApp'].name
+            const newProducts = await instantiateDKCProducts(products, app)
             return newProducts
         },
-        async fetchProductsByEAN({ dispatch, getters }, { EANs, company, season }) {
+        async fetchProductsByEAN({ rootGetters }, { EANs, company, season, currencies }) {
             let products = []
             await Promise.all(
                 EANs.map(async ean => {
                     const apiUrl = `/dkc-adapter/find-ean?ean_code=${ean}&company=${company.code}${
                         season ? `&season_code=${season}` : ''
-                    }`
+                    }${currencies ? `&currency=${currencies.join('|')}` : ''}`
                     await axios
                         .get(apiUrl)
                         .then(async response => {
@@ -298,7 +315,9 @@ export default {
             ).catch(err => {
                 console.log('error when fetching products', err.response)
             })
-            const newProducts = await instantiateDKCProducts(products)
+            // Figure out what the current app is
+            const app = rootGetters['kollektApps/getCurrentApp'].name
+            const newProducts = await instantiateDKCProducts(products, app)
             return newProducts
         },
         async fetchAvailableSeasonsByBrand({ commit }, brands) {

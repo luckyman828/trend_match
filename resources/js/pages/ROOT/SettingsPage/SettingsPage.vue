@@ -194,6 +194,7 @@ export default {
             }
         },
         async onUpdateWorkspaceDetails() {
+            this.workspace.style_option_enabled = this.workspace.feature_flags.includes('bestseller_style_option')
             await this.updateWorkspaceDetails(this.workspace)
         },
     },

@@ -178,6 +178,12 @@ export default {
                     timings: video.timings,
                 })
                 .then(response => {
+                    // Make sure the timings have an ID
+                    if (response.data.timings) {
+                        response.data.timings.map((responseTiming, index) => {
+                            Vue.set(video.timings[index], 'id', responseTiming.id)
+                        })
+                    }
                     commit('SET_STATUS', 'success')
                 })
                 .catch(err => {
@@ -277,14 +283,13 @@ export default {
         },
         initTimings({ state, getters, rootGetters }, timings) {
             timings.map(timing => {
-                // Give the timing an ID
-                Vue.set(timing, 'id', state.timingId)
-                state.timingId++
+                if (!timing.variants) Vue.set(timing, 'variants', [])
 
                 Object.defineProperty(timing, 'product', {
                     get() {
+                        if (timing.variants.length <= 0) return
                         const products = rootGetters['products/products']
-                        return products.find(x => x.id == timing.product_id)
+                        return products.find(product => product.id == timing.variants[0].product_id)
                     },
                 })
                 Object.defineProperty(timing, 'start', {

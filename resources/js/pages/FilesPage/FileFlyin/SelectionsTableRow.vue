@@ -68,7 +68,12 @@
                 </div>
             </td>
             <td class="budget">
-                <v-popover trigger="click" @apply-show="onShowBudgetInput" ref="budgetInputPopover">
+                <v-popover
+                    trigger="click"
+                    @apply-show="onShowBudgetInput"
+                    ref="budgetInputPopover"
+                    :disabled="!userHasEditAccess"
+                >
                     <button v-if="userHasEditAccess" class="ghost editable sm">
                         <span>{{ selection.budget || 'Set budget' | thousandSeparated }}</span>
                     </button>
@@ -153,7 +158,7 @@
             </td>
             <td class="presentation">
                 <SelectionPresenterModeButton
-                    v-if="selection.your_job == 'Alignment'"
+                    v-if="selection.your_job == 'Alignment' && selection.your_role == 'Owner'"
                     :selection="selection"
                     :showLabel="false"
                 />

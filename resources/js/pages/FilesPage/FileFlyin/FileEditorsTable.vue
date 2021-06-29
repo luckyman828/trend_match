@@ -164,7 +164,7 @@ export default {
             }
             let sortAsc = this.sortAsc
 
-            this.sortArray(this.team.users, this.sortAsc, this.sortKey)
+            this.sortArray(this.file.users, this.sortAsc, this.sortKey)
         },
     },
     created() {

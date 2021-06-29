@@ -252,7 +252,7 @@ export default {
                 this.availableFiles,
                 this.uploadOptions
             )
-            this.$emit('submit', newProducts)
+            this.$emit('submit', newProducts, this.fieldsToMap)
         },
         reset() {
             this.$emit('reset')

@@ -35,6 +35,7 @@
                 <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
                 <BaseTableHeader class="qty">QTY</BaseTableHeader>
                 <BaseTableHeader class="users">Users</BaseTableHeader>
+                <BaseTableHeader class="status"></BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -168,9 +169,13 @@
                             !(
                                 !contextSelection.is_presenting ||
                                 (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')
-                            )
+                            ) || !contextSelection.is_open
                         "
-                        disabledTooltip="Selection is in presentation mode. To join the presentation login to the Kollekt mobile app"
+                        :disabledTooltip="
+                            !contextSelection.is_open
+                                ? 'Selection i locked'
+                                : 'Selection is in presentation mode. To join the presentation login to the Kollekt mobile app'
+                        "
                         hotkey="KeyG"
                         @click="
                             $router.push({
@@ -590,6 +595,7 @@ export default {
                     selection: this.contextSelection,
                     users: usersToAdd.map(user => {
                         user.role = 'Owner'
+                        user.job = 'Alignment'
                         return user
                     }),
                     ignoreRole: false,
@@ -736,7 +742,6 @@ export default {
                         : 'New Selection',
                 type,
                 currency: null,
-                user_count: 0,
                 team_count: 0,
                 children: [],
                 visible_from: null,
@@ -944,6 +949,10 @@ export default {
                     min-width: 76px;
                     max-width: 76px;
                     margin-left: auto;
+                }
+                &.status {
+                    min-width: 24px;
+                    max-width: 24px;
                 }
                 &.action {
                     // Actions

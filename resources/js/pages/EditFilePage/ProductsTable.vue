@@ -27,6 +27,14 @@
                     <span>No images only</span>
                 </BaseCheckboxInputField>
 
+                <BaseCheckboxInputField
+                    class="small"
+                    v-model="styleOptionOnly"
+                    v-if="enabledFeatures.includes('bestseller_style_option')"
+                >
+                    <span>No option ID</span>
+                </BaseCheckboxInputField>
+
                 <button class="invisible primary" v-if="getFiltersAreActive" @click="onClearFilters">
                     <span>Clear filter</span>
                 </button>
@@ -241,6 +249,9 @@ export default {
         ...mapGetters('products', {
             products: 'productsFiltered',
         }),
+        ...mapGetters('workspaces', {
+            enabledFeatures: 'getFeatureFlags',
+        }),
         ...mapState('products', { stateProducts: 'products' }),
         selectedProducts: {
             get() {
@@ -290,6 +301,14 @@ export default {
                 this.SET_NO_IMAGES_ONLY(value)
             },
         },
+        styleOptionOnly: {
+            get() {
+                return this.$store.getters['productFilters/styleOptionOnly']
+            },
+            set(value) {
+                this.SET_STYLE_OPTION_ONLY(value)
+            },
+        },
     },
     methods: {
         ...mapActions('products', [
@@ -305,7 +324,7 @@ export default {
             'SET_AVAILABLE_PRODUCTS',
             'SET_SELECTED_PRODUCTS',
         ]),
-        ...mapMutations('productFilters', ['CLEAR_PRODUCT_FILTERS', 'SET_NO_IMAGES_ONLY']),
+        ...mapMutations('productFilters', ['CLEAR_PRODUCT_FILTERS', 'SET_NO_IMAGES_ONLY', 'SET_STYLE_OPTION_ONLY']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products

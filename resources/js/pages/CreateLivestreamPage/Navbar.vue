@@ -132,7 +132,7 @@ export default {
             const newTiming = {
                 start_at_ms: newStart,
                 end_at_ms: Math.ceil(this.videoDuration + 5),
-                product_id: product.id,
+                variants: [product.variants[0]],
             }
             await this.addTiming({ newTiming })
             this.broadcastProduct({ product })
@@ -143,6 +143,7 @@ export default {
             }
         },
         async onEndLivestream() {
+            console.log('end the livestream maybe', this.presentationId)
             if (this.presentationId) {
                 // End the current presentation
                 await this.stopPresentation({ presentationId: this.presentationId })

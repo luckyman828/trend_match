@@ -116,6 +116,11 @@ export default {
             return url != '/images/placeholder.JPG'
         },
     },
+    watch: {
+        selectedDeliveryDate(newDate) {
+            this.onNewDeliveryDate()
+        },
+    },
     methods: {
         onTab(e, index, ref) {
             const refArray = this.$refs[ref]
@@ -130,16 +135,19 @@ export default {
                 refArray[index - 1].onFocus()
             }
         },
+        onNewDeliveryDate() {
+            this.assortmentsSorted = this.variant.assortments
+                .filter(assortment => assortment.delivery_dates.includes(this.selectedDeliveryDate))
+                .slice()
+                .sort((a, b) => b.quantity - a.quantity)
+        },
     },
     mounted() {
-        if (this.product.delivery_dates.length > 0) {
-            this.selectedDeliveryDate = this.product.delivery_dates[0]
-        }
         this.deliveriesSorted = this.variant.deliveries.slice().sort((a, b) => b.quantity - a.quantity)
-        this.assortmentsSorted = this.variant.assortments
-            .filter(assortment => assortment.delivery_dates.includes(this.selectedDeliveryDate))
-            .slice()
-            .sort((a, b) => b.quantity - a.quantity)
+        if (this.assortmentDeliveries.length > 0) {
+            this.selectedDeliveryDate = this.assortmentDeliveries[0].value
+        }
+        this.onNewDeliveryDate()
     },
 }
 </script>

@@ -21,7 +21,7 @@
 
         <BulkUploadComponent v-if="showBulkUpload" />
 
-        <div class="quick-actions" v-if="productsEligibleForVariantImageShift.length > 0">
+        <div class="quick-actions">
             <p>Recommended actions</p>
             <button
                 v-if="productsEligibleForVariantImageShift.length > 0"
@@ -33,6 +33,14 @@
                     >Update {{ productsEligibleForVariantImageShift.length }} products: Show variants with image
                     first</span
                 >
+            </button>
+            <button
+                v-if="enabledFeatures.includes('bestseller_style_option') && productsEligibleForResync.length > 0"
+                class="ghost md dark"
+                @click="onResyncBestsellerImages"
+                style="margin-right: 8px;"
+            >
+                <span>Re-sync images: Style option mapped but no image</span>
             </button>
         </div>
 
@@ -70,11 +78,24 @@ export default {
     computed: {
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
+        ...mapGetters('workspaces', {
+            enabledFeatures: 'getFeatureFlags',
+        }),
         file() {
             return this.currentFile
         },
         productsEligibleForVariantImageShift() {
             return this.products.filter(x => this.checkProductEligibleForVariantShift(x))
+        },
+        productsEligibleForResync() {
+            return this.products.filter(
+                product =>
+                    !!product.variants.find(variant => {
+                        if (!variant.pictures.find(picture => !!picture.url) && variant.style_option_id) {
+                            return true
+                        }
+                    })
+            )
         },
     },
     methods: {
@@ -108,6 +129,21 @@ export default {
             // Return true if there is a variant after the found one, that does have an image
             const nextVariants = product.variants.slice(noImageIndex + 1)
             return !!nextVariants.find(x => x.pictures.find(picture => !!picture.url))
+        },
+        onResyncBestsellerImages() {
+            const products = this.productsEligibleForResync
+            products.map(product =>
+                product.variants.map(variant => {
+                    if (
+                        variant.style_option_id &&
+                        typeof variant.style_option_id == 'string' &&
+                        variant.style_option_id.search('REF') >= 0
+                    ) {
+                        variant.style_option_id = variant.style_option_id.slice(4)
+                    }
+                })
+            )
+            this.updateManyProducts({ products, file: this.currentFile })
         },
     },
     created() {

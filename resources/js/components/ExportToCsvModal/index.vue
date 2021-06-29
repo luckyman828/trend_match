@@ -78,6 +78,11 @@
                                 <span>Comments</span>
                             </BaseCheckboxInputField>
                         </div>
+                        <div class="form-element" v-if="exportAlignment || exportFeedback">
+                            <BaseCheckboxInputField v-model="exportInputLabels">
+                                <span>Input labels</span>
+                            </BaseCheckboxInputField>
+                        </div>
                         <div class="form-element" v-if="quantityEnabled">
                             <BaseCheckboxInputField v-model="exportQuantity">
                                 <span>Quantity</span>
@@ -160,6 +165,7 @@ export default {
             exportComments: true,
             exportQuantity: false,
             exportVariants: false,
+            exportInputLabels: false,
 
             excludeNoQtyVariants: false,
 
@@ -177,7 +183,7 @@ export default {
                 'RRP',
                 'MU',
                 'Product EANs',
-                'Labels',
+                // 'Labels',
             ],
             defaultCsvDumpHeaders: [
                 'Product ID',
@@ -205,7 +211,10 @@ export default {
         ...mapGetters('selections', {
             quantityEnabled: 'getQuantityModeActive',
         }),
-        ...mapGetters('products', ['productsFiltered', 'getSelectedProducts', 'getCurrentViewProductsFiltered']),
+        ...mapGetters('selectionProducts', {
+            products: 'getProducts',
+        }),
+        ...mapGetters('products', ['getFilteredProducts', 'getSelectedProducts', 'getCurrentViewProductsFiltered']),
         ...mapGetters('productFilters', ['getFilterSelectionIds']),
         ...mapGetters('selectionProducts', ['getSelections']),
         ...mapGetters('files', ['currentFile']),
@@ -216,6 +225,9 @@ export default {
                 ? this.productsFiltered
                 : this.getCurrentViewProductsFiltered
             return products
+        },
+        productsFiltered() {
+            return this.getFilteredProducts(this.products)
         },
         selectionsToExport() {
             if (this.getFilterSelectionIds.length <= 0) return this.getSelections
@@ -257,9 +269,7 @@ export default {
             }
             if (this.exportType == 'dump') {
                 this.exportTemplate = this.generateCsvDumpTemplate()
-                // console.log('Dump template', this.exportTemplate)
                 this.exportCSVByTemplate()
-                // this.exportCsvDump()
                 return
             }
             // START HEADERS
@@ -364,6 +374,9 @@ export default {
                     const chapterName = chapter ? `[${chapter.name}] ` : ''
                     if (this.exportAlignment) {
                         headers.push(`${chapterName}${origin.selection.name} (Alignment)`)
+                        if (this.exportInputLabels) {
+                            headers.push(`${chapterName}${origin.selection.name} (Labels)`)
+                        }
                         // if (this.exportQuantity) {
                         //     headers.push(`${chapterName}${origin.selection.name} (QTY)`)
                         //     headers.push(`${chapterName}${origin.selection.name} (Spend)`)
@@ -390,6 +403,13 @@ export default {
                                 origin.user ? origin.user.name : 'Anonymous'
                             } (Feedback)`
                         )
+                        if (this.exportInputLabels) {
+                            headers.push(
+                                `${chapterName}${origin.selection.name} - ${
+                                    origin.user ? origin.user.name : 'Anonymous'
+                                } (Labels)`
+                            )
+                        }
                         // if (this.exportQuantity) {
                         //     headers.push(
                         //         `${chapterName}${origin.selection.name} - ${
@@ -463,22 +483,21 @@ export default {
                             )
                             currentRow.push(originAction ? originAction.action : 'None')
 
-                            // if (this.exportQuantity) {
-                            //     if (!originAction) {
-                            //         currentRow.push(...['', ''])
-                            //     } else {
-                            //         const quantity = originAction.quantity ? originAction.quantity : 0
-                            //         currentRow.push(quantity)
-                            //         currentRow.push(quantity * productPriceWhs)
-                            //     }
-                            // }
+                            if (this.exportInputLabels) {
+                                if (!originAction) {
+                                    currentRow.push('')
+                                } else {
+                                    currentRow.push(originAction.labels.join(', '))
+                                }
+                            }
                         }
 
                         if (this.exportRequests) {
                             for (let i = -1; i < origin.labels.length; i++) {
                                 // Find the origin Request(s)
                                 const originRequestList = selectionInput.requests.filter(request => {
-                                    let isMatch = request.selection_id == origin.selection_id
+                                    if (request.selection_id != origin.selection_id) return false
+                                    let isMatch = true
                                     const originLabel = origin.labels[i]
                                     if (originLabel) {
                                         isMatch = request.labels[0] == originLabel
@@ -519,15 +538,13 @@ export default {
                             )
                             currentRow.push(originFeedback ? originFeedback.action : 'None')
 
-                            // if (this.exportQuantity) {
-                            //     if (!originFeedback) {
-                            //         currentRow.push(...['', ''])
-                            //     } else {
-                            //         const quantity = originFeedback.quantity ? originFeedback.quantity : 0
-                            //         currentRow.push(quantity)
-                            //         currentRow.push(quantity * productPriceWhs)
-                            //     }
-                            // }
+                            if (this.exportInputLabels) {
+                                if (!originFeedback) {
+                                    currentRow.push('')
+                                } else {
+                                    currentRow.push(originFeedback.labels.join(', '))
+                                }
+                            }
                         }
 
                         if (this.exportComments) {
@@ -917,7 +934,7 @@ export default {
                 priceToReturn.recommended_retail_price || '',
                 priceToReturn.mark_up || '',
                 product.eans.join(', '),
-                product.labels.join(', '),
+                // product.labels.join(', '),
             ]
             // Get the extra data
             const extraFields = this.getCustomProductFields

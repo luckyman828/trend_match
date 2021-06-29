@@ -29,6 +29,7 @@ export default {
             }
         },
         generateCSVRowsFromTemplate(products, template, preferredCurrency) {
+            console.log('generate csv rows from template', products, template)
             const rows = []
 
             // Add headers

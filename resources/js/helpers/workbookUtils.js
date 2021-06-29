@@ -184,6 +184,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         file.rows.map(row => {
             let rowCurrency = null
             let rowAssortmentName = null
+            let rowAssortmentGroup = null
             let rowVariant = null
             let rowDeliveries = []
 
@@ -232,15 +233,15 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 field =>
                     field.name == 'color' &&
                     field.file &&
-                    field.file.fileName == file.fileName &&
-                    (!!field.enabled || !!field.customEntry)
+                    field.file.fileName == file.fileName
+                    // && (!!field.enabled || !!field.customEntry)
             )
             const variantFields = fieldsToInstantiateFrom.filter(
                 field =>
                     field.name == 'variant' &&
                     field.file &&
-                    field.file.fileName == file.fileName &&
-                    (!!field.enabled || !!field.customEntry)
+                    field.file.fileName == file.fileName
+                    // && (!!field.enabled || !!field.customEntry)
             )
 
             if (product.variants && (variantFields.length > 0 || colorFields.length > 0)) {
@@ -351,7 +352,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             const variant = product.variants.find(x => x.color == color && x.variant == variantVariant)
                             rowVariant = variant
 
-                            if (!variant) continue
+                            if (!variant) {
+                                variantFieldHasBeenProcessed = true
+                                continue
+                            }
 
                             // Now that we have our variant, it's just a question of setting the values
                             const variantField = field.customProperty
@@ -391,7 +395,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                                 if (!variant.ean) variant.ean = fieldValue
 
                                 // Add the EAN to the products EANs
-                                if (product.eans) {
+                                if (product.eans && Array.isArray(product.eans)) {
                                     const existsInArray = product.eans.find(x => x == fieldValue)
                                     if (!existsInArray) product.eans.push(fieldValue)
                                 }
@@ -424,6 +428,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             }
 
                             variant[field.name] = fieldValue
+                            variantFieldHasBeenProcessed = true
                         }
                     }
                     if (variantFieldHasBeenProcessed) return
@@ -461,16 +466,22 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                 // START MAP ASSORTMENTS
                 if (product.assortments && field.scope == 'assortments') {
+                    if (field.groupId != rowAssortmentGroup) {
+                        rowAssortmentName = null
+                    }
+                    
                     // Find the assortment name for this row && field to map.
                     // This only works because the assortment name field is always the first assortment field being mapped
                     if (field.name == 'name') {
+                        rowAssortmentGroup = field.groupId
                         rowAssortmentName = fieldValue
                     }
-
+                    
                     // Check if the assortment group already exists
                     let assortmentGroup = product.assortments.find(
                         x => x.mappingGroupId == field.groupId && x.name == rowAssortmentName
-                    )
+                        )
+                    if (!assortmentGroup && !rowAssortmentName) return
                     if (!assortmentGroup) {
                         assortmentGroup = {
                             mappingGroupId: field.groupId,
@@ -523,6 +534,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         // Generate the product variant name
         if (product.variants) {
             product.variants.map(variant => {
+
                 // Calculate the new name
                 const nameComponents = []
                 if (variant.color) nameComponents.push(variant.color)
@@ -532,6 +544,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             })
         }
     })
+    console.log('instantiated products', products)
     // Remove products with no ID
     return products.filter(x => !!x.datasource_id)
 }

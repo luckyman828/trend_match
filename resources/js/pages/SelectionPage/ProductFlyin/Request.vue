@@ -207,13 +207,13 @@ export default {
         hasTicketControl() {
             if (this.request.product.is_completed) return false
             return (
-                ['Owner', 'Approver'].includes(this.request.selection.your_role) ||
-                this.currentSelection.your_role == 'Approver' ||
-                (this.currentSelection.type == 'Master' && this.currentSelection.your_role == 'Owner')
+                ['Alignment', 'Approval'].includes(this.request.selection.your_job) ||
+                this.currentSelection.your_job == 'Approval' ||
+                (this.currentSelection.type == 'Master' && this.currentSelection.your_job == 'Alignment')
             )
         },
         hasEditAccess() {
-            return this.request.selection.your_role == 'Owner'
+            return this.request.selection.your_job == 'Alignment'
         },
     },
     watch: {

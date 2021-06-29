@@ -585,6 +585,7 @@ export default {
             'deleteSelection',
             'sendSelectionLink',
             'getSelectionLink',
+            'instantiateBaseSelection',
         ]),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
         ...mapActions('presentation', ['fetchFilePresentations']),
@@ -761,25 +762,11 @@ export default {
             // First check that we don't already have an unsaved new selection
             if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
-            const newSelection = {
-                id: null,
-                file_id: this.currentFile.id,
-                name: type == 'Master' ? 'New Master' : type == 'Chapter' ? 'New Chapter' : 'New Selection',
-                type,
-                currency: null,
-                user_count: 0,
-                team_count: 0,
-                children: [],
-                visible_from: null,
-                visible_to: null,
-                open_from: null,
-                open_to: null,
-                completed_at: null,
-                your_role: null,
-                is_presenting: null,
-                budget: 0,
-                budget_spend: 0,
-            }
+            const newSelection = await this.instantiateBaseSelection()
+            newSelection.type = type
+            newSelection.name = type == 'Master' ? 'New Master' : type == 'Chapter' ? 'New Chapter' : 'New Selection'
+            newSelection.file_id = this.currentFile.id
+
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection

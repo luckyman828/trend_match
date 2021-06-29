@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 import router from '../../router'
 
 export default {
@@ -27,26 +28,22 @@ export default {
                 description:
                     'Full edit rights over the selection. Can add/remove teams and users from the selection, change selection settings, and create/delete sub-selections.',
             },
-            {
-                role: 'Approver',
-                description: 'Replies to requests',
-            },
         ],
         availableSelectionJobs: [
             {
-                role: 'Feedback',
+                job: 'Feedback',
                 description: 'Gives feedback and makes comments',
             },
             {
-                role: 'Alignment',
+                job: 'Alignment',
                 description: 'Aligns the selection',
             },
             {
-                role: 'Approval',
+                job: 'Approval',
                 description: 'Replies to requests',
             },
         ],
-        currentSelectionRealRole: null,
+        currentSelectionRealJob: null,
     },
 
     getters: {
@@ -109,15 +106,7 @@ export default {
         },
         getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
-            return selection.your_job && selection.your_job != 'None'
-                ? selection.your_job
-                : selection.your_roles.includes('Member')
-                ? 'Feedback'
-                : selection.your_roles.includes('Approver')
-                ? 'Approval'
-                : selection.your_roles.includes('Owner')
-                ? 'Alignment'
-                : 'No Access'
+            return selection.your_job && selection.your_job != 'None' ? selection.your_job : 'No Access'
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
@@ -225,13 +214,13 @@ export default {
                 actionMsg = 'Product has been marked as complete'
                 requestMsg = 'Product has been marked as complete'
             } else {
-                if (selection.your_role != 'Owner') {
+                if (selection.your_job != 'Alignment') {
                     requestAccess = false
-                    requestMsg = 'Only selection owners can make requests'
+                    requestMsg = 'Requests can only be made in Alignment'
                 }
-                if (selection.your_role == 'Approver') {
+                if (selection.your_job == 'Approval') {
                     actionAccess = false
-                    actionMsg = 'Only selection owners can decide action'
+                    actionMsg = 'Actions can only be decided from Alignment'
                 }
             }
             return {
@@ -248,67 +237,9 @@ export default {
                     msg: requestMsg,
                 },
             }
-
-            // return {
-            //     actions: {
-            //         hasAccess: selection.is_open && selection.your_role != 'Approver',
-            //         msg: !selection.is_open
-            //             ? 'Selection is locked'
-            //             : selection.your_role == 'Approver'
-            //             ? 'Only selection owners can decide action'
-            //             : '',
-            //     },
-            //     requests: {
-            //         hasAccess: selection.is_open && selection.your_role == 'Owner',
-            //         msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can make requests',
-            //     },
-            //     comments: {
-            //         hasAccess: selection.is_open,
-            //         msg: !selection.is_open && 'Selection is locked',
-            //     },
-            // }
         },
         getSelectionsAvailableForInputFiltering: (state, getters, rootState, rootGetters) => {
             return rootGetters['selectionProducts/getSelections']
-            // const products = rootGetters['products/getProducts']
-            // const activeSelections = getters.getCurrentSelections
-            // const availableSelections = []
-            // products.forEach(product => {
-            //     // Find the selection input available
-            //     const selectionInputListFiltered = product.selectionInputList.filter(
-            //         selectionInput => !!activeSelections.find(selection => selection.id == selectionInput.selection_id)
-            //     )
-
-            //     selectionInputListFiltered.forEach(selectionInput => {
-            //         // Loop through the products feedback
-            //         selectionInput.rawSelectionInput.feedbacks.forEach(feedback => {
-            //             const existsInArray = availableSelections.find(
-            //                 selection => selection.id == feedback.selection_id
-            //             )
-            //             if (!existsInArray) availableSelections.push(feedback.selection)
-            //         })
-            //         // Loop through the products alignment
-            //         selectionInput.rawSelectionInput.alignments.forEach(action => {
-            //             const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
-            //             if (!existsInArray) availableSelections.push(action.selection)
-            //         })
-            //         // Loop through the products comments
-            //         selectionInput.rawSelectionInput.comments.forEach(comment => {
-            //             const existsInArray = availableSelections.find(
-            //                 selection => selection.id == comment.selection_id
-            //             )
-            //             if (!existsInArray) availableSelections.push(comment.selection)
-            //         })
-            //         // Loop through the products requests
-            //         selectionInput.rawSelectionInput.requests.forEach(request => {
-            //             const existsInArray = availableSelections.find(
-            //                 selection => selection.id == request.selection_id
-            //             )
-            //             if (!existsInArray) availableSelections.push(request.selection)
-            //         })
-            //     })
-            // })
-            // return availableSelections
         },
         getSelectionPresentationGroups: state => {
             const groupIds = []
@@ -319,15 +250,40 @@ export default {
             })
             return groupIds
         },
-        getCurrentSelectionRealRole: state => state.currentSelectionRealRole,
+        getCurrentSelectionRealJob: state => state.currentSelectionRealJob,
         getViewingAsObserver: (state, getters) =>
             !getters.currentSelection ||
-            !getters.currentSelection.your_role ||
-            (getters.getCurrentSelectionRealRole &&
-                getters.currentSelection.your_role != getters.getCurrentSelectionRealRole),
+            !getters.currentSelection.your_job ||
+            (getters.getCurrentSelectionRealJob &&
+                getters.currentSelection.your_job != getters.getCurrentSelectionRealJob),
     },
 
     actions: {
+        async instantiateBaseSelection({ dispatch }) {
+            const newSelection = {
+                id: null,
+                file_id: null,
+                name: 'New selection',
+                type: 'Normal',
+                currency: null,
+                users: [],
+                teams: [],
+                team_count: 0,
+                children: [],
+                visible_from: null,
+                visible_to: null,
+                open_from: null,
+                open_to: null,
+                completed_at: null,
+                your_role: null,
+                is_presenting: null,
+                budget: 0,
+                budget_spend: 0,
+                product_set_identifier: '',
+            }
+            await dispatch('initSelections', [newSelection])
+            return newSelection
+        },
         async fetchSelections({ commit, dispatch }, { fileId, addToState = true }) {
             return new Promise(async (resolve, reject) => {
                 commit('SET_LOADING', true)
@@ -425,7 +381,9 @@ export default {
                 .post(apiUrl, selection)
                 .then(async response => {
                     Object.assign(selection, response.data)
+
                     dispatch('initSelections', [selection])
+
                     if (addToState) {
                         commit('insertSelections', { file, selections: [selection] })
                     }
@@ -563,6 +521,7 @@ export default {
                 selection,
                 users: users.map(user => {
                     if (ignoreRole) user.role = 'Member'
+                    if (ignoreRole) user.job = 'Feedback'
                     return user
                 }),
             })
@@ -575,7 +534,7 @@ export default {
                         return {
                             id: user.id,
                             role: ignoreRole ? 'Member' : user.role,
-                            // job: ignoreRole ? 'Feedback' : user.job,
+                            job: ignoreRole ? 'Feedback' : user.job,
                         }
                     }),
                 })
@@ -692,6 +651,7 @@ export default {
                         return {
                             id: x.id,
                             role: x.role,
+                            job: x.job,
                         }
                     }),
                 })
@@ -731,7 +691,7 @@ export default {
             const usersToDeny = []
             const usersToRemove = []
             users.forEach(user => {
-                if (user.inherit_from_teams) {
+                if (user.inherit_source == 'Team') {
                     usersToDeny.push(user)
                 } else {
                     usersToRemove.push(user)
@@ -1243,11 +1203,18 @@ export default {
             return joinResponse
         },
         async initSelections({ getters, rootGetters }, selections) {
-            selections.map(selection => {
+            for (const selection of selections) {
+                if (selection.initDone) continue
                 const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
                 const chatperId =
                     chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
                 Vue.set(selection, 'chapterId', chatperId)
+                if (!selection.children) {
+                    Vue.set(selection, 'children', [])
+                }
+                if (!selection.denied_users) {
+                    Vue.set(selection, 'denied_users', [])
+                }
 
                 if (!selection.your_roles) {
                     Vue.set(selection, 'your_roles', [])
@@ -1255,6 +1222,78 @@ export default {
                 if (!selection.your_role) {
                     Vue.set(selection, 'your_role', selection.your_roles[0])
                 }
+
+                // Users
+                Object.defineProperty(selection, 'excludedUsers', {
+                    get: () => {
+                        if (!selection.users) return []
+                        return selection.users.filter(user => user.roles.includes('Denied'))
+                    },
+                })
+                Object.defineProperty(selection, 'directUsers', {
+                    get: () => {
+                        let users = []
+                        if (!selection.users) return users
+                        selection.users.map(user => {
+                            // Test if there is an existing user
+                            const existingUser = users.find(x => x.id == user.id)
+                            if (existingUser) {
+                                // Roles
+                                if (user.role == 'Owner') {
+                                    existingUser.role = 'Owner'
+                                }
+                            }
+                            // Direct users
+                            if (!['Ancestor', 'TeamAncestor'].includes(user.inherit_source)) {
+                                if (existingUser) {
+                                    // Check if the exising ranks higher
+                                    if (!['Approval'].includes(existingUser.job) && ['Approval'].includes(user.job)) {
+                                        existingUser.job = user.job
+                                    }
+                                    if (
+                                        !['Approval', 'Alignment'].includes(existingUser.job) &&
+                                        ['Approval', 'Alignment'].includes(user.job)
+                                    ) {
+                                        existingUser.job = user.job
+                                    }
+                                    if (
+                                        !['Approval', 'Alignment', 'Feedback'].includes(existingUser.job) &&
+                                        ['Approval', 'Alignment', 'Feedback'].includes(user.job)
+                                    ) {
+                                        existingUser.job = user.job
+                                    }
+                                } else {
+                                    users.push(user)
+                                }
+                            }
+                        })
+                        return users
+                    },
+                })
+                Object.defineProperty(selection, 'inheritedUsers', {
+                    get: () => {
+                        let users = []
+                        if (!selection.users) return users
+                        selection.users.map(user => {
+                            if (
+                                !selection.directUsers.find(directUser => directUser.id == user.id) &&
+                                !users.find(x => x.id == user.id)
+                            ) {
+                                users.push(user)
+                            }
+                        })
+                        return users
+                    },
+                })
+                Object.defineProperty(selection, 'user_count', {
+                    get: () => selection.users.length,
+                })
+                Object.defineProperty(selection, 'direct_user_count', {
+                    get: () => selection.directUsers.length,
+                })
+                Object.defineProperty(selection, 'inherited_user_count', {
+                    get: () => selection.inheritedUsers.length,
+                })
 
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {
@@ -1306,7 +1345,8 @@ export default {
                 //         return selection.chapter ? selection.chapter.name : ''
                 //     },
                 // })
-            })
+                selection.initDone = true
+            }
         },
         async fetchChapterRules({ commit, dispatch }, { selection }) {
             const apiUrl = `selections/${selection.id}/chapter`
@@ -1485,12 +1525,10 @@ export default {
             if (currentSelection) stateSelections.push(currentSelection)
             if (stateSelections.length > 0) {
                 stateSelections.map(stateSelection => {
-                    // Make users, teams and denied_users reactive
+                    // Make properties reactive
                     if (selection.users) Vue.set(stateSelection, 'users', selection.users)
-                    if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
                     if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
                     if (selection.children) Vue.set(stateSelection, 'children', selection.children)
-                    // Object.assign(stateSelection, selection)
                 })
             }
         },
@@ -1548,12 +1586,11 @@ export default {
         },
         setSelectionUsers(state, { selection, users }) {
             Vue.set(selection, 'users', users)
-            Vue.set(selection, 'user_count', users.length)
+
             // Also update the selection if it exists in our state
             const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) {
                 Vue.set(stateSelection, 'users', users)
-                Vue.set(stateSelection, 'user_count', users.length)
             }
         },
         SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive, presentationGroupId }) {
@@ -1564,8 +1601,8 @@ export default {
         SET_CURRENT_SELECTION_ID(state, selectionId) {
             state.currentSelectionId = selectionId
         },
-        SET_CURRENT_SELECTION_REAL_ROLE(state, role) {
-            state.currentSelectionRealRole = role
+        SET_CURRENT_SELECTION_REAL_JOB(state, job) {
+            state.currentSelectionRealJob = job
         },
     },
 }

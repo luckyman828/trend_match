@@ -188,7 +188,7 @@ export default {
             left: 0;
             position: absolute;
             &:not(.Success):not(.Error) {
-                background: rgba(white, 0.8);
+                // background: rgba(white, 0.8);
             }
             .sync-icon {
                 margin: 8px;

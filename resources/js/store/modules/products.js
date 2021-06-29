@@ -4,6 +4,7 @@ import Compressor from 'compressorjs'
 import { instantiateProductsFromMappedFields, parseCSVStringToRowsAndCells } from '../../helpers/workbookUtils'
 import chunkArray from '../../helpers/chunkArray'
 import getUniqueObjectValuesByKey from '../../helpers/getUniqueObjectValuesByKey'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
     namespaced: true,
@@ -93,6 +94,7 @@ export default {
             const openTicketsOnly = rootGetters['productFilters/openTicketsOnly']
             const hideCompleted = rootGetters['productFilters/hideCompleted']
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
+            const styleOptionOnly = rootGetters['productFilters/styleOptionOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
@@ -102,10 +104,17 @@ export default {
             const currentAction = rootGetters['selections/currentSelectionModeAction']
             const selectionMode = rootGetters['selections/currentSelectionMode']
             const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
+            const selection = rootGetters['selections/getCurrentSelection']
             // END YE OLDE STUFF
 
             const filtersActive = rootGetters['productFilters/getFiltersAreActive']
             let productsToReturn = [...products]
+
+            // Summed selections
+            if (selection && selection.type == 'Summed') {
+                // Filter out variats with no QTY
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
+            }
 
             // Filter by regular filters
             filters.map(filter => {
@@ -288,6 +297,13 @@ export default {
                 )
                 productsToReturn = filteredByNoImages
             }
+            // Filter by style option
+            if (styleOptionOnly) {
+                const filteredByStyleOption = productsToReturn.filter(
+                    product => !product.variants.find(variant => variant.style_option_id)
+                )
+                productsToReturn = filteredByStyleOption
+            }
 
             // Filter by actions
             if (['ins', 'outs', 'nds', 'focus', 'tickets'].includes(actionFilter)) {
@@ -326,10 +342,15 @@ export default {
             const products = getters.products
             const buyView = rootGetters['productFilters/getBuyView']
             const selection = rootGetters['selections/getCurrentSelection']
+            const currentApp = rootGetters['kollektApps/getCurrentApp']
 
             if (!selection) return products
 
             let productsToReturn = [...products]
+            if (currentApp.name == 'select') {
+                const selectProducts = rootGetters['selectionProducts/getProducts']
+                productsToReturn = [...selectProducts]
+            }
 
             if (selection.type == 'Summed') {
                 // Filter out variats with no QTY
@@ -460,8 +481,8 @@ export default {
                         })
                         .then(response => {
                             // Add the created ID to the products
-                            products.map(product => {
-                                product.id = response.data.added_product_id_map[product.datasource_id]
+                            productChunk.map(product => {
+                                Vue.set(product, 'id', response.data.added_product_id_map[product.datasource_id])
                             })
                             // Start image sync job
                             const syncJobId = response.data.download_image_progress_id
@@ -589,7 +610,7 @@ export default {
         },
         instantiateNewProductVariant({ commit }) {
             return {
-                id: null,
+                id: uuidv4(),
                 color: null,
                 variant: null,
                 delivery_dates: [],
@@ -1387,6 +1408,7 @@ export default {
                         Vue.set(variant, 'imageIndex', 0)
                     }
                     Vue.set(variant, 'index', variantIndex)
+                    Vue.set(variant, 'product_id', product.id)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
                     if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])

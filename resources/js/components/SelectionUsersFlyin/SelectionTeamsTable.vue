@@ -200,7 +200,7 @@ export default {
                     // Check if the user already exists
                     team.users.map(user => {
                         if (
-                            user.role != 'Member' &&
+                            (user.role != 'Member' || user.job != 'Feedback') &&
                             !this.selection.users.find(x => x.id == user.id) &&
                             !usersAddedFromTeams.find(x => x.id == user.id)
                         ) {
@@ -219,7 +219,7 @@ export default {
             // Add the team to the selection
             await this.addTeamsToSelection({ selection: this.selection, teams })
 
-            this.updateSelectionUsers({ selection: this.selection, users: usersAddedFromTeams })
+            // this.updateSelectionUsers({ selection: this.selection, users: usersAddedFromTeams })
         },
         sortTeams(method, key) {
             // If if we are already sorting by the given key, flip the sort order
