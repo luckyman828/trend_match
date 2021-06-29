@@ -35,8 +35,8 @@ export function embed(addToBasketCallBack, removeFromBasketCallback) {
             return
         }
         const presentationId = button.getAttribute('data-kollekt-play-id')
-        // const iFrameBaseUrl = 'https://branchtest.kollekt.dk/#/play/watch/'
-        const iFrameBaseUrl = 'https://kollekt_feature.test/#/play/watch/'
+        const iFrameBaseUrl = 'https://dev-stable.kollekt.dk/#/play/watch/'
+        // const iFrameBaseUrl = 'https://kollekt_feature.test/#/play/watch/'
         // iframeEl.src = `${iFrameBaseUrl}${videoId}`
         // iframeEl.src = `https://kollekt_feature.test/#/?timestamp=${new Date().getTime()}`
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
@@ -46,11 +46,13 @@ export function embed(addToBasketCallBack, removeFromBasketCallback) {
 
     // Interact with shopify
     window.addEventListener('message', async event => {
-        const testOrigins = ['https://kollekt_feature.test', 'https://kollekt_release.test'] // REMOVE BEFORE GOING PRODUCTION!!
+        // const testOrigins = ['https://kollekt_feature.test', 'https://kollekt_release.test'] // REMOVE BEFORE GOING PRODUCTION!!
+        const testOrigins = []
         const acceptedOrigins = [
             'https://app.kollekt.dk',
             'https://branchtest.kollekt.dk',
             'https://dev.kollekt.dk',
+            'https://dev-stable.kollekt.dk',
             'https://staging.kollekt.dk',
         ]
         if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
