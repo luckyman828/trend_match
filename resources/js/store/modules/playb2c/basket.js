@@ -9,7 +9,7 @@ export default {
         getBasket: state => state.basket,
         getBasketTotal: state =>
             state.basket.reduce((acc, curr) => {
-                return (acc += curr.variant.yourPrice.wholesale_price * curr.qty)
+                return (acc += curr.variant.yourPrice.wholesale_price * curr.quantity)
             }, 0),
         getVariantIsInBasket: state => variant => state.basket.find(basketItem => basketItem.variant.id == variant.id),
         getItemIsInBasket: state => item => {
@@ -25,17 +25,17 @@ export default {
         fetchBasket({ state }, msg) {
             alert(msg)
         },
-        addToBasket({ getters, commit, dispatch }, { variant, sizeDetail, qty = 1 }) {
+        addToBasket({ getters, commit, dispatch }, { variant, sizeDetail, quantity = 1 }) {
             dispatch(
                 'playEmbed/postMessage',
-                { action: 'addToBasket', items: [{ id: variant.extra_data.shopid, quantity: qty }] },
+                { action: 'addToBasket', items: [{ variant, sizeDetail, quantity }] },
                 { root: true }
             )
 
-            const newBasketItem = { variant, sizeDetail, qty }
+            const newBasketItem = { variant, sizeDetail, quantity }
             const alreadyAdded = getters.getItemIsInBasket(newBasketItem)
             if (alreadyAdded) {
-                commit('SET_ITEM_QTY', alreadyAdded.qty + qty)
+                commit('SET_ITEM_QTY', alreadyAdded.quantity + quantity)
                 return
             }
             commit('ADD_ITEM', newBasketItem)
@@ -43,15 +43,14 @@ export default {
         removeFromBasket({ getters, commit, dispatch }, { variant, sizeDetail }) {
             dispatch(
                 'playEmbed/postMessage',
-                { action: 'removeFromBasket', items: [{ id: variant.extra_data.shopid }] },
+                { action: 'removeFromBasket', items: [{ variant, sizeDetail }] },
                 { root: true }
             )
 
-            console.log('remove from basket action', variant, sizeDetail)
             commit('REMOVE_ITEM', { variant, sizeDetail })
         },
-        updateItemQty({ getters, commit }, { item, qty }) {
-            commit('SET_ITEM_QTY', { item, qty })
+        updateItemQty({ getters, commit }, { item, quantity }) {
+            commit('SET_ITEM_QTY', { item, quantity })
         },
     },
 
@@ -69,11 +68,11 @@ export default {
                     )
             )
         },
-        ADD_ITEM(state, { variant, sizeDetail, qty }) {
-            state.basket.push({ variant, sizeDetail, qty })
+        ADD_ITEM(state, { variant, sizeDetail, quantity }) {
+            state.basket.push({ variant, sizeDetail, quantity })
         },
-        SET_ITEM_QTY(state, { item, qty }) {
-            item.qty = Math.max(qty, 0)
+        SET_ITEM_QTY(state, { item, quantity }) {
+            item.quantity = Math.max(quantity, 0)
         },
         UPDATE_BASKET_ITEM(state, item) {},
     },

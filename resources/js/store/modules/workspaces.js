@@ -75,6 +75,9 @@ export default {
                 return getters.getFeatureFlags.includes(app.featureFlag)
             })
         },
+        getWebshop: () => {
+            return { url: `https://kollektteststore.myshopify.com` }
+        },
     },
 
     actions: {

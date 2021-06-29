@@ -3,10 +3,15 @@ export default {
     state: {},
     getters: {},
     actions: {
-        postMessage({}, msg) {
+        postMessage({ rootGetters }, msg) {
             const targetWindow = window.parent
-            if (!targetWindow || targetWindow == window) return 
-            const targetOrigin = `https://kollektteststore.myshopify.com`
+            if (!targetWindow || targetWindow == window) return
+            const webshop = rootGetters['workspaces/getWebshop']
+            if (!webshop) {
+                console.log('no webshop linked!')
+                return
+            }
+            const targetOrigin = webshop.url
             targetWindow.postMessage(msg, targetOrigin)
         },
     },
