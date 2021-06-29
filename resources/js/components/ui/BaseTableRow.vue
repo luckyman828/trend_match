@@ -7,7 +7,7 @@
         @click.ctrl.exact.capture.stop.prevent="$refs.selectBox.check()"
         @click.ctrl.shift.capture.stop.prevent="onCtrlShiftClick"
         @contextmenu.prevent="$emit('show-contextmenu', $event)"
-        :data-item-name="item.name ? item.name : item.title ? item.title : null"
+        :data-item-name="item && (item.name ? item.name : item.title ? item.title : null)"
     >
         <td class="select" v-if="showSelect">
             <BaseCheckbox

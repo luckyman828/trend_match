@@ -74,6 +74,8 @@
                                 </div>
                                 <div class="item-group">
                                     <BaseSelectButton
+                                        :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
+                                        disabledTooltip="Only admins and editors can edit files"
                                         v-model="file.swipeOnVariants"
                                         :modelValue="true"
                                         @input="insertOrUpdateFile({ file, addToState: false })"
