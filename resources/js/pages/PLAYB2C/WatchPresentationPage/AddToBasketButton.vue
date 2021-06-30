@@ -78,7 +78,7 @@ export default {
         onRemoveFromBasket(variant) {
             // Use a timeout here to avoid this event from triggering the popover
             setTimeout(() => {
-                this.removeFromBasket({ variant, sizeDetail: this.sizeDetail })
+                this.removeFromBasket({ variant, sizeDetail: this.variantAddedToBasket.sizeDetail })
                 if (this.resetOnSubmit) {
                     this.$refs.sizeSelector.reset()
                 }

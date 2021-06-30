@@ -35,8 +35,10 @@ export function embed(addToBasketCallBack, removeFromBasketCallback, updateItemQ
             return
         }
         const presentationId = button.getAttribute('data-kollekt-play-id')
-        const iFrameBaseUrl = 'https://dev-stable.kollekt.dk/#/play/watch/'
-        // const iFrameBaseUrl = 'https://kollekt_feature.test/#/play/watch/'
+        const appUrl = process.env.MIX_APP_URL
+
+        // const iFrameBaseUrl = 'https://dev-stable.kollekt.dk/#/play/watch/'
+        const iFrameBaseUrl = `${appUrl}/#/play/watch/`
         // iframeEl.src = `${iFrameBaseUrl}${videoId}`
         // iframeEl.src = `https://kollekt_feature.test/#/?timestamp=${new Date().getTime()}`
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
@@ -46,8 +48,8 @@ export function embed(addToBasketCallBack, removeFromBasketCallback, updateItemQ
 
     // Interact with shopify
     window.addEventListener('message', async event => {
-        // const testOrigins = ['https://kollekt_feature.test', 'https://kollekt_release.test'] // REMOVE BEFORE GOING PRODUCTION!!
-        const testOrigins = []
+        const testOrigins =
+            process.env.NODE_ENV == 'production' ? [] : ['https://kollekt_feature.test', 'https://kollekt_release.test']
         const acceptedOrigins = [
             'https://app.kollekt.dk',
             'https://branchtest.kollekt.dk',

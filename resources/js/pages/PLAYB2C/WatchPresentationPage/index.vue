@@ -70,28 +70,33 @@ export default {
         },
 
         // // CODE TO RESPOND TO EVENTS FROM THE PARENT WINDOW
-        // postMessageHandler(event) {
-        //     console.log('VUE, message recieved', event)
-        //     // Test that the origin matches
-        //     if (!event.origin == 'https://kollektteststore.myshopify.com') return
-        //     const msgData = event.data
-        //     if (msgData.action == 'updateBasketItem') {
-        //         this.$store.commit('basket/UPDATE_BASKET_ITEM', msgData.item)
-        //     }
-        // },
-        // addPostMessageListeners() {
-        //     window.addEventListener('message', this.postMessageHandler)
-        // },
-        // removePostMessageListeners() {
-        //     window.removeEventListener('message', this.postMessageHandler)
-        // },
+        postMessageHandler(event) {
+            // Test that the origin matches
+            const acceptedOrigin = 'https://kollektteststore.myshopify.com'
+
+            if (!event.origin == acceptedOrigin) return
+            // console.log('VUE, message recieved', event)
+            const msgData = event.data
+            if (msgData.action == 'updateBasketItems') {
+                msgData.items.map(item => {
+                    const basketItem = this.$store.getters['basket/getBasketItem'](item)
+                    this.$store.commit('basket/SET_ITEM_QTY', { item: basketItem, quantity: item.quantity })
+                })
+            }
+        },
+        addPostMessageListeners() {
+            window.addEventListener('message', this.postMessageHandler)
+        },
+        removePostMessageListeners() {
+            window.removeEventListener('message', this.postMessageHandler)
+        },
     },
     created() {
         this.fetchData()
-        // this.addPostMessageListeners()
+        this.addPostMessageListeners()
     },
     destroyed() {
-        // this.removePostMessageListeners()
+        this.removePostMessageListeners()
     },
 }
 </script>

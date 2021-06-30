@@ -2,7 +2,8 @@ import { embed } from './play.js'
 const version = `0.0.0 - (2)`
 console.log('Init PLAY Shopify embed script. Version: ' + version)
 
-const targetOrigin = `https://kollekt_feature.test`
+const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
+const targetOrigin = `${appUrl}`
 
 const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity)
 
@@ -26,12 +27,15 @@ async function addToBasket(items) {
     }).then(async response => {
         result = await response.json()
 
+        console.log('add', result)
         contentWindow.postMessage(
             {
                 action: 'updateBasketItems',
-                items: result.items.map((basketItem, index) => {
-                    const item = items[index]
+                items: items.map(item => {
+                    const basketItem = result.items.find(x => x.id == item.sizeDetail.ref_id)
+                    if (!basketItem) return item
                     item.quantity = basketItem.quantity
+                    return item
                 }),
             },
             targetOrigin
@@ -56,12 +60,16 @@ async function removeFromBasket(items) {
     }).then(async response => {
         result = await response.json()
 
+        console.log('remove', result)
+
         contentWindow.postMessage(
             {
                 action: 'updateBasketItems',
-                items: result.items.map((basketItem, index) => {
-                    const item = items[index]
+                items: items.map(item => {
+                    const basketItem = result.items.find(x => x.id == item.sizeDetail.ref_id)
+                    if (!basketItem) return item
                     item.quantity = basketItem.quantity
+                    return item
                 }),
             },
             targetOrigin
@@ -83,13 +91,17 @@ async function updateItemQuantity(item) {
     }).then(async response => {
         result = await response.json()
 
+        console.log('update', result)
+
+        const basketItem = result.items.find(x => x.id == item.sizeDetail.ref_id)
+        if (basketItem) {
+            item.quantity = basketItem.quantity
+        }
+
         contentWindow.postMessage(
             {
                 action: 'updateBasketItems',
-                items: result.items.map((basketItem, index) => {
-                    const item = items[index]
-                    item.quantity = basketItem.quantity
-                }),
+                items: [item],
             },
             targetOrigin
         )

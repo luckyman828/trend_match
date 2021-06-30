@@ -19,6 +19,13 @@ export default {
                     (!item.sizeDetail || basketItem.sizeDetail.size == item.sizeDetail.size)
             )
         },
+        getBasketItem: state => item => {
+            return state.basket.find(
+                basketItem =>
+                    basketItem.variant.id == item.variant.id &&
+                    (!item.sizeDetail || basketItem.sizeDetail.size == item.sizeDetail.size)
+            )
+        },
     },
 
     actions: {
@@ -26,21 +33,19 @@ export default {
             alert(msg)
         },
         async addToBasket({ getters, commit, dispatch }, { variant, sizeDetail, quantity = 1 }) {
-            commit('ADD_ITEM', newBasketItem)
             const newBasketItem = { variant, sizeDetail, quantity }
             const alreadyAdded = getters.getItemIsInBasket(newBasketItem)
             if (alreadyAdded) {
                 commit('SET_ITEM_QTY', alreadyAdded.quantity + quantity)
-                return
+            } else {
+                commit('ADD_ITEM', newBasketItem)
             }
 
             await dispatch(
                 'playEmbed/postMessage',
                 { action: 'addToBasket', items: [{ variant, sizeDetail, quantity }] },
                 { root: true }
-            ).then(response => {
-                console.log('response', response.addToBasket)
-            })
+            )
         },
         async removeFromBasket({ getters, commit, dispatch }, { variant, sizeDetail }) {
             commit('REMOVE_ITEM', { variant, sizeDetail })
@@ -49,20 +54,12 @@ export default {
                 'playEmbed/postMessage',
                 { action: 'removeFromBasket', items: [{ variant, sizeDetail }] },
                 { root: true }
-            ).then(response => {
-                console.log('response', response.addToBasket)
-            })
+            )
         },
-        async updateItemQty({ getters, commit }, { item, quantity }) {
+        async updateItemQty({ dispatch, commit }, { item, quantity }) {
             commit('SET_ITEM_QTY', { item, quantity })
 
-            await dispatch(
-                'playEmbed/postMessage',
-                { action: 'removeFromBasket', items: [{ variant, sizeDetail }] },
-                { root: true }
-            ).then(response => {
-                console.log('response', response.addToBasket)
-            })
+            await dispatch('playEmbed/postMessage', { action: 'updateItemQuantity', item }, { root: true })
         },
     },
 
@@ -84,6 +81,7 @@ export default {
             state.basket.push({ variant, sizeDetail, quantity })
         },
         SET_ITEM_QTY(state, { item, quantity }) {
+            console.log('set qty', item, quantity)
             item.quantity = Math.max(quantity, 0)
         },
         UPDATE_BASKET_ITEM(state, item) {},
