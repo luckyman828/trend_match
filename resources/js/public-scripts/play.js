@@ -1,6 +1,6 @@
 export function embed(addToBasketCallBack, removeFromBasketCallback) {
     // Kollekt PLAY
-    const version = `0.0.0 - (5)`
+    const version = `0.0.0 - (6)`
     console.log('Init PLAY embed script. Version: ' + version)
 
     // Create Player
@@ -59,8 +59,13 @@ export function embed(addToBasketCallBack, removeFromBasketCallback) {
         const msgData = event.data
 
         // ADD TO BASKET
-        if (msgData.action == 'addToBasket') {
+        if (msgData.action == 'addToBasket' && addToBasketCallBack) {
             addToBasketCallBack(msgData.items)
+        }
+
+        // REMOVE FROM BASKET
+        if (msgData.action == 'removeFromBasket' && removeFromBasketCallback) {
+            removeFromBasketCallback(msgData.items)
         }
     })
     return iframeEl.contentWindow
