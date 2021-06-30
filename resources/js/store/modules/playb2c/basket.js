@@ -25,32 +25,44 @@ export default {
         fetchBasket({ state }, msg) {
             alert(msg)
         },
-        addToBasket({ getters, commit, dispatch }, { variant, sizeDetail, quantity = 1 }) {
-            dispatch(
-                'playEmbed/postMessage',
-                { action: 'addToBasket', items: [{ variant, sizeDetail, quantity }] },
-                { root: true }
-            )
-
+        async addToBasket({ getters, commit, dispatch }, { variant, sizeDetail, quantity = 1 }) {
+            commit('ADD_ITEM', newBasketItem)
             const newBasketItem = { variant, sizeDetail, quantity }
             const alreadyAdded = getters.getItemIsInBasket(newBasketItem)
             if (alreadyAdded) {
                 commit('SET_ITEM_QTY', alreadyAdded.quantity + quantity)
                 return
             }
-            commit('ADD_ITEM', newBasketItem)
+
+            await dispatch(
+                'playEmbed/postMessage',
+                { action: 'addToBasket', items: [{ variant, sizeDetail, quantity }] },
+                { root: true }
+            ).then(response => {
+                console.log('response', response.addToBasket)
+            })
         },
-        removeFromBasket({ getters, commit, dispatch }, { variant, sizeDetail }) {
-            dispatch(
+        async removeFromBasket({ getters, commit, dispatch }, { variant, sizeDetail }) {
+            commit('REMOVE_ITEM', { variant, sizeDetail })
+
+            await dispatch(
                 'playEmbed/postMessage',
                 { action: 'removeFromBasket', items: [{ variant, sizeDetail }] },
                 { root: true }
-            )
-
-            commit('REMOVE_ITEM', { variant, sizeDetail })
+            ).then(response => {
+                console.log('response', response.addToBasket)
+            })
         },
-        updateItemQty({ getters, commit }, { item, quantity }) {
+        async updateItemQty({ getters, commit }, { item, quantity }) {
             commit('SET_ITEM_QTY', { item, quantity })
+
+            await dispatch(
+                'playEmbed/postMessage',
+                { action: 'removeFromBasket', items: [{ variant, sizeDetail }] },
+                { root: true }
+            ).then(response => {
+                console.log('response', response.addToBasket)
+            })
         },
     },
 

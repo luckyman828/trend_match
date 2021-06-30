@@ -1,7 +1,7 @@
-export function embed(addToBasketCallBack, removeFromBasketCallback) {
+export function embed(addToBasketCallBack, removeFromBasketCallback, updateItemQuantityCallback) {
     // Kollekt PLAY
     const version = `0.0.0 - (7)`
-    console.log('Init PLAY embed script. Version: ' + version)
+    // console.log('Init PLAY embed script. Version: ' + version)
 
     // Create Player
     const playerEl = document.createElement('div')
@@ -66,6 +66,11 @@ export function embed(addToBasketCallBack, removeFromBasketCallback) {
         // REMOVE FROM BASKET
         if (msgData.action == 'removeFromBasket' && removeFromBasketCallback) {
             removeFromBasketCallback(msgData.items)
+        }
+
+        // UPDATE QUANTITY
+        if (msgData.action == 'updateItemQuantity' && updateItemQuantityCallback) {
+            updateItemQuantityCallback(msgData.item)
         }
     })
     return iframeEl.contentWindow
