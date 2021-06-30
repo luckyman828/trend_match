@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -857,10 +857,10 @@ try {
 
 /***/ }),
 
-/***/ "./resources/js/public-scripts/play-dkc.js":
-/*!*************************************************!*\
-  !*** ./resources/js/public-scripts/play-dkc.js ***!
-  \*************************************************/
+/***/ "./resources/js/public-scripts/play-shopify.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/public-scripts/play-shopify.js ***!
+  \*****************************************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -871,12 +871,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _play_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./play.js */ "./resources/js/public-scripts/play.js");
 
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -886,48 +880,77 @@ var contentWindow = Object(_play_js__WEBPACK_IMPORTED_MODULE_1__["embed"])(addTo
 
 function addToBasket(_x) {
   return _addToBasket.apply(this, arguments);
-} // Hello
-
+}
 
 function _addToBasket() {
-  _addToBasket = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(items) {
-    var newBasket;
-    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+  _addToBasket = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(items) {
+    var result, formData;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
-            newBasket = window.w2mInterop.addMultipleToBasket(items.map(function (item) {
-              return {
-                ean: item.sizeDetail.ean,
-                quantity: 1
-              };
-            }));
+            console.log('add to basket', items);
+            formData = {
+              items: items.map(function (item) {
+                return {
+                  id: item.sizeDetail.ref_id,
+                  quantity: item.quantity
+                };
+              })
+            };
+            _context2.next = 4;
+            return fetch('/cart/add.js', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            }).then( /*#__PURE__*/function () {
+              var _ref = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(response) {
+                return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        _context.next = 2;
+                        return response.json();
 
-          case 1:
+                      case 2:
+                        result = _context.sent;
+                        contentWindow.postMessage({
+                          action: 'updateBasketItems',
+                          items: result.items.map(function (basketItem, index) {
+                            var item = items[index];
+                            item.quantity = basketItem.quantity;
+                          })
+                        }, 'https://kollekt_feature.test');
+
+                      case 4:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _callee);
+              }));
+
+              return function (_x2) {
+                return _ref.apply(this, arguments);
+              };
+            }());
+
+          case 4:
+            return _context2.abrupt("return", result);
+
+          case 5:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee);
+    }, _callee2);
   }));
   return _addToBasket.apply(this, arguments);
 }
 
-function removeFromBasket(items) {
-  var _iterator = _createForOfIteratorHelper(items),
-      _step;
-
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var item = _step.value;
-      window.w2mInterop.removeFromBasket(item.sizeDetail.ean);
-    }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
-}
+function removeFromBasket(items) {}
 
 /***/ }),
 
@@ -1035,14 +1058,14 @@ function embed(addToBasketCallBack, removeFromBasketCallback) {
 
 /***/ }),
 
-/***/ 5:
-/*!*******************************************************!*\
-  !*** multi ./resources/js/public-scripts/play-dkc.js ***!
-  \*******************************************************/
+/***/ 6:
+/*!***********************************************************!*\
+  !*** multi ./resources/js/public-scripts/play-shopify.js ***!
+  \***********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\laragon\www\kollekt_feature\resources\js\public-scripts\play-dkc.js */"./resources/js/public-scripts/play-dkc.js");
+module.exports = __webpack_require__(/*! C:\laragon\www\kollekt_feature\resources\js\public-scripts\play-shopify.js */"./resources/js/public-scripts/play-shopify.js");
 
 
 /***/ })
