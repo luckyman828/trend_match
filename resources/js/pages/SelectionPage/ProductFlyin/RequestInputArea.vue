@@ -15,6 +15,8 @@
             :open="showLabelList && labelsFiltered.length > 0"
             placement="top"
             :handleResize="true"
+            ref="labelPopover"
+            :autoHide="!forceLabelPopoverOpen"
         >
             <BaseInputTextArea
                 :class="{ 'has-label': request.labels.length > 0 }"
@@ -102,6 +104,22 @@ export default {
         submitDisabled() {
             return this.request.content.length < 1
         },
+        forceLabelPopoverOpen() {
+            return (
+                this.enabledFeatures.includes('force_ticket_labels') &&
+                this.request.labels.length <= 0 &&
+                this.request.labels.length <= 0
+            )
+        },
+    },
+    watch: {
+        writeActive(isActive) {
+            if (isActive && this.forceLabelPopoverOpen) {
+                this.onShowLabelList()
+            } else {
+                this.showLabelList = false
+            }
+        },
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest']),
@@ -127,20 +145,30 @@ export default {
             }
 
             // Hide the label list
-            this.showLabelList = false
+            if (!this.forceLabelPopoverOpen) {
+                this.showLabelList = false
+            } else {
+                this.$refs.labelPopover.$_handleResize()
+            }
             this.$nextTick(() => {
                 this.$refs.requestField.resize()
             })
         },
         removeLabel(index) {
             this.request.labels.splice(index, 1)
+            if (this.forceLabelPopoverOpen) {
+                this.onShowLabelList()
+            }
         },
 
         onInput(e) {
             // if (!this.ticketModeActive) return
             if (this.showLabelList) {
+                this.$refs.labelPopover.$_handleResize()
                 if (this.labelListFocusIndex > this.labelsFiltered.length - 1) this.labelListFocusIndex = 0
-                if (e.target.value.search('#') < 0) this.showLabelList = false
+                if (e.target.value.search('#') < 0 && !this.forceLabelPopoverOpen) {
+                    this.showLabelList = false
+                }
             }
             if (e.data == '#') {
                 this.showLabelList = true
@@ -188,9 +216,7 @@ export default {
         },
         async onSubmit(e) {
             if (e) e.preventDefault()
-            console.log(this.enabledFeatures, this.request.labels)
-            if (this.enabledFeatures.includes('force_ticket_labels') && this.request.labels.length <= 0) {
-                console.log('no labels. Cancelling')
+            if (this.forceLabelPopoverOpen) {
                 // this.SHOW_SNACKBAR({ msg: 'Please add a label before posting.', type: 'info' })
                 this.onShowLabelList()
                 return
@@ -227,9 +253,6 @@ export default {
             this.writeActive = false
             document.activeElement.blur()
         },
-    },
-    created() {
-        console.log('created')
     },
 }
 </script>
