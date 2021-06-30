@@ -4,7 +4,7 @@ const contentWindow = embed(addToBasket, removeFromBasket)
 
 async function addToBasket(items) {
     let result
-    console.log('add to basket', items)
+    console.log('add to basket ss', items)
     const formData = {
         items: items.map(item => {
             return {
@@ -22,6 +22,8 @@ async function addToBasket(items) {
         body: JSON.stringify(formData),
     }).then(async response => {
         result = await response.json()
+
+        console.log('result', result)
         contentWindow.postMessage(
             {
                 action: 'updateBasketItems',

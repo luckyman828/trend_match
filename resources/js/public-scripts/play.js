@@ -1,6 +1,6 @@
 export function embed(addToBasketCallBack, removeFromBasketCallback) {
     // Kollekt PLAY
-    const version = `0.0.0 - (6)`
+    const version = `0.0.0 - (7)`
     console.log('Init PLAY embed script. Version: ' + version)
 
     // Create Player
