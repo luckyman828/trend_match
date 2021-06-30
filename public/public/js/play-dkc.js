@@ -886,7 +886,8 @@ var contentWindow = Object(_play_js__WEBPACK_IMPORTED_MODULE_1__["embed"])(addTo
 
 function addToBasket(_x) {
   return _addToBasket.apply(this, arguments);
-}
+} // Hello
+
 
 function _addToBasket() {
   _addToBasket = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(items) {

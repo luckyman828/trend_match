@@ -8,6 +8,8 @@ async function addToBasket(items) {
     )
 }
 
+// Hello
+
 function removeFromBasket(items) {
     for (const item of items) {
         window.w2mInterop.removeFromBasket(item.sizeDetail.ean)
