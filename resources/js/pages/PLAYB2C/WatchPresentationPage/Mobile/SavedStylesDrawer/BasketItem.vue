@@ -13,9 +13,14 @@
                     <div class="product-name">{{ variant.name }}</div>
                     <div class="price flex-list md">
                         <div class="current-price">
-                            {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
+                            {{
+                                variant.yourPrice.wholesale_price
+                                    ? variant.yourPrice.wholesale_price
+                                    : variant.yourPrice.recommended_retail_price
+                            }}
+                            {{ variant.yourPrice.currency }}
                         </div>
-                        <div class="old-price">
+                        <div class="old-price" v-if="variant.yourPrice.wholesale_price">
                             {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
                         </div>
                     </div>
@@ -47,7 +52,7 @@
                     </div>
                     <div class="flex-list flex-v quantity-col space-min justify">
                         <span class="ft-bd ft-color-soft ft-10">QTY</span>
-                        <span class="ft-bd">{{ item.qty }}</span>
+                        <span class="ft-bd">{{ item.quantity }}</span>
                     </div>
                     <div class="increment sm light flex-list center-v center-h" @click="incrementQty">
                         <i class="fas fa-plus ft-color-soft"></i>
@@ -77,10 +82,10 @@ export default {
     methods: {
         ...mapActions('basket', ['updateItemQty']),
         decrementQty() {
-            this.updateItemQty({ item: this.item, qty: this.item.qty - 1 })
+            this.updateItemQty({ item: this.item, quantity: this.item.quantity - 1 })
         },
         incrementQty() {
-            this.updateItemQty({ item: this.item, qty: this.item.qty + 1 })
+            this.updateItemQty({ item: this.item, quantity: this.item.quantity + 1 })
         },
     },
 }

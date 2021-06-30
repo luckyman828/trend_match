@@ -8,9 +8,14 @@
                 </div>
                 <div class="price">
                     <div class="current-price">
-                        {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
+                        {{
+                            product.yourPrice.wholesale_price
+                                ? product.yourPrice.wholesale_price
+                                : product.yourPrice.recommended_retail_price
+                        }}
+                        {{ product.yourPrice.currency }}
                     </div>
-                    <div class="old-price">
+                    <div class="old-price" v-if="product.yourPrice.wholesale_price">
                         {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
                     </div>
                 </div>

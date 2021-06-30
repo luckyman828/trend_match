@@ -10,7 +10,12 @@
             </BaseImageSizer>
             <div class="price-wrapper">
                 <span class="price"
-                    >{{ variant.product.yourPrice.wholesale_price }} {{ variant.product.yourPrice.currency }}</span
+                    >{{
+                        variant.product.yourPrice.wholesale_price
+                            ? variant.product.yourPrice.wholesale_price
+                            : variant.product.yourPrice.recommended_retail_price
+                    }}
+                    {{ variant.product.yourPrice.currency }}</span
                 >
             </div>
         </div>
