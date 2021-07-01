@@ -1,7 +1,7 @@
 export function embed(addToBasketCallBack, removeFromBasketCallback, updateItemQuantityCallback) {
     // Kollekt PLAY
     const version = `0.0.0 - (7)`
-    // console.log('Init PLAY embed script. Version: ' + version)
+    console.log('Init PLAY embed script. Version: ' + version)
 
     // Create Player
     const playerEl = document.createElement('div')
@@ -57,6 +57,8 @@ export function embed(addToBasketCallBack, removeFromBasketCallback, updateItemQ
             'https://dev-stable.kollekt.dk',
             'https://staging.kollekt.dk',
         ]
+
+        console.log('message!', event.data)
         if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
         const msgData = event.data
 

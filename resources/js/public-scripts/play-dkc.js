@@ -1,4 +1,6 @@
 import { embed } from './play.js'
+const version = `0.0.0 - (1)`
+console.log('Init PLAY DKC embed script. Version: ' + version)
 
 const contentWindow = embed(addToBasket, removeFromBasket)
 
