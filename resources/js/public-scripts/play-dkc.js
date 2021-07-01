@@ -5,28 +5,11 @@ console.log('Init PLAY DKC embed script. Version: ' + version)
 const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity)
 
 async function addToBasket(items) {
-    console.log(
-        'post this',
-        items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 }))
-    )
-    const newBasket = window.w2mInterop.addMultipleToBasket(
-        items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 }))
-    )
-    console.log('add response', newBasket)
-    const basket = await w2mInterop.getBasket()
-    console.log('get basket', basket)
-    // contentWindow.postMessage(
-    //     {
-    //         action: 'updateBasketItems',
-    //         items: items.map(item => {
-    //             const basketItem = result.items.find(x => x.id == item.sizeDetail.ref_id)
-    //             if (!basketItem) return item
-    //             item.quantity = basketItem.quantity
-    //             return item
-    //         }),
-    //     },
-    //     targetOrigin
-    // )
+    await window.w2mInterop.addMultipleToBasket(items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 })))
+
+    const newBasket = await w2mInterop.getBasket()
+    console.log('AFTER ADDING!', newBasket)
+    updateKollektBasket(newBasket)
 }
 
 async function removeFromBasket(items) {
@@ -35,14 +18,29 @@ async function removeFromBasket(items) {
             await window.w2mInterop.removeFromBasket(item.sizeDetail.ean)
         })
     )
-    const basket = await w2mInterop.getBasket()
-    console.log('remove basket', basket)
+    const newBasket = await w2mInterop.getBasket()
+    console.log('AFTER REMOVING!', newBasket)
+    updateKollektBasket(newBasket)
 }
 
 async function updateItemQuantity(item) {
-    const newBasket = await window.w2mInterop.updateBasket(item.sizeDetail.ean, item.quantity)
+    await window.w2mInterop.updateBasket(item.sizeDetail.ean, item.quantity)
 
-    console.log('update response', newBasket)
-    const basket = await w2mInterop.getBasket()
-    console.log('update basket', basket)
+    const newBasket = await w2mInterop.getBasket()
+    updateKollektBasket(newBasket)
+}
+
+function updateKollektBasket(newBasket) {
+    contentWindow.postMessage(
+        {
+            action: 'updateBasketItems',
+            items: items.map(item => {
+                const basketItem = newBasket.basketLines.find(x => x.productEAN == item.sizeDetail.ean)
+                if (!basketItem) return item
+                item.quantity = basketItem.quantity
+                return item
+            }),
+        },
+        targetOrigin
+    )
 }
