@@ -59,8 +59,15 @@
 
             <!-- ACTIONS  -->
             <div class="action-list flex-list center-v pos-top-right pas-sm">
-                <AddToWishlistButton class="true-square white" :variants="[variant]" />
-                <div class="button invisible ghost-hover circle">
+                <AddToWishlistButton
+                    class="invisible true-square float-icon-hover"
+                    :variants="[variant]"
+                    theme="invisible"
+                />
+                <div
+                    class="button invisible ghost-hover circle"
+                    v-show-contextmenu="{ contextMenuComponent: moreContext, placement: 'bottom' }"
+                >
                     <i class="fas fa-ellipsis-h"></i>
                 </div>
             </div>
@@ -89,7 +96,7 @@ import ChooseSizePopover from '../../ChooseSizePopover'
 export default {
     name: 'basketItem',
     components: { AddToWishlistButton, ChooseSizePopover },
-    props: ['item'],
+    props: ['item', 'moreContext'],
     computed: {
         ...mapGetters('basket', {
             getVariantIsInBasket: 'getVariantIsInBasket',
@@ -107,6 +114,9 @@ export default {
         incrementQty() {
             this.updateItemQty({ item: this.item, quantity: this.item.quantity + 1 })
         },
+    },
+    created() {
+        console.log('created', this.moreContext)
     },
 }
 </script>

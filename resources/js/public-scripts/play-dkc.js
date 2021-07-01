@@ -3,6 +3,10 @@ import { embed } from './play.js'
 const contentWindow = embed(addToBasket, removeFromBasket)
 
 async function addToBasket(items) {
+    console.log(
+        'post this',
+        items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 }))
+    )
     const newBasket = window.w2mInterop.addMultipleToBasket(
         items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 }))
     )

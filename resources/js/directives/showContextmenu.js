@@ -2,9 +2,11 @@ const showContextMenuDirective = {}
 showContextMenuDirective.install = Vue => {
     Vue.directive('show-contextmenu', {
         bind: function(el, binding, vnode) {
+            console.log('bind this', binding.value, vnode)
             el.triggerHandler = function(event) {
+                console.log('trigger this', binding.value)
                 // Get the element of the binding
-                const contextMenu = vnode.context.$refs[binding.value.ref]
+                const contextMenu = binding.value.contextMenuComponent || vnode.context.$refs[binding.value.ref]
                 if (!contextMenu) return
                 event.preventDefault()
 
