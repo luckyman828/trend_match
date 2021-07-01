@@ -32,7 +32,7 @@
                     />
                 </template>
                 <template v-else>
-                    <BasketItem v-for="item in basket" :key="item.id" :item="item" :moreContext="basketMoreContext" />
+                    <BasketItem v-for="item in basket" :key="item.id" :item="item" />
                 </template>
             </div>
         </template>
@@ -57,14 +57,6 @@
                 <span>Go to Checkout</span>
             </BaseButton>
         </div>
-
-        <BaseContextMenu ref="basketMoreContext" class="more-context">
-            <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-trash" hotkey="KeyD">
-                    <u>R</u>emove from Basket
-                </BaseContextMenuItem>
-            </div>
-        </BaseContextMenu>
     </BaseFlyin>
 </template>
 
@@ -83,7 +75,6 @@ export default {
         return {
             wishlistSnapshot: [],
             addToBasketVariant: null,
-            isRendered: false,
         }
     },
     computed: {
@@ -95,11 +86,6 @@ export default {
             basket: 'getBasket',
             basketTotal: 'getBasketTotal',
         }),
-        basketMoreContext() {
-            console.log('get basket more context', this.isRendered && this.$refs.basketMoreContext)
-            if (!this.isRendered) return
-            return this.$refs.basketMoreContext
-        },
         userCurrency() {
             return this.wishlist.length > 0
                 ? this.wishlist[0].yourPrice.currency
@@ -118,12 +104,6 @@ export default {
         show(isVisible) {
             if (isVisible) {
                 this.saveWishlistSnapshot()
-                this.$nextTick(() => {
-                    this.isRendered = true
-                    console.log('is rendered', this.$refs.basketMoreContext)
-                })
-            } else {
-                this.isRendered = false
             }
         },
         view() {
@@ -134,9 +114,6 @@ export default {
         saveWishlistSnapshot() {
             this.wishlistSnapshot = [...this.wishlist]
         },
-    },
-    created() {
-        console.log('created', this.$refs)
     },
 }
 </script>

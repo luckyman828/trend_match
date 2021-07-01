@@ -66,7 +66,7 @@
                 />
                 <div
                     class="button invisible ghost-hover circle"
-                    v-show-contextmenu="{ contextMenuComponent: moreContext, placement: 'bottom' }"
+                    v-show-contextmenu="{ ref: 'moreContext', placement: 'bottom' }"
                 >
                     <i class="fas fa-ellipsis-h"></i>
                 </div>
@@ -85,6 +85,14 @@
             </div>
             <!-- END ACTIONS  -->
         </div>
+
+        <BaseContextMenu ref="moreContext" class="more-context">
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-trash" hotkey="KeyD" @click="onRemoveFromBasket">
+                    <u>R</u>emove from Basket
+                </BaseContextMenuItem>
+            </div>
+        </BaseContextMenu>
     </div>
 </template>
 
@@ -98,25 +106,22 @@ export default {
     components: { AddToWishlistButton, ChooseSizePopover },
     props: ['item', 'moreContext'],
     computed: {
-        ...mapGetters('basket', {
-            getVariantIsInBasket: 'getVariantIsInBasket',
-        }),
         variant() {
             return this.item.variant
         },
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
-        ...mapActions('basket', ['updateItemQty']),
+        ...mapActions('basket', ['updateItemQty', 'removeFromBasket']),
         decrementQty() {
             this.updateItemQty({ item: this.item, quantity: this.item.quantity - 1 })
         },
         incrementQty() {
             this.updateItemQty({ item: this.item, quantity: this.item.quantity + 1 })
         },
-    },
-    created() {
-        console.log('created', this.moreContext)
+        onRemoveFromBasket() {
+            this.removeFromBasket({ variant: this.item.variant, sizeDetail: this.item.sizeDetail })
+        },
     },
 }
 </script>
