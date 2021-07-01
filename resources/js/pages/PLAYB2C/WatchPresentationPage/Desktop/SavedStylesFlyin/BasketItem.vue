@@ -109,10 +109,22 @@ export default {
         variant() {
             return this.item.variant
         },
+        sizeDetail() {
+            return this.item.sizeDetail
+        },
+    },
+    watch: {
+        sizeDetail(newSizeDetail, oldSizeDetail) {
+            this.changeItemSize({
+                item: this.item,
+                newSizeDetail,
+                oldSizeDetail,
+            })
+        },
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
-        ...mapActions('basket', ['updateItemQty', 'removeFromBasket']),
+        ...mapActions('basket', ['updateItemQty', 'removeFromBasket', 'changeItemSize']),
         decrementQty() {
             this.updateItemQty({ item: this.item, quantity: this.item.quantity - 1 })
         },

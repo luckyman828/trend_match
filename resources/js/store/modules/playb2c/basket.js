@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export default {
     namespaced: true,
 
@@ -36,6 +38,7 @@ export default {
             const newBasketItem = { variant, sizeDetail, quantity }
             const alreadyAdded = getters.getItemIsInBasket(newBasketItem)
             if (alreadyAdded) {
+                console.log('already added!? :o ')
                 commit('SET_ITEM_QTY', alreadyAdded.quantity + quantity)
             } else {
                 commit('ADD_ITEM', newBasketItem)
@@ -61,6 +64,31 @@ export default {
 
             await dispatch('playEmbed/postMessage', { action: 'updateItemQuantity', item }, { root: true })
         },
+        async changeItemSize({ dispatch, getters }, { item, newSizeDetail, oldSizeDetail }) {
+            // Vue.set(item, 'sizeDetail', newSizeDetail)
+
+            // Remove old and add new if the old item is still in the basket / has not already been updated
+            const notUpdated = getters.getItemIsInBasket({ variant: item.variant, sizeDetail: oldSizeDetail })
+
+            if (notUpdated) {
+                // Remove the old item if it is still there
+                await dispatch('removeFromBasket', { variant: item.variant, sizeDetail: oldSizeDetail })
+                // Add the new item
+                await dispatch('addToBasket', { variant: item.variant, sizeDetail: newSizeDetail })
+            }
+
+            // Post message to parent window
+            await dispatch(
+                'playEmbed/postMessage',
+                { action: 'removeFromBasket', items: [{ variant: item.variant, sizeDetail: oldSizeDetail }] },
+                { root: true }
+            )
+            await dispatch(
+                'playEmbed/postMessage',
+                { action: 'addToBasket', items: [{ variant: item.variant, sizeDetail: newSizeDetail }] },
+                { root: true }
+            )
+        },
     },
 
     mutations: {
@@ -81,7 +109,6 @@ export default {
             state.basket.push({ variant, sizeDetail, quantity })
         },
         SET_ITEM_QTY(state, { item, quantity }) {
-            console.log('set qty', item, quantity)
             item.quantity = Math.max(quantity, 0)
         },
         UPDATE_BASKET_ITEM(state, item) {},
