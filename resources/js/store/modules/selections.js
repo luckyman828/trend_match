@@ -1240,6 +1240,16 @@ export default {
                                 }
                             }
                         })
+                        // Remove approval users
+                        selection.users.map(user => {
+                            if (['Ancestor', 'TeamAncestor'].includes(user.inherit_source) && user.job == 'Approval') {
+                                const index = users.findIndex(directUser => directUser.id == user.id)
+                                if (index >= 0) {
+                                    users.splice(index, 1)
+                                }
+                            }
+                        })
+
                         return users
                     },
                 })
