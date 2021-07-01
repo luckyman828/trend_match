@@ -115,6 +115,7 @@ export default {
     },
     watch: {
         sizeDetail(newSizeDetail, oldSizeDetail) {
+            console.log('size detail changed')
             this.changeItemSize({
                 item: this.item,
                 newSizeDetail,

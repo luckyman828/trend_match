@@ -5,11 +5,12 @@ console.log('Init PLAY DKC embed script. Version: ' + version)
 const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity)
 
 async function addToBasket(items) {
+    console.log('Add this to basket', items)
     await window.w2mInterop.addMultipleToBasket(items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 })))
 
     const newBasket = await w2mInterop.getBasket()
     console.log('AFTER ADDING!', newBasket)
-    updateKollektBasket(newBasket)
+    updateKollektBasket(items, newBasket)
 }
 
 async function removeFromBasket(items) {
@@ -20,17 +21,17 @@ async function removeFromBasket(items) {
     )
     const newBasket = await w2mInterop.getBasket()
     console.log('AFTER REMOVING!', newBasket)
-    updateKollektBasket(newBasket)
+    updateKollektBasket(items, newBasket)
 }
 
 async function updateItemQuantity(item) {
     await window.w2mInterop.updateBasket(item.sizeDetail.ean, item.quantity)
 
     const newBasket = await w2mInterop.getBasket()
-    updateKollektBasket(newBasket)
+    updateKollektBasket([item], newBasket)
 }
 
-function updateKollektBasket(newBasket) {
+function updateKollektBasket(items, newBasket) {
     contentWindow.postMessage(
         {
             action: 'updateBasketItems',
