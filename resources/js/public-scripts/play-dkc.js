@@ -5,7 +5,7 @@ console.log('Init PLAY DKC embed script. Version: ' + version)
 const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
 const targetOrigin = `${appUrl}`
 
-const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity)
+const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity, changeItemSizeCallback)
 
 async function addToBasket(items) {
     console.log('Add this to basket', items)
@@ -17,6 +17,7 @@ async function addToBasket(items) {
 }
 
 async function removeFromBasket(items) {
+    console.log('remove this from basket', items)
     await Promise.all(
         items.map(async item => {
             await window.w2mInterop.removeFromBasket(item.sizeDetail.ean)
@@ -32,6 +33,15 @@ async function updateItemQuantity(item) {
 
     const newBasket = await w2mInterop.getBasket()
     updateKollektBasket([item], newBasket)
+}
+
+async function changeItemSizeCallback(updateDetail) {
+    const item = updateDetail.item
+    const oldSizeDetail = updateDetail.oldSizeDetail
+    const newSizeDetail = updateDetail.newSizeDetail
+
+    await removeFromBasket([{ variant: item.variant, sizeDetail: oldSizeDetail }])
+    await addToBasket([{ variant: item.variant, sizeDetail: newSizeDetail }])
 }
 
 function updateKollektBasket(items, newBasket) {

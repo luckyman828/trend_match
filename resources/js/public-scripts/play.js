@@ -1,4 +1,9 @@
-export function embed(addToBasketCallBack, removeFromBasketCallback, updateItemQuantityCallback) {
+export function embed(
+    addToBasketCallBack,
+    removeFromBasketCallback,
+    updateItemQuantityCallback,
+    changeItemSizeCallback
+) {
     // Kollekt PLAY
     const version = `0.0.0 - (7)`
     console.log('Init PLAY embed script. Version: ' + version)
@@ -75,6 +80,12 @@ export function embed(addToBasketCallBack, removeFromBasketCallback, updateItemQ
         // UPDATE QUANTITY
         if (msgData.action == 'updateItemQuantity' && updateItemQuantityCallback) {
             updateItemQuantityCallback(msgData.item)
+        }
+
+        // CHANGE SIZE
+        if (msgData.action == 'changeItemSize' && changeItemSizeCallback) {
+            // updateDetail: { item, newSizeDetail, oldSizeDetail }
+            changeItemSizeCallback(msgData.updateDetail)
         }
     })
     return iframeEl.contentWindow

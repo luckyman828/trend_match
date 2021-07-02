@@ -80,12 +80,7 @@ export default {
             // Post message to parent window
             await dispatch(
                 'playEmbed/postMessage',
-                { action: 'removeFromBasket', items: [{ variant: item.variant, sizeDetail: oldSizeDetail }] },
-                { root: true }
-            )
-            await dispatch(
-                'playEmbed/postMessage',
-                { action: 'addToBasket', items: [{ variant: item.variant, sizeDetail: newSizeDetail }] },
+                { action: 'changeItemSize', updateDetail: { item, newSizeDetail, oldSizeDetail } },
                 { root: true }
             )
         },
