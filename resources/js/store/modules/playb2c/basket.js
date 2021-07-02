@@ -22,7 +22,6 @@ export default {
             )
         },
         getBasketItem: state => item => {
-            console.log('get basket item', item, state.basket)
             return state.basket.find(
                 basketItem =>
                     basketItem.variant.id == item.variant.id &&
@@ -39,7 +38,6 @@ export default {
             const newBasketItem = { variant, sizeDetail, quantity }
             const alreadyAdded = getters.getItemIsInBasket(newBasketItem)
             if (alreadyAdded) {
-                console.log('already added!? :o ')
                 commit('SET_ITEM_QTY', alreadyAdded.quantity + quantity)
             } else {
                 commit('ADD_ITEM', newBasketItem)

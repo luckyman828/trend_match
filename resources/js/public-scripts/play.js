@@ -63,7 +63,7 @@ export function embed(
             'https://staging.kollekt.dk',
         ]
 
-        console.log('message!', event.data)
+        // console.log('message!', event.data)
         if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
         const msgData = event.data
 

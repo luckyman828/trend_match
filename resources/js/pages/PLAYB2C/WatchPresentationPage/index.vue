@@ -78,10 +78,8 @@ export default {
             // console.log('VUE, message recieved', event)
             const msgData = event.data
             if (msgData.action == 'updateBasketItems') {
-                console.log('update basket items', msgData)
                 msgData.items.map(item => {
                     const basketItem = this.$store.getters['basket/getBasketItem'](item)
-                    console.log('the basket item', basketItem)
                     if (!basketItem) return
                     this.$store.commit('basket/SET_ITEM_QTY', { item: basketItem, quantity: item.quantity })
                 })

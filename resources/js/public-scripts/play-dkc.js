@@ -8,23 +8,23 @@ const targetOrigin = `${appUrl}`
 const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity, changeItemSizeCallback)
 
 async function addToBasket(items) {
-    console.log('Add this to basket', items)
+    // console.log('Add this to basket', items)
     await window.w2mInterop.addMultipleToBasket(items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 })))
 
     const newBasket = await w2mInterop.getBasket()
-    console.log('AFTER ADDING!', newBasket)
+    // console.log('AFTER ADDING!', newBasket)
     updateKollektBasket(items, newBasket)
 }
 
 async function removeFromBasket(items) {
-    console.log('remove this from basket', items)
+    // console.log('remove this from basket', items)
     await Promise.all(
         items.map(async item => {
             await window.w2mInterop.removeFromBasket(item.sizeDetail.ean)
         })
     )
     const newBasket = await w2mInterop.getBasket()
-    console.log('AFTER REMOVING!', newBasket)
+    // console.log('AFTER REMOVING!', newBasket)
     updateKollektBasket(items, newBasket)
 }
 
