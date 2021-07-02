@@ -2,6 +2,9 @@ import { embed } from './play.js'
 const version = `0.0.0 - (1)`
 console.log('Init PLAY DKC embed script. Version: ' + version)
 
+const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
+const targetOrigin = `${appUrl}`
+
 const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity)
 
 async function addToBasket(items) {
