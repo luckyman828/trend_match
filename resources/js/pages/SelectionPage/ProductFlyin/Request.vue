@@ -51,14 +51,14 @@
 
                 <div class="label-wrapper">
                     <v-popover
-                        v-if="hasLabel || hasTicketControl"
+                        v-if="hasLabel || hasEditAccess"
                         ref="labelPopover"
                         trigger="click"
-                        :disabled="!hasTicketControl"
+                        :disabled="!hasEditAccess"
                         @hide="$refs.labelList.removeListeners()"
                         @show="$refs.labelList.addListeners()"
                     >
-                        <div class="request-label ghost dark xs square" :class="{ clickable: hasTicketControl }">
+                        <div class="request-label ghost dark xs square" :class="{ clickable: hasEditAccess }">
                             <span v-if="hasLabel">#{{ request.labels[0] }}</span>
                             <template v-else> <i class="far fa-plus"></i><span>Add label</span> </template>
                         </div>
@@ -213,6 +213,7 @@ export default {
             )
         },
         hasEditAccess() {
+            if (this.request.product.is_completed) return false
             return this.request.selection.your_job == 'Alignment'
         },
     },
