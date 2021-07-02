@@ -22,6 +22,7 @@ export default {
             )
         },
         getBasketItem: state => item => {
+            console.log('get basket item', item, state.basket)
             return state.basket.find(
                 basketItem =>
                     basketItem.variant.id == item.variant.id &&
