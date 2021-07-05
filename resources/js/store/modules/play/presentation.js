@@ -118,6 +118,7 @@ export default {
             // Fetch presentation video
             const apiUrl = `/files/${presentationId}/video`
             let video
+            console.log('keep going')
             await axios
                 .get(apiUrl)
                 .then(async response => {
@@ -130,6 +131,10 @@ export default {
                     await dispatch('initTimings', timings)
                     commit('SET_TIMINGS', timings)
                     commit('SET_TIMINGS_READY', true)
+
+                    const products = response.data.products
+                    await dispatch('products/initProducts', products, { root: true })
+                    commit('products/SET_PRODUCTS', products, { root: true })
                 })
                 .catch(err => {
                     commit('SET_STATUS', err.status)

@@ -43,23 +43,21 @@ export default {
         },
     },
     methods: {
-        ...mapActions('playPresentation', ['fetchPresentation']),
-        ...mapActions('videoComments', ['fetchVideoComments']),
+        ...mapActions('playPresentation', ['fetchPresentationVideo']),
         ...mapActions('productGroups', ['fetchFileProductGroups']),
-        ...mapActions('products', ['fetchProducts']),
+        ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapActions('videos', ['fetchVideoUrls']),
         ...mapMutations('player', ['SET_DESIRED_QUALITY']),
         async fetchData() {
             this.loadingData = true
             // Fetch presentation details
             const presentationId = this.$route.params.presentationId
-            await this.fetchPresentation(presentationId)
-            const video = this.video
+            const video = await this.fetchPresentationVideo(presentationId)
 
             await Promise.all([
-                this.fetchProducts({ fileId: presentationId }),
+                // this.fetchProducts({ fileId: presentationId }),
                 this.fetchFileProductGroups(presentationId),
-                this.fetchVideoComments({ video }),
+                // this.fetchVideoComments({ video }),
                 this.fetchVideoUrls(video),
             ])
 
