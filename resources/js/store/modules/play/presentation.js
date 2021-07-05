@@ -118,10 +118,13 @@ export default {
             // Fetch presentation video
             const apiUrl = `/files/${presentationId}/video`
             let video
-            console.log('keep going')
             await axios
                 .get(apiUrl)
                 .then(async response => {
+                    const presentation = response.data.file
+                    Vue.set(presentation, 'id', presentationId)
+                    commit('SET_PRESENTATION', presentation)
+
                     video = response.data.video
                     commit('SET_VIDEO', video)
                     const timings = response.data.timings

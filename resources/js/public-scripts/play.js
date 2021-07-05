@@ -7,29 +7,110 @@ export function embed(
     // Kollekt PLAY
     const version = `0.0.0 - (7)`
     console.log('Init PLAY embed script. Version: ' + version)
+    document.head.insertAdjacentHTML(
+        'beforeend',
+        `<style>
+            .kollekt-play-wrapper {
+                position: fixed; 
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                margin: auto;
+                height: 100vh; 
+                width: 100vw; 
+                z-index: 99999; 
+                display: none;
+                scroll-behavior: smooth;
+            }
+            .kollekt-play-overlay {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                background: #0D131C69;
+            }
+            .kollekt-player {
+                position: fixed; 
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                margin: auto;
+                height: 100vh; 
+                width: 100vw; 
+                scroll-behavior: smooth;
+                max-height: 800px;
+                max-width: 1280px;
+                z-index: 1;
+            }
+            .kollekt-player-frame {
+                background: #f4f6ff;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+            .kollekt-close-button {
+                position: absolute; 
+                right: 0; 
+                top: -40px; 
+                height: 32px; 
+                width: 32px; 
+                z-index: 1;
+                border: none;
+                -webkit-appearence: none;
+                border-radius: 50px;
+                background: white;
+                color: #1C293B;
+            }
+            .kollekt-close-button > svg {
+                height: 15px;
+                width: 15px;
+                margin-top: 5px;
+            }
+            @media screen and (max-width: 800) {
+                min-height: 100vh;
+                min-width: 100vw;
+                max-height: 100vh;
+                min-height: -webkit-fill-available;
+                height: -webkit-fill-available;'
+            }
+        </style>`
+    )
+
+    // Create wrapper
+    const wrapperEl = document.createElement('div')
+    wrapperEl.classList.add('kollekt-play-wrapper')
 
     // Create Player
     const playerEl = document.createElement('div')
-    playerEl.style.cssText =
-        'position: fixed; left: 0; top: 0; height: 100vh; width: 100vw; z-index: 99999; display: none; min-height: 100vh;min-width: 100vw;max-height: 100vh;overflow: hidden;background: #f4f6ff;scroll-behavior: smooth;min-height: -webkit-fill-available;height: -webkit-fill-available;'
+    playerEl.classList.add('kollekt-player')
+    wrapperEl.appendChild(playerEl)
+
+    // Crete overlay
+    const overlayEl = document.createElement('div')
+    overlayEl.classList.add('kollekt-play-overlay')
+    overlayEl.addEventListener('click', function(e) {
+        wrapperEl.style.display = 'none'
+    })
+    wrapperEl.appendChild(overlayEl)
 
     // Close button
     const closeButton = document.createElement('button')
-    closeButton.innerHTML = '<span>X</span>'
-    closeButton.style.cssText = 'position: absolute; right: 0; top: 0; height: 40px; width: 40px; z-index: 1;'
+    closeButton.innerHTML = `<svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="times" class="svg-inline--fa fa-times fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"></path></svg>`
+    closeButton.classList.add('kollekt-close-button')
     closeButton.addEventListener('click', function(e) {
-        playerEl.style.display = 'none'
+        wrapperEl.style.display = 'none'
     })
 
     const iframeEl = document.createElement('iframe')
     iframeEl.id = `embed-${version}`
+    iframeEl.classList.add('kollekt-player-frame')
     iframeEl.name = Date.now()
-    iframeEl.style.cssText = 'width: 100%; height: 100%;'
+    iframeEl.style.cssText = 'width: 100%; height: 100%; border: none;'
 
     playerEl.appendChild(closeButton)
     playerEl.appendChild(iframeEl)
 
-    document.body.appendChild(playerEl)
+    document.body.appendChild(wrapperEl)
 
     // Add click listener
     document.addEventListener('click', function(e) {
@@ -47,7 +128,7 @@ export function embed(
         // iframeEl.src = `${iFrameBaseUrl}${videoId}`
         // iframeEl.src = `https://kollekt_feature.test/#/?timestamp=${new Date().getTime()}`
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
-        playerEl.style.display = 'block'
+        wrapperEl.style.display = 'block'
         iframeEl.contentWindow.location.href = iframeEl.src
     })
 
