@@ -156,6 +156,9 @@ export default {
                     const products = response.data.products
                     await dispatch('products/initProducts', products, { root: true })
                     commit('products/SET_PRODUCTS', products, { root: true })
+
+                    const workspace = response.data.workspace
+                    Vue.set(presentation, 'workspace', workspace)
                 })
                 .catch(err => {
                     commit('SET_STATUS', err.status)

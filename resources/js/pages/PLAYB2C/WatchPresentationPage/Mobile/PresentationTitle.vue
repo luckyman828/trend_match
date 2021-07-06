@@ -14,7 +14,7 @@
             </button>
             <div class="title">
                 <div class="presentation-name">{{ presentation.name }}</div>
-                <div class="brand-name">{{ workspace && workspace.title }}</div>
+                <div class="brand-name">{{ presentation.workspace && presentation.workspace.title }}</div>
             </div>
         </div>
     </div>
