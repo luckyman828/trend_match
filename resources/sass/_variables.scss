@@ -288,6 +288,14 @@ $brand-colors: (
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount), 1),
     ('black', black, mix(white, black, $lightenAmount), white, black, 0.8),
     (
+        'bg-blur',
+        transparent,
+        mix(white, transparent, $lightenAmount),
+        white,
+        mix($dark05, transparent, $darkenAmount),
+        0
+    ),
+    (
         'light',
         $bluegrey250,
         mix(white, $bluegrey250, $lightenAmount),

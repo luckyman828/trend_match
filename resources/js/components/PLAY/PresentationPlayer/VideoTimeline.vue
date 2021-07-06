@@ -160,13 +160,13 @@ export default {
         transition: bottom $videoPauseTransition;
         .paused &,
         &.drag-active {
-            bottom: 16px;
-            .rail {
-                height: 8px;
-            }
-            .knob {
-                transform: translate(50%, -50%) scale(3);
-            }
+            // bottom: 16px;
+            // .rail {
+            //     height: 8px;
+            // }
+            // .knob {
+            //     transform: translate(50%, -50%) scale(3);
+            // }
         }
     }
 }

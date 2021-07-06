@@ -133,4 +133,7 @@ export default {
         }
     }
 }
+.saved-item-list {
+    padding-bottom: 100px;
+}
 </style>

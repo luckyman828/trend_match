@@ -9,29 +9,49 @@
 
             <template v-if="playerStarted">
                 <div class="bottom-aligned flex-list flex-v md">
-                    <PreviewList v-if="currentTiming" />
-                    <div class="top flex-list justify">
-                        <!-- <button class="white lg circle comment-button"><i class="far fa-comment"></i></button> -->
-                        <AddToWishlistButton
-                            class="lg circle"
-                            :disabled="!currentTiming"
-                            :variants="currentTiming && currentTiming.variantList"
-                        />
-                    </div>
-                    <div class="bottom flex-list equal-width justify center-v">
-                        <div class="left">
-                            <div class="video-timer pill grey sm">
-                                <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
+                    <div class="over-timeline flex-list flex-v md">
+                        <PreviewList v-if="currentTiming" />
+                        <div class="top flex-list justify flex-end-v">
+                            <div class="left">
+                                <!-- <button class="bg-blur sm pill comment-button">
+                                    <i class="far fa-comment black"></i><span class="color-black">Show</span>
+                                </button> -->
+                            </div>
+                            <div class="right flex-list">
+                                <AddToWishlistButton
+                                    class="lg circle"
+                                    :disabled="!currentTiming"
+                                    :variants="currentTiming && currentTiming.variantList"
+                                />
+                                <AddToBasketButton
+                                    buttonClass="lg circle"
+                                    baseClass="white"
+                                    :disabled="!currentTiming"
+                                    :variant="currentTiming && currentTiming.variant"
+                                    textStyle="none"
+                                />
                             </div>
                         </div>
+                    </div>
+
+                    <VideoTimeline />
+
+                    <div class="bottom flex-list equal-width justify center-v">
+                        <div class="left flex-list">
+                            <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+                                <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
+                            </button>
+                            <VolumeControl />
+                        </div>
                         <div class="center">
-                            <div class="timing-count pill white sm">
+                            <div class="timing-count pill bg-blur">
+                                <i class="fas fa-tshirt"></i>
                                 <span>{{ currentTimingIndex + 1 }} of {{ videoTimings.length }}</span>
                             </div>
                         </div>
                         <div class="flex-list">
                             <button
-                                class="wishlist-count pill white"
+                                class="wishlist-count pill bg-blur"
                                 @click="
                                     showSavedProductsDrawer = true
                                     savedProductsView = 'wishlist'
@@ -41,7 +61,7 @@
                                 <span>{{ wishlist.length }}</span>
                             </button>
                             <button
-                                class="basket-count pill white"
+                                class="basket-count pill bg-blur"
                                 @click="
                                     showSavedProductsDrawer = true
                                     savedProductsView = 'basket'
@@ -53,7 +73,6 @@
                         </div>
                     </div>
                 </div>
-                <VideoTimeline />
 
                 <ProductDetailsDrawer :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
                 <SavedStylesDrawer
@@ -70,11 +89,13 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../../../components/PLAY/VideoPlayer'
 import VideoTimeline from '../../../../components/PLAY/PresentationPlayer/VideoTimeline'
+import VolumeControl from '../../../../components/PLAY/PresentationPlayer/VolumeControl'
 
 import BeforeStartOverlay from './BeforeStartOverlay'
 import PresentationTitle from './PresentationTitle'
 import PreviewList from './PreviewList'
 import AddToWishlistButton from '../AddToWishlistButton'
+import AddToBasketButton from '../AddToBasketButton'
 
 import ProductDetailsDrawer from './ProductDetailsDrawer/'
 import SavedStylesDrawer from './SavedStylesDrawer/'
@@ -90,6 +111,8 @@ export default {
         ProductDetailsDrawer,
         SavedStylesDrawer,
         AddToWishlistButton,
+        AddToBasketButton,
+        VolumeControl,
     },
     data: function() {
         return {
@@ -119,6 +142,7 @@ export default {
             videoType: 'getVideoType',
             duration: 'getDuration',
             timestamp: 'getTimestamp',
+            isLive: 'getIsLive',
             playerStarted: 'getPlayerStarted',
         }),
         ...mapGetters('wishlist', {
@@ -130,6 +154,7 @@ export default {
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
+        ...mapActions('player', ['togglePlayerMuted', 'togglePlaying']),
     },
 }
 </script>
@@ -146,17 +171,26 @@ export default {
     z-index: 2147483646;
     .timeline {
         position: fixed;
-        bottom: -8px;
-        left: 16px;
-        width: calc(100% - 2 * 16px);
+        bottom: 48px;
+        left: 8px;
+        width: calc(100% - 2 * 8px);
         transition: $videoPauseTransition;
+        &::v-deep {
+            .knob {
+                display: none;
+            }
+        }
     }
+
     &.desired-paused {
         .bottom-aligned {
-            transform: translateY(-32px);
+            // transform: translateY(-32px);
+        }
+        .over-timeline {
+            transform: translateY(-24px);
         }
         .timeline {
-            transform: translateY(-24px);
+            transform: translateY(-12px);
         }
     }
 
@@ -165,11 +199,19 @@ export default {
         left: 0;
         bottom: 0;
         width: 100%;
-        padding: 12px 8px;
+        padding: 8px;
         transition: $videoPauseTransition;
         pointer-events: none;
         > * {
             pointer-events: all;
+        }
+        .over-timeline {
+            transition: $videoPauseTransition;
+            pointer-events: none;
+            padding-bottom: 6px;
+            > * {
+                pointer-events: all;
+            }
         }
         .top {
             pointer-events: none;
