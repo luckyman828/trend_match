@@ -29,13 +29,9 @@ export default {
         ...mapGetters('workspaces', {
             workspace: 'currentWorkspace',
         }),
-        isEmbedded() {
-            try {
-                return window.self !== window.top
-            } catch (e) {
-                return true
-            }
-        },
+        ...mapGetters('player', {
+            isEmbedded: 'getIsEmbedded',
+        }),
     },
 }
 </script>

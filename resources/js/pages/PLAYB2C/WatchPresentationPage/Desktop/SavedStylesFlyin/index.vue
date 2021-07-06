@@ -49,7 +49,7 @@
                 v-if="view == 'Basket'"
                 class="checkout-button full-width"
                 buttonClass="dark full-width checkout-button"
-                :disabled="basket.length <= 0"
+                :disabled="basket.length <= 0 || !isEmbedded"
             >
                 <template v-slot:iconLeft>
                     <i class="far fa-credit-card white"></i>
@@ -85,6 +85,9 @@ export default {
         ...mapGetters('basket', {
             basket: 'getBasket',
             basketTotal: 'getBasketTotal',
+        }),
+        ...mapGetters('player', {
+            isEmbedded: 'getIsEmbedded',
         }),
         userCurrency() {
             return this.wishlist.length > 0

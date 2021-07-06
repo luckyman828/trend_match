@@ -23,10 +23,10 @@
                 <div class="item-group">
                     <BaseContextMenuItem
                         iconClass="far fa-play"
-                        hotkey="KeyW"
+                        hotkey="KeyP"
                         @click="onGoToWatchPresentation(contextPresentation)"
                     >
-                        <u>W</u>atch presentation
+                        <u>P</u>review presentation
                     </BaseContextMenuItem>
                     <BaseContextMenuItem
                         iconClass="far fa-edit"

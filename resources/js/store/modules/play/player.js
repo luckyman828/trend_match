@@ -36,6 +36,13 @@ export default {
         getPlayerRecentlyStarted: state => state.recentlyStarted,
         getContainerEl: state => state.player,
         getDesiredQuality: state => state.desiredQuality,
+        getIsEmbedded() {
+            try {
+                return window.self !== window.top
+            } catch (e) {
+                return true
+            }
+        },
     },
 
     actions: {

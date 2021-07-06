@@ -52,18 +52,18 @@
             @hide="addToBasketItem = null"
             @click.native="addToBasketItem = null"
         />
-        <!-- <BaseFloatyBar v-if="view == 'basket'" :show="show" pos="bottom" classes="rounded">
+        <BaseFloatyBar v-if="view == 'basket'" :show="show" pos="bottom" classes="rounded">
             <BaseButton
                 class="checkout-button full-width"
                 buttonClass="dark full-width pill lg checkout-button"
-                :disabled="basket.length <= 0"
+                :disabled="basket.length <= 0 || !isEmbedded"
             >
                 <template v-slot:iconLeft>
                     <i class="far fa-credit-card white"></i>
                 </template>
                 <span>Go to Checkout</span>
             </BaseButton>
-        </BaseFloatyBar> -->
+        </BaseFloatyBar>
     </BaseDrawer>
 </template>
 
@@ -91,6 +91,9 @@ export default {
         ...mapGetters('basket', {
             basket: 'getBasket',
             basketTotal: 'getBasketTotal',
+        }),
+        ...mapGetters('player', {
+            isEmbedded: 'getIsEmbedded',
         }),
         userCurrency() {
             return this.wishlist.length > 0
