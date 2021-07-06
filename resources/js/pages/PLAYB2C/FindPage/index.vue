@@ -23,20 +23,25 @@ export default {
         ...mapGetters('playPresentations', {
             presentations: 'getPresentationsFilteredBySearch',
         }),
+        ...mapGetters('workspaces', {
+            currentWorkspace: 'getCurrentWorkspace',
+        }),
+    },
+    watch: {
+        currentWorkspace(newVal, oldVal) {
+            this.initData(true)
+        },
     },
     methods: {
         ...mapActions('playPresentations', ['fetchPresentations']),
+        async initData() {
+            this.loadingData = true
+            await this.fetchPresentations()
+            this.loadingData = false
+        },
     },
-    async created() {
-        this.loadingData = true
-        await this.fetchPresentations()
-        this.loadingData = false
-        // window.addEventListener('beforeunload', e => {
-        //     e.returnValue = true
-        // })
-    },
-    destroyed() {
-        // window.removeEventListener('beforeunload')
+    created() {
+        this.initData()
     },
 }
 </script>

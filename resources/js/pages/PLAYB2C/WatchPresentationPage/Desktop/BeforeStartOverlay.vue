@@ -3,7 +3,7 @@
         <div class="overlay"></div>
 
         <BaseLoader msg="Starting..!" v-if="desiredStatus == 'playing'" />
-        <button v-else class="xxl circle white invisible bg-blur" @click="play">
+        <button v-else class="xxl circle bg-blur" @click="play">
             <i class="fas fa-play"></i>
         </button>
     </div>
