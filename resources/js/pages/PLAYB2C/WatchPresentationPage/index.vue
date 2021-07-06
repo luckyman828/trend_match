@@ -44,8 +44,8 @@ export default {
     },
     methods: {
         ...mapActions('playPresentation', ['fetchPresentationVideo']),
-        ...mapActions('productGroups', ['fetchFileProductGroups']),
-        ...mapActions('videoComments', ['fetchVideoComments']),
+        // ...mapActions('productGroups', ['fetchFileProductGroups']),
+        // ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapActions('videos', ['fetchVideoUrls']),
         ...mapMutations('player', ['SET_DESIRED_QUALITY']),
         async fetchData() {
@@ -56,7 +56,7 @@ export default {
 
             await Promise.all([
                 // this.fetchProducts({ fileId: presentationId }),
-                this.fetchFileProductGroups(presentationId),
+                // this.fetchFileProductGroups(presentationId),
                 // this.fetchVideoComments({ video }),
                 this.fetchVideoUrls(video),
             ])

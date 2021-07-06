@@ -127,7 +127,25 @@ export default {
 
                     video = response.data.video
                     commit('SET_VIDEO', video)
+
                     const timings = response.data.timings
+
+                    // Extract looks
+                    const looks = []
+                    for (const timing of timings) {
+                        if (!timing.product_group_id) continue
+                        const existsInArray = looks.find(group => group.id == timing.product_group_id)
+                        if (existsInArray) continue
+                        const productGroup = {
+                            id: timing.product_group_id,
+                            name: `timing: ${timing.id}`,
+                            variants: [...timing.variants],
+                        }
+                        looks.push(productGroup)
+                    }
+                    await dispatch('productGroups/initProductGroups', looks, { root: true })
+                    commit('productGroups/SET_PRODUCT_GROUPS', looks, { root: true })
+
                     // Sort the timings
                     timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
                     // Init the videos timings
