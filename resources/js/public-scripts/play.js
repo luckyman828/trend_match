@@ -5,7 +5,7 @@ export function embed(
     changeItemSizeCallback
 ) {
     // Kollekt PLAY
-    const version = `0.0.0 - (7)`
+    const version = `0.0.0 - (8)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -36,12 +36,13 @@ export function embed(
                 top: 0;
                 bottom: 0;
                 margin: auto;
-                height: 100vh; 
-                width: 100vw; 
+                height: calc(100vh - 80px); 
+                width: calc(100vw - 32px); 
                 scroll-behavior: smooth;
                 max-height: 800px;
                 max-width: 1280px;
                 z-index: 1;
+                box-shadow: 0 3px 6px #00000029;
             }
             .kollekt-player-frame {
                 background: #f4f6ff;
@@ -66,12 +67,20 @@ export function embed(
                 width: 15px;
                 margin-top: 5px;
             }
-            @media screen and (max-width: 800) {
-                min-height: 100vh;
-                min-width: 100vw;
-                max-height: 100vh;
-                min-height: -webkit-fill-available;
-                height: -webkit-fill-available;'
+            @media screen and (max-height: 932px) {
+                .kollekt-player {
+                    top: 32px;
+                }
+            }
+            @media screen and (max-width: 800px) {
+                .kollekt-player {
+                    min-height: 100vh;
+                    min-width: 100vw;
+                    max-height: 100vh;
+                    min-height: -webkit-fill-available;
+                    height: -webkit-fill-available;
+                }
+                
             }
         </style>`
     )

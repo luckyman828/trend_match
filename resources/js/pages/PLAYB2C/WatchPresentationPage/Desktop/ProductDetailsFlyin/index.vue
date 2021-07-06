@@ -120,6 +120,9 @@ export default {
         .flyin {
             min-width: 0;
             width: 384px;
+            .flyin-inner {
+                background: white;
+            }
         }
         .overlay {
             opacity: 0;
