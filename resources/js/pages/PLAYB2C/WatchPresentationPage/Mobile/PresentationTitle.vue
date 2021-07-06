@@ -1,7 +1,7 @@
 <template>
     <div class="presentation-title-wrapper">
         <div class="presentation-title">
-            <button
+            <!-- <button
                 class="white circle"
                 @click="
                     $router.push({
@@ -10,7 +10,7 @@
                 "
             >
                 <i class="fas fa-arrow-left"></i>
-            </button>
+            </button> -->
             <div class="title">
                 <div class="presentation-name">{{ presentation.name }}</div>
                 <div class="brand-name">{{ workspace.title }}</div>

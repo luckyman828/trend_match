@@ -67,11 +67,15 @@ export function embed(
                 width: 15px;
                 margin-top: 5px;
             }
+
+            /* SMALL DESKTOP */
             @media screen and (max-height: 932px) {
                 .kollekt-player {
                     top: 32px;
                 }
             }
+
+            /* MOBILE */
             @media screen and (max-width: 800px) {
                 .kollekt-player {
                     min-height: 100vh;
@@ -79,6 +83,14 @@ export function embed(
                     max-height: 100vh;
                     min-height: -webkit-fill-available;
                     height: -webkit-fill-available;
+                    top: 0;
+                }
+                .kollekt-player-frame {
+                    border-radius: 0;
+                }
+                .kollekt-close-button {
+                    top: 8px;
+                    right: 8px; 
                 }
                 
             }

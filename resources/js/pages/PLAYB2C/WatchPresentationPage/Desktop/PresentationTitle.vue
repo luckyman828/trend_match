@@ -1,7 +1,7 @@
 <template>
     <div class="video-title-wrapper">
         <div class="video-title">
-            <button
+            <!-- <button
                 class="white circle"
                 @click="
                     $router.push({
@@ -10,7 +10,7 @@
                 "
             >
                 <i class="fas fa-arrow-left"></i>
-            </button>
+            </button> -->
             <div class="title">
                 <div class="video-name">{{ presentation.name }}</div>
                 <div class="brand-name">{{ workspace.title }}</div>
