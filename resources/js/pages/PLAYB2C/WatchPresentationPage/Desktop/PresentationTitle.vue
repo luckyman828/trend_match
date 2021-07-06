@@ -1,7 +1,8 @@
 <template>
     <div class="video-title-wrapper">
         <div class="video-title">
-            <!-- <button
+            <button
+                v-if="!isEmbedded"
                 class="white circle"
                 @click="
                     $router.push({
@@ -10,7 +11,7 @@
                 "
             >
                 <i class="fas fa-arrow-left"></i>
-            </button> -->
+            </button>
             <div class="title">
                 <div class="video-name">{{ presentation.name }}</div>
                 <div class="brand-name">{{ workspace.title }}</div>
@@ -28,6 +29,13 @@ export default {
         ...mapGetters('workspaces', {
             workspace: 'currentWorkspace',
         }),
+        isEmbedded() {
+            try {
+                return window.self !== window.top
+            } catch (e) {
+                return true
+            }
+        },
     },
 }
 </script>
