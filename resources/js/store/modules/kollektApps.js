@@ -3,7 +3,13 @@ import router from '../../router'
 export default {
     namespaced: true,
     state: {
-        currentApp: localStorage.getItem('kollektApp') || null,
+        currentApp: () => {
+            try {
+                return localStorage.getItem('kollektApp') || null
+            } catch (e) {
+                return null
+            }
+        },
         apps: [
             {
                 name: 'select',
@@ -69,7 +75,9 @@ export default {
     mutations: {
         SET_KOLLEKT_APP(state, app) {
             state.currentApp = app
-            localStorage.setItem('kollektApp', app)
+            try {
+                localStorage.setItem('kollektApp', app)
+            } catch (e) {}
         },
         NAVIGATE_TO_CURRENT_APP(state) {
             router.push({ name: state.currentApp })

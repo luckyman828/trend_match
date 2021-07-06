@@ -125,5 +125,7 @@ const store = new Vuex.Store({
     },
 })
 // Set the token in the store
-store.state.auth.token = localStorage.getItem('user-token') || ''
+try {
+    store.state.auth.token = localStorage.getItem('user-token') || ''
+} catch (e) {}
 export default store

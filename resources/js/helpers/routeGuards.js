@@ -44,6 +44,10 @@ export async function triggerRouteGuards(to) {
     const authenticatedInitDone = store.getters['persist/getAuthenticatedInitDone']
 
     // console.log('trigger route guards', to, isAuthenticated, store.getters['workspaces/getCurrentWorkspaceId'])
+    console.log('route guards!', toRoot, to)
+    if (to && to.meta.isPublic) {
+        return
+    }
 
     // If the user is authenticated wait with applying guards until we have fetched the necessary data
     await awaitAuthInit()

@@ -18,7 +18,10 @@
         <router-view v-else-if="!!isAuthenticated && !loadingWorkspace" :key="$route.path"></router-view> -->
 
         <router-view
-            v-if="!noWorkspaceAvailable && (!isAuthenticated || (!!isAuthenticated && !!authenticatedInitDone))"
+            v-if="
+                (!noWorkspaceAvailable && (!isAuthenticated || (!!isAuthenticated && !!authenticatedInitDone))) ||
+                    ($route.meta && $route.meta.isPublic)
+            "
         ></router-view>
 
         <div class="error-wrapper" v-else-if="noWorkspaceAvailable">

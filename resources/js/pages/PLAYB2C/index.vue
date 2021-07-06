@@ -45,7 +45,7 @@ export default {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
         isLoading() {
-            return !this.currentWorkspace //Check if we have a workspace
+            return !this.currentWorkspace && !this.$route.meta.isPublic //Check if we have a workspace
         },
     },
     watch: {

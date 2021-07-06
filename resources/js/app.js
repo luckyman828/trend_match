@@ -129,10 +129,12 @@ requireComponent.keys().forEach(fileName => {
 })
 
 // Check if the user is logged in
-const token = localStorage.getItem('user-token')
-if (token) {
-    axios.defaults.headers.common['Authorization'] = token
-}
+try {
+    const token = localStorage.getItem('user-token')
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = token
+    }
+} catch (e) {}
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {

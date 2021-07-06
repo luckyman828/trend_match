@@ -14,7 +14,7 @@
             </button>
             <div class="title">
                 <div class="video-name">{{ presentation.name }}</div>
-                <div class="brand-name">{{ workspace.title }}</div>
+                <div class="brand-name">{{ workspace && workspace.title }}</div>
             </div>
         </div>
     </div>

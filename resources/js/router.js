@@ -345,6 +345,7 @@ const routes = [
                 meta: {
                     isFullscreen: true,
                     hideCrisp: true,
+                    isPublic: true,
                 },
                 component: () =>
                     import(/* webpackChunkName: "watchPresentationPage" */ './pages/PLAYB2C/WatchPresentationPage/'),
