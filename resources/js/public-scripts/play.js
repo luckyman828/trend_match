@@ -49,6 +49,9 @@ export function embed(
                 max-height: none;
                 max-width: none;
             }
+            .kollekt-player.fullscreen-mode-active .kollekt-player-frame {
+                border-radius: 0;
+            }
             .kollekt-player-frame {
                 background: #f4f6ff;
                 border-radius: 12px;
