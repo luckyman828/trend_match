@@ -12,6 +12,9 @@ export default {
     name: 'actionListPopover',
     components: { ProductActionButton },
     props: ['product'],
+    created() {
+        console.log('hello')
+    },
 }
 </script>
 

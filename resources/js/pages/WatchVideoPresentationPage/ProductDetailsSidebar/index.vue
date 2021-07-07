@@ -45,5 +45,10 @@ export default {
 .product-details-sidebar {
     pointer-events: all;
     display: inline-block;
+    &::v-deep {
+        .flyin-inner {
+            background: white;
+        }
+    }
 }
 </style>
