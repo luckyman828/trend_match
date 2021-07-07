@@ -74,7 +74,6 @@ export default {
     name: 'playerControls',
     data: function() {
         return {
-            fullscreenModeActive: false,
             mouseMoveTimeout: null,
         }
     },
@@ -93,6 +92,7 @@ export default {
             hideControls: 'getControlsHidden',
             playerReady: 'getPlayer',
             desiredQuality: 'getDesiredQuality',
+            fullscreenModeActive: 'getFullscreenModeActive',
         }),
         ...mapGetters('playPresentation', {
             video: 'getVideo',
@@ -103,7 +103,7 @@ export default {
     },
     methods: {
         ...mapActions('player', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapMutations('player', ['SET_CONTROLS_HIDDEN', 'SET_DESIRED_QUALITY']),
+        ...mapMutations('player', ['SET_CONTROLS_HIDDEN', 'SET_DESIRED_QUALITY', 'SET_FULLSCREEN_MODE_ACTIVE']),
         onChangeQuality(newQuality) {
             this.SET_DESIRED_QUALITY(newQuality)
             this.$refs.qualitySelector.hide()
@@ -116,9 +116,13 @@ export default {
             }
         },
         onEnterFullscreen() {
+            console.log('VUE, ENTER Fullscreen')
+            // try {
             const elem = document.documentElement
             if (elem.requestFullscreen) {
+                // try {
                 elem.requestFullscreen()
+                // } catch (e) {}
             } else if (elem.mozRequestFullScreen) {
                 /* Firefox */
                 elem.mozRequestFullScreen()
@@ -129,8 +133,13 @@ export default {
                 /* IE/Edge */
                 elem.msRequestFullscreen()
             }
+            // } catch (e) {
+            //     console.log('error')
+            // }
         },
         onExitFullscreen() {
+            console.log('VUE, EXIT Fullscreen')
+
             if (document.exitFullscreen) {
                 document.exitFullscreen()
             } else if (document.mozCancelFullScreen) {
@@ -144,14 +153,23 @@ export default {
                 document.msExitFullscreen()
             }
         },
+
         fullscreenChangeHandler(e) {
+            const shouldBeActive = !!(
+                document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement
+            )
+
             if (this.fullscreenModeActive) {
-                this.fullscreenModeActive = false
+                this.SET_FULLSCREEN_MODE_ACTIVE(shouldBeActive)
             } else {
-                this.fullscreenModeActive = true
+                this.SET_FULLSCREEN_MODE_ACTIVE(shouldBeActive)
             }
         },
         addFullscreenListeners() {
+            // window.addEventListener('resize', this.fullscreenChangeHandler, false)
             document.addEventListener('fullscreenchange', this.fullscreenChangeHandler, false)
             document.addEventListener('mozfullscreenchange', this.fullscreenChangeHandler, false)
             document.addEventListener('MSFullscreenChange', this.fullscreenChangeHandler, false)

@@ -47,7 +47,7 @@ export default {
         // ...mapActions('productGroups', ['fetchFileProductGroups']),
         // ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapActions('videos', ['fetchVideoUrls']),
-        ...mapMutations('player', ['SET_DESIRED_QUALITY']),
+        ...mapMutations('player', ['SET_DESIRED_QUALITY', 'SET_FULLSCREEN_MODE_ACTIVE']),
         async fetchData() {
             this.loadingData = true
             // Fetch presentation details
@@ -73,8 +73,13 @@ export default {
             const acceptedOrigin = 'https://kollektteststore.myshopify.com'
 
             if (!event.origin == acceptedOrigin) return
-            // console.log('VUE, message recieved', event)
             const msgData = event.data
+            // console.log('VUE, message recieved', msgData)
+
+            // if (msgData.action == 'toggleFullscreenMode') {
+            //     this.SET_FULLSCREEN_MODE_ACTIVE(msgData.newValue)
+            // }
+
             if (msgData.action == 'updateBasketItems') {
                 msgData.items.map(item => {
                     const basketItem = this.$store.getters['basket/getBasketItem'](item)

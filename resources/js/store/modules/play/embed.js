@@ -12,6 +12,7 @@ export default {
                 return
             }
             const targetOrigin = webshop.url
+            // console.log('post the message', msg, targetOrigin)
             targetWindow.postMessage(msg, targetOrigin)
         },
     },

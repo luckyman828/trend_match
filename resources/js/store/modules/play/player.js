@@ -16,6 +16,8 @@ export default {
         controlsHidden: false,
         recentlyStarted: false,
         desiredQuality: null,
+        fullscreenModeActive: false,
+        fullscreenChangeTimestamp: null,
     },
 
     getters: {
@@ -43,6 +45,7 @@ export default {
                 return true
             }
         },
+        getFullscreenModeActive: state => state.fullscreenModeActive,
     },
 
     actions: {
@@ -164,6 +167,9 @@ export default {
         },
         SET_DESIRED_QUALITY(state, quality) {
             state.desiredQuality = quality
+        },
+        SET_FULLSCREEN_MODE_ACTIVE(state, newValue) {
+            state.fullscreenModeActive = newValue
         },
         RESET_PLAYER(state) {
             state.controlsHidden = false

@@ -5,7 +5,7 @@ export function embed(
     changeItemSizeCallback
 ) {
     // Kollekt PLAY
-    const version = `0.0.0 - (8)`
+    const version = `0.0.0 - (9)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -42,11 +42,17 @@ export function embed(
                 max-height: 800px;
                 max-width: 1280px;
                 z-index: 1;
-                box-shadow: 0 3px 6px #00000029;
+            }
+            .kollekt-player.fullscreen-mode-active {
+                height: 100vh; 
+                width: 100vw; 
+                max-height: none;
+                max-width: none;
             }
             .kollekt-player-frame {
                 background: #f4f6ff;
                 border-radius: 12px;
+                box-shadow: 0 3px 6px #00000029;
                 overflow: hidden;
             }
             .kollekt-close-button {
@@ -123,6 +129,7 @@ export function embed(
     })
 
     const iframeEl = document.createElement('iframe')
+    iframeEl.setAttribute('allow', 'fullscreen')
     iframeEl.id = `embed-${version}`
     iframeEl.classList.add('kollekt-player-frame')
     iframeEl.name = Date.now()
@@ -132,6 +139,8 @@ export function embed(
     playerEl.appendChild(iframeEl)
 
     document.body.appendChild(wrapperEl)
+
+    const contentWindow = iframeEl.contentWindow
 
     // Add click listener
     document.addEventListener('click', function(e) {
@@ -144,14 +153,31 @@ export function embed(
         const presentationId = button.getAttribute('data-kollekt-play-id')
         const appUrl = process.env.MIX_APP_URL
 
-        // const iFrameBaseUrl = 'https://dev-stable.kollekt.dk/#/play/watch/'
         const iFrameBaseUrl = `${appUrl}/#/play/watch/`
-        // iframeEl.src = `${iFrameBaseUrl}${videoId}`
-        // iframeEl.src = `https://kollekt_feature.test/#/?timestamp=${new Date().getTime()}`
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
         wrapperEl.style.display = 'block'
         iframeEl.contentWindow.location.href = iframeEl.src
     })
+
+    function toggleFullscreenMode() {
+        if (playerEl.classList.contains('fullscreen-mode-active')) {
+            playerEl.classList.remove('fullscreen-mode-active')
+            postMessage({ action: 'toggleFullscreenMode', newValue: false })
+        } else {
+            playerEl.classList.add('fullscreen-mode-active')
+            postMessage({ action: 'toggleFullscreenMode', newValue: true })
+        }
+    }
+
+    // Add fullscreen listeners
+    function fullscreenChangeHandler(e) {
+        toggleFullscreenMode()
+    }
+
+    document.addEventListener('fullscreenchange', fullscreenChangeHandler, false)
+    document.addEventListener('mozfullscreenchange', fullscreenChangeHandler, false)
+    document.addEventListener('MSFullscreenChange', fullscreenChangeHandler, false)
+    document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler, false)
 
     // Interact with shopify
     window.addEventListener('message', async event => {
@@ -165,7 +191,7 @@ export function embed(
             'https://staging.kollekt.dk',
         ]
 
-        // console.log('message!', event.data)
+        // console.log('postMessage received!', event.data)
         if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
         const msgData = event.data
 
@@ -190,5 +216,12 @@ export function embed(
             changeItemSizeCallback(msgData.updateDetail)
         }
     })
-    return iframeEl.contentWindow
+
+    function postMessage(msg) {
+        const appUrl = process.env.MIX_APP_URL
+        const targetOrigin = `${appUrl}`
+        contentWindow.postMessage(msg, targetOrigin)
+    }
+
+    return contentWindow
 }
