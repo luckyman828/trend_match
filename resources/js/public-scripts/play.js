@@ -5,7 +5,7 @@ export function embed(
     changeItemSizeCallback
 ) {
     // Kollekt PLAY
-    const version = `0.0.0 - (9)`
+    const version = `0.0.0 - (10)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -118,28 +118,18 @@ export function embed(
     // Crete overlay
     const overlayEl = document.createElement('div')
     overlayEl.classList.add('kollekt-play-overlay')
-    overlayEl.addEventListener('click', function(e) {
-        wrapperEl.style.display = 'none'
-    })
+    overlayEl.addEventListener('click', onClose)
     wrapperEl.appendChild(overlayEl)
 
     // Close button
     const closeButton = document.createElement('button')
     closeButton.innerHTML = `<svg aria-hidden="true" focusable="false" data-prefix="fal" data-icon="times" class="svg-inline--fa fa-times fa-w-10" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"></path></svg>`
     closeButton.classList.add('kollekt-close-button')
-    closeButton.addEventListener('click', function(e) {
-        wrapperEl.style.display = 'none'
-    })
+    closeButton.addEventListener('click', onClose)
 
-    const iframeEl = document.createElement('iframe')
-    iframeEl.setAttribute('allow', 'fullscreen')
-    iframeEl.id = `embed-${version}`
-    iframeEl.classList.add('kollekt-player-frame')
-    iframeEl.name = Date.now()
-    iframeEl.style.cssText = 'width: 100%; height: 100%; border: none;'
+    let iframeEl = createIframe()
 
     playerEl.appendChild(closeButton)
-    playerEl.appendChild(iframeEl)
 
     document.body.appendChild(wrapperEl)
 
@@ -159,7 +149,7 @@ export function embed(
         const iFrameBaseUrl = `${appUrl}/#/play/watch/`
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
         wrapperEl.style.display = 'block'
-        iframeEl.contentWindow.location.href = iframeEl.src
+        // iframeEl.contentWindow.location.href = iframeEl.src
     })
 
     function toggleFullscreenMode() {
@@ -175,6 +165,26 @@ export function embed(
     // Add fullscreen listeners
     function fullscreenChangeHandler(e) {
         toggleFullscreenMode()
+    }
+
+    function onClose() {
+        {
+            // Reload the iframe by removing and recreating the iframe
+            wrapperEl.style.display = 'none'
+            iframeEl.remove()
+            iframeEl = createIframe()
+        }
+    }
+
+    function createIframe() {
+        const newIframe = document.createElement('iframe')
+        newIframe.setAttribute('allow', 'fullscreen')
+        newIframe.id = `embed-${version}`
+        newIframe.classList.add('kollekt-player-frame')
+        newIframe.name = Date.now()
+        newIframe.style.cssText = 'width: 100%; height: 100%; border: none;'
+        playerEl.appendChild(newIframe)
+        return newIframe
     }
 
     document.addEventListener('fullscreenchange', fullscreenChangeHandler, false)
