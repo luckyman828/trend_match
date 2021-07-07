@@ -122,7 +122,7 @@ export default {
             return this.comment.user_id == this.authUser.id
         },
         hasEditAccess() {
-            return this.isOwn || this.comment.selection.your_role == 'Owner'
+            return this.isOwn
         },
         hasTraits() {
             return this.comment.important || this.comment.focus

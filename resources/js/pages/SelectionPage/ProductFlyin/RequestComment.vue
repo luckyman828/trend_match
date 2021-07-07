@@ -109,7 +109,7 @@ export default {
             return this.comment.author_id == this.authUser.id
         },
         hasEditAccess() {
-            return this.isOwn || (this.comment.role != 'Approver' && this.request.selection.your_role == 'Owner')
+            return this.isOwn
         },
     },
     methods: {
