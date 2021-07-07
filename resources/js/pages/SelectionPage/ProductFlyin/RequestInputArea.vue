@@ -176,6 +176,7 @@ export default {
         },
         onKeyDown(e) {
             // Label list actions
+
             if (this.showLabelList) {
                 if (e.code == 'ArrowUp' || e.code == 'ArrowDown') {
                     e.preventDefault()

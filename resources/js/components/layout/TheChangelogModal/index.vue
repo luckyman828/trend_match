@@ -1,6 +1,55 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Lace: Burnt Orange"
+            date="July 2021 Release"
+            featuredImgUrl="/images/blog/undraw_Schedule_re_2vro.svg"
+        >
+            <template v-slot:lead>
+                <p>
+                    Burnt Orange is another SELECT focused released, but don't worry - we have other things in the works
+                    as well.
+                    <br />Enjoy.
+                </p>
+            </template>
+            <template v-slot:body>
+                <h2>SELECT</h2>
+                <h3>You can now define which ticket labels should be available in the workspace settings</h3>
+                <p>The old ticket labels will be set as default for workspaces that have been using ticket labels.</p>
+                <img src="/images/blog/workspace-ticket-labels.png" alt="workspace-ticket-labels" />
+
+                <h3>Added a setting to force adding a label to all tickets before they can be posted</h3>
+                <p>This setting has to be turned on/off by a Kollekt admin.</p>
+                <p>It is a workspace- wide feature.</p>
+
+                <h3>Added the ability to swipe per variant in the iOS app instead of per style</h3>
+                <p>Style can be changed in the dashboard in the file fly-in more-menu</p>
+                <p>
+                    <strong
+                        >Swipe on variants is currently only available for Feedback (not Alignment), and does not work
+                        with presentation mode.</strong
+                    >
+                </p>
+                <img src="/images/blog/swipe-variants-setting.png" alt="swipe-variants-setting" />
+
+                <h3>Fixed edit tickets/requests permissions</h3>
+                <p>
+                    Users with role Owner can now edit ALL tickets/requests on the selection they are added as Owner to,
+                    and every descendant of that selection (sub-selections). This is no matter the Job that the user has
+                    been given.
+                </p>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+
+        <ChangelogPost
             title="Lace: Brickred"
             date="June 2021: The Jobs Release"
             featuredImgUrl="/images/blog/undraw_Work_chat_re_qes4.svg"

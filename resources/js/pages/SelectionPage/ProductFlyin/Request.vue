@@ -214,7 +214,7 @@ export default {
         },
         hasEditAccess() {
             if (this.request.product.is_completed) return false
-            return this.request.selection.your_job == 'Alignment'
+            return this.request.selection.your_job == 'Alignment' || this.request.selection.your_role == 'Owner'
         },
     },
     watch: {
