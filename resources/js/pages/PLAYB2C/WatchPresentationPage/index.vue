@@ -32,6 +32,7 @@ export default {
     data() {
         return {
             loadingData: '',
+            postMessageQueue: [],
         }
     },
     computed: {
@@ -39,8 +40,25 @@ export default {
             video: 'getVideo',
             videoStatus: 'getStatus',
         }),
+        ...mapGetters('products', {
+            products: 'getProducts',
+        }),
         status() {
             return this.videoStatus == '404' ? 'error' : this.loadingData ? 'loading' : 'success'
+        },
+    },
+    watch: {
+        products(newVal, oldVal) {
+            // If we have added new products
+            if (!oldVal || newVal.lenght > oldVal.lenght) {
+                // Process the queue
+                for (const queuedEvent of postMessageQueue) {
+                    console.log('process this queued event', queuedEvent)
+                    this.postMessageHandler(queuedEvent)
+                }
+                // Reset the queue
+                postMessageQueue = []
+            }
         },
     },
     methods: {
@@ -79,6 +97,9 @@ export default {
 
             if (msgData.action == 'syncBasket') {
                 console.log('sync basket', msgData)
+                if (this.products.lenght <= 0) {
+                    this.postMessageQueue.push(event)
+                }
                 msgData.items.map(item => {
                     const basketItem = this.$store.getters['basket/getBasket'].find(
                         basketItem =>
@@ -90,7 +111,7 @@ export default {
                         // If the basket item is not already in our basket, see if the item exists in our presentation, then add it if it is
                         let variant
                         let sizeDetail
-                        const product = this.$store.getters['products/getProducts'].find(product => {
+                        const product = this.products.find(product => {
                             variant = product.variants.find(variant => {
                                 sizeDetail = variant.ean_sizes.find(size => size.ref_id == item.ref_id)
                                 return !!sizeDetail
