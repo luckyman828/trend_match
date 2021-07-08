@@ -8,15 +8,6 @@ export default {
         loading: true,
         submitting: false,
         currentRequestThread: null,
-        availableRequestLabels: [
-            'color_added',
-            'color_removed',
-            'delivery_added',
-            'change_delivery',
-            'box_wish',
-            'price_wish',
-            'comments in general',
-        ],
     },
 
     getters: {
@@ -28,7 +19,10 @@ export default {
         },
         getCurrentRequestThread: state => state.currentRequestThread,
         getRequestThreadVisible: state => !!state.currentRequestThread,
-        getAvailableRequestLabels: state => state.availableRequestLabels,
+        getAvailableRequestLabels: (state, getters, rootState, rootGetters) =>
+            rootGetters['workspaces/getCurrentWorkspace'].ticket_labels
+                ? rootGetters['workspaces/getCurrentWorkspace'].ticket_labels
+                : [],
     },
 
     actions: {

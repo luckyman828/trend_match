@@ -292,6 +292,7 @@ export default {
         },
     },
     async created() {
+        // console.log('hello')
         // Set up a request intercepter that checks if the user is still authenticated
         axios.interceptors.response.use(
             response => response,

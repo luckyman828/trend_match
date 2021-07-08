@@ -72,6 +72,17 @@
                                         <span>Go to <u>L</u>ive Results</span>
                                     </BaseContextMenuItem>
                                 </div>
+                                <div class="item-group">
+                                    <BaseSelectButton
+                                        :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
+                                        disabledTooltip="Only admins and editors can edit files"
+                                        v-model="file.swipeOnVariants"
+                                        :modelValue="true"
+                                        @input="insertOrUpdateFile({ file, addToState: false })"
+                                    >
+                                        <span>Swipe variants on mobile</span>
+                                    </BaseSelectButton>
+                                </div>
                             </BaseContextMenu>
                         </v-popover>
                     </div>
@@ -143,6 +154,7 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['updateSelection']),
+        ...mapActions('files', ['insertOrUpdateFile']),
         ...mapMutations('files', ['SET_CURRENT_FILE']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS', 'SET_SELECTION_USERS_FLYIN_VISIBLE']),
         showSelectionUsersFlyin(selection) {

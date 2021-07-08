@@ -1212,12 +1212,7 @@ export default {
                         selection.users.map(user => {
                             // Test if there is an existing user
                             const existingUser = users.find(x => x.id == user.id)
-                            if (existingUser) {
-                                // Roles
-                                if (user.role == 'Owner') {
-                                    existingUser.role = 'Owner'
-                                }
-                            }
+
                             // Direct users
                             if (!['Ancestor', 'TeamAncestor'].includes(user.inherit_source)) {
                                 if (existingUser) {
@@ -1238,10 +1233,38 @@ export default {
                                         existingUser.job = user.job
                                     }
                                 } else {
-                                    users.push(user)
+                                    users.push(JSON.parse(JSON.stringify(user)))
                                 }
                             }
                         })
+                        // Remove approval users
+                        selection.users.map(user => {
+                            if (['Ancestor', 'TeamAncestor'].includes(user.inherit_source) && user.job == 'Approval') {
+                                const index = users.findIndex(directUser => directUser.id == user.id)
+                                if (index >= 0) {
+                                    users.splice(index, 1)
+                                }
+                            }
+                        })
+
+                        // set Owner role
+                        users.map(directUser => {
+                            const directInherit = selection.users.find(
+                                user => user.id == directUser.id && user.inherit_source == 'None'
+                            )
+                            if (directInherit) {
+                                directUser.job = directInherit.job
+                                directUser.role = directInherit.role
+                                return
+                            }
+                            const inheritOwnerRole = selection.users.find(
+                                user => user.id == directUser.id && user.role == 'Owner'
+                            )
+                            if (inheritOwnerRole) {
+                                directUser.role = inheritOwnerRole.role
+                            }
+                        })
+
                         return users
                     },
                 })

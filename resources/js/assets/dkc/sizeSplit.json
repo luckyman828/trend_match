@@ -1548,5 +1548,67 @@
                 }
             ]
         }
+    },
+    "The Jogg Concept": {
+        "alphanumeric": {
+            "standard": [
+                {
+                    "name": "XS",
+                    "weight": 8
+                },
+                {
+                    "name": "S",
+                    "weight": 10
+                },
+                {
+                    "name": "M",
+                    "weight": 27
+                },
+                {
+                    "name": "L",
+                    "weight": 27
+                },
+                {
+                    "name": "XL",
+                    "weight": 20
+                },
+                {
+                    "name": "XXL",
+                    "weight": 8
+                }
+            ]
+        },
+        "numeric": {
+            "standard": [
+                {
+                    "name": "34",
+                    "weight": 4
+                },
+                {
+                    "name": "36",
+                    "weight": 12
+                },
+                {
+                    "name": "38",
+                    "weight": 23
+                },
+                {
+                    "name": "40",
+                    "weight": 23
+                },
+                {
+                    "name": "42",
+                    "weight": 21
+                },
+                {
+                    "name": "44",
+                    "weight": 12
+                },
+                {
+                    "name": "46",
+                    "weight": 5
+                }
+            ]
+        }
     }
 }

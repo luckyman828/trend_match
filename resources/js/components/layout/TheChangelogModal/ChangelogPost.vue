@@ -89,6 +89,12 @@ export default {
             margin-top: 32px;
             font-size: 16px;
         }
+        img {
+            width: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            overflow: hidden;
+        }
         p:not(:last-child) {
             margin-bottom: 20px;
         }

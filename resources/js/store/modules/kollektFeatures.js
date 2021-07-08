@@ -10,6 +10,7 @@ export default {
             'bestseller_style_option',
             'select_always_show_alignment_input',
             'select_always_show_feedback_input',
+            'force_ticket_labels',
         ],
     },
     getters: {
