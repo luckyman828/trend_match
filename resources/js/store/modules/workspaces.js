@@ -82,8 +82,8 @@ export default {
             })
         },
         getWebshop: () => {
-            return { url: `https://kollektteststore.myshopify.com` }
-            // return { url: `https://bap-qa.bap-test.com` }
+            // return { url: `https://kollektteststore.myshopify.com` }
+            return { url: `https://bap-qa.bap-test.com` }
         },
     },
 
