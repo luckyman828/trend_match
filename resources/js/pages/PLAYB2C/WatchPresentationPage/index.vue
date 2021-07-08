@@ -104,8 +104,8 @@ export default {
                             variant,
                             'the detail',
                             sizeDetail,
-                            'local basket',
-                            this.$store.getters['basket/getBasket']
+                            'local products',
+                            this.$store.getters['products/getProducts']
                         )
                         if (variant && sizeDetail) {
                             this.$store.commit('basket/ADD_ITEM', { variant, sizeDetail, quantity: item.quantity })
