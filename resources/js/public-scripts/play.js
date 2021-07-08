@@ -157,7 +157,7 @@ export function embed({
         // Add delay to ensure loading is done
         setTimeout(() => {
             if (getBasketCallback) getBasketCallback()
-        }, 5000)
+        }, 1000)
     })
 
     function toggleFullscreenMode() {
