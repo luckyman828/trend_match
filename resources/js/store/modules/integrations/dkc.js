@@ -143,6 +143,11 @@ export default {
                     code: 'IA',
                     company: 'DkCompanyVejle',
                 },
+                {
+                    name: 'The Jogg Concept',
+                    code: 'JC',
+                    company: 'DkCompanyVejle',
+                },
                 // DKV Mens dept. A/S
                 {
                     name: 'Solid',
