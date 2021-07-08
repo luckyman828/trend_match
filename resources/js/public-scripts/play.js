@@ -6,7 +6,7 @@ export function embed({
     changeItemSizeCallback,
 } = {}) {
     // Kollekt PLAY
-    const version = `0.0.0 - (11)`
+    const version = `0.0.0 - (12)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -157,7 +157,7 @@ export function embed({
         // Add delay to ensure loading is done
         setTimeout(() => {
             if (getBasketCallback) getBasketCallback()
-        }, 500)
+        }, 5000)
     })
 
     function toggleFullscreenMode() {
