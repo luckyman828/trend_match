@@ -7,7 +7,7 @@ export function embed({
     changeItemSizeCallback,
 } = {}) {
     // Kollekt PLAY
-    const version = `0.0.0 - (13)`
+    const version = `0.0.0 - (14)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -157,7 +157,6 @@ export function embed({
         // Add delay to ensure loading is done
 
         iframeEl.onload = () => {
-            console.log('iframe on load')
             if (getBasketCallback) getBasketCallback()
         }
     })
