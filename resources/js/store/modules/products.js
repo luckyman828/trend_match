@@ -1506,6 +1506,7 @@ export default {
             state.status = status
         },
         SET_PRODUCTS(state, products) {
+            console.log('SET PRODUCTS', products)
             state.products = products
         },
         insertProducts(state, { products, method }) {
