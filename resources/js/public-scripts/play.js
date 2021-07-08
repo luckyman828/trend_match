@@ -181,6 +181,7 @@ export function embed({
             // Reload the iframe by removing and recreating the iframe
             wrapperEl.style.display = 'none'
             iframeEl.remove()
+            console.log('on close', iframeEl)
             iframeEl = createIframe()
 
             // Reset the contentWindow
@@ -190,7 +191,7 @@ export function embed({
     }
 
     function createIframe() {
-        console.log('CREATE I FRAME')
+        console.log('CREATE I FRAME', iframeEl)
         const newIframe = document.createElement('iframe')
         newIframe.setAttribute('allow', 'fullscreen')
         newIframe.id = `embed-${version}`
