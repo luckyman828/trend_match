@@ -6,6 +6,12 @@ export function embed({
     updateItemQuantityCallback,
     changeItemSizeCallback,
 } = {}) {
+    if (window.kollekt_play_init) {
+        console.log('wont create an extra')
+        return
+    }
+    window.kollekt_play_init = true
+
     // Kollekt PLAY
     const version = `0.0.0 - (15)`
     console.log('Init PLAY embed script. Version: ' + version)
