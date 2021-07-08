@@ -7,7 +7,7 @@ export function embed({
     changeItemSizeCallback,
 } = {}) {
     // Kollekt PLAY
-    const version = `0.0.0 - (14)`
+    const version = `0.0.0 - (15)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -191,7 +191,7 @@ export function embed({
     }
 
     function createIframe() {
-        console.log('CREATE I FRAME', iframeEl)
+        console.log('CREATE I FRAME', document.getElementById(`embed-${version}`))
         const newIframe = document.createElement('iframe')
         newIframe.setAttribute('allow', 'fullscreen')
         newIframe.id = `embed-${version}`
