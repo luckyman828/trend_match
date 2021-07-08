@@ -19,19 +19,19 @@ async function getBasket() {
     console.log('shop basket', shopBasket)
 
     // Transform the basket response to a kollekt-compatible model
-    // contentWindow.postMessage(
-    //     {
-    //         action: 'syncBasket',
-    //         items: shopBasket.items.map(item => {
-    //             return {
-    //                 ref_id: item.variant_id,
-    //                 size: item.options_with_values.find(x => x.name == 'size').value,
-    //                 quantity: item.quantity,
-    //             }
-    //         }),
-    //     },
-    //     targetOrigin
-    // )
+    contentWindow.postMessage(
+        {
+            action: 'syncBasket',
+            items: shopBasket.basketLines.map(item => {
+                return {
+                    ref_id: item.productEAN,
+                    size: item.size,
+                    quantity: item.quantity,
+                }
+            }),
+        },
+        targetOrigin
+    )
 }
 
 async function addToBasket(items) {
