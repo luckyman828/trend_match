@@ -1,11 +1,43 @@
 import { embed } from './play.js'
-const version = `0.0.0 - (4)`
+const version = `0.0.0 - (6)`
 console.log('Init PLAY Shopify embed script. Version: ' + version)
 
 const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
 const targetOrigin = `${appUrl}`
 
-const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity, changeItemSize)
+const contentWindow = embed({
+    getBasketCallback: getBasket,
+    addToBasketCallback: addToBasket,
+    removeFromBasketCallback: removeFromBasket,
+    updateItemQuantityCallback: updateItemQuantity,
+    changeItemSizeCallback: changeItemSize,
+})
+
+async function getBasket() {
+    await fetch('/cart.js', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    }).then(async response => {
+        const shopBasket = await response.json()
+
+        // Transform the basket response to a kollekt-compatible model
+        contentWindow.postMessage(
+            {
+                action: 'syncBasket',
+                items: shopBasket.items.map(item => {
+                    return {
+                        ref_id: item.variant_id,
+                        size: item.options_with_values.find(x => x.name == 'size').value,
+                        quantity: item.quantity,
+                    }
+                }),
+            },
+            targetOrigin
+        )
+    })
+}
 
 async function addToBasket(items) {
     const formData = {
@@ -16,7 +48,6 @@ async function addToBasket(items) {
             }
         }),
     }
-
     await fetch('/cart/add.js', {
         method: 'POST',
         headers: {

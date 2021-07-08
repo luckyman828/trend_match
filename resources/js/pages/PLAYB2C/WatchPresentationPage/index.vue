@@ -76,9 +76,32 @@ export default {
             const msgData = event.data
             // console.log('VUE, message recieved', msgData)
 
-            // if (msgData.action == 'toggleFullscreenMode') {
-            //     this.SET_FULLSCREEN_MODE_ACTIVE(msgData.newValue)
-            // }
+            if (msgData.action == 'syncBasket') {
+                // console.log('sync basket', msgData)
+                msgData.items.map(item => {
+                    const basketItem = this.$store.getters['basket/getBasket'].find(
+                        basketItem =>
+                            basketItem.variant.ref_id == item.ref_id && basketItem.sizeDetail.size == item.size
+                    )
+                    if (basketItem) {
+                        this.$store.commit('basket/SET_ITEM_QTY', { item: basketItem, quantity: item.quantity })
+                    } else {
+                        // If the basket item is not already in our basket, see if the item exists in our presentation, then add it if it is
+                        let variant
+                        let sizeDetail
+                        const product = this.$store.getters['products/getProducts'].find(product => {
+                            variant = product.variants.find(variant => {
+                                sizeDetail = variant.ean_sizes.find(size => size.ref_id == item.ref_id)
+                                return !!sizeDetail
+                            })
+                            return !!variant
+                        })
+                        if (variant && sizeDetail) {
+                            this.$store.commit('basket/ADD_ITEM', { variant, sizeDetail, quantity: item.quantity })
+                        }
+                    }
+                })
+            }
 
             if (msgData.action == 'updateBasketItems') {
                 msgData.items.map(item => {

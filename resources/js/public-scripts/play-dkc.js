@@ -1,11 +1,38 @@
 import { embed } from './play.js'
-const version = `0.0.0 - (1)`
+const version = `0.0.0 - (3)`
 console.log('Init PLAY DKC embed script. Version: ' + version)
 
 const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
 const targetOrigin = `${appUrl}`
 
-const contentWindow = embed(addToBasket, removeFromBasket, updateItemQuantity, changeItemSize)
+const contentWindow = embed({
+    getBasketCallback: getBasket,
+    addToBasketCallback: addToBasket,
+    removeFromBasketCallback: removeFromBasket,
+    updateItemQuantityCallback: updateItemQuantity,
+    changeItemSizeCallback: changeItemSize,
+})
+
+async function getBasket() {
+    const shopBasket = await window.w2mInterop.getBasket()
+    // Transform the basket response to a kollekt-compatible model
+    console.log('shop basket', shopBasket)
+
+    // Transform the basket response to a kollekt-compatible model
+    // contentWindow.postMessage(
+    //     {
+    //         action: 'syncBasket',
+    //         items: shopBasket.items.map(item => {
+    //             return {
+    //                 ref_id: item.variant_id,
+    //                 size: item.options_with_values.find(x => x.name == 'size').value,
+    //                 quantity: item.quantity,
+    //             }
+    //         }),
+    //     },
+    //     targetOrigin
+    // )
+}
 
 async function addToBasket(items) {
     // console.log('Add this to basket', items)

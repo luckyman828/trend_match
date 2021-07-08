@@ -1,11 +1,12 @@
-export function embed(
-    addToBasketCallBack,
+export function embed({
+    getBasketCallback,
+    addToBasketCallback,
     removeFromBasketCallback,
     updateItemQuantityCallback,
-    changeItemSizeCallback
-) {
+    changeItemSizeCallback,
+} = {}) {
     // Kollekt PLAY
-    const version = `0.0.0 - (10)`
+    const version = `0.0.0 - (11)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -136,6 +137,7 @@ export function embed(
     const contentWindow = iframeEl.contentWindow
 
     // Add click listener
+    // ON SHOW FUNCTION
     document.addEventListener('click', function(e) {
         const button = e.target.getAttribute('data-kollekt-play-id')
             ? e.target
@@ -150,6 +152,12 @@ export function embed(
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
         wrapperEl.style.display = 'block'
         // iframeEl.contentWindow.location.href = iframeEl.src
+
+        // Trigger get basket on creation
+        // Add delay to ensure loading is done
+        setTimeout(() => {
+            if (getBasketCallback) getBasketCallback()
+        }, 500)
     })
 
     function toggleFullscreenMode() {
@@ -184,6 +192,7 @@ export function embed(
         newIframe.name = Date.now()
         newIframe.style.cssText = 'width: 100%; height: 100%; border: none;'
         playerEl.appendChild(newIframe)
+
         return newIframe
     }
 
@@ -204,13 +213,18 @@ export function embed(
             'https://staging.kollekt.dk',
         ]
 
-        // console.log('postMessage received!', event.data)
+        // console.log('postMessage received!', event.data, addToBasketCallback)
         if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
         const msgData = event.data
 
+        // GET BASKET
+        if (msgData.action == 'getBasket' && getBasketCallback) {
+            getBasketCallback()
+        }
+
         // ADD TO BASKET
-        if (msgData.action == 'addToBasket' && addToBasketCallBack) {
-            addToBasketCallBack(msgData.items)
+        if (msgData.action == 'addToBasket' && addToBasketCallback) {
+            addToBasketCallback(msgData.items)
         }
 
         // REMOVE FROM BASKET
