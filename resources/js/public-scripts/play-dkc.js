@@ -5,13 +5,18 @@ console.log('Init PLAY DKC embed script. Version: ' + version)
 const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
 const targetOrigin = `${appUrl}`
 
-const contentWindow = embed({
+let contentWindow = embed({
+    contentWindowChangeCallback: onContentWindowChange,
     getBasketCallback: getBasket,
     addToBasketCallback: addToBasket,
     removeFromBasketCallback: removeFromBasket,
     updateItemQuantityCallback: updateItemQuantity,
     changeItemSizeCallback: changeItemSize,
 })
+
+async function onContentWindowChange(newContentWindow) {
+    contentWindow = newContentWindow
+}
 
 async function getBasket() {
     const shopBasket = await window.w2mInterop.getBasket()

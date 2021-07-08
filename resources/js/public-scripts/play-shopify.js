@@ -1,11 +1,12 @@
 import { embed } from './play.js'
-const version = `0.0.0 - (6)`
+const version = `0.0.0 - (7)`
 console.log('Init PLAY Shopify embed script. Version: ' + version)
 
 const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
 const targetOrigin = `${appUrl}`
 
-const contentWindow = embed({
+let contentWindow = embed({
+    contentWindowChangeCallback: onContentWindowChange,
     getBasketCallback: getBasket,
     addToBasketCallback: addToBasket,
     removeFromBasketCallback: removeFromBasket,
@@ -13,7 +14,13 @@ const contentWindow = embed({
     changeItemSizeCallback: changeItemSize,
 })
 
+async function onContentWindowChange(newContentWindow) {
+    console.log('new content window', newContentWindow)
+    contentWindow = newContentWindow
+}
+
 async function getBasket() {
+    console.log('GET BASKET')
     await fetch('/cart.js', {
         method: 'GET',
         headers: {
@@ -23,6 +30,7 @@ async function getBasket() {
         const shopBasket = await response.json()
 
         // Transform the basket response to a kollekt-compatible model
+
         contentWindow.postMessage(
             {
                 action: 'syncBasket',

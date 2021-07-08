@@ -74,10 +74,10 @@ export default {
 
             if (!event.origin == acceptedOrigin) return
             const msgData = event.data
-            // console.log('VUE, message recieved', msgData)
+            console.log('VUE, message recieved', msgData)
 
             if (msgData.action == 'syncBasket') {
-                // console.log('sync basket', msgData)
+                console.log('sync basket', msgData)
                 msgData.items.map(item => {
                     const basketItem = this.$store.getters['basket/getBasket'].find(
                         basketItem =>

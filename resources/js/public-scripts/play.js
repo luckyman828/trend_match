@@ -1,4 +1,5 @@
 export function embed({
+    contentWindowChangeCallback,
     getBasketCallback,
     addToBasketCallback,
     removeFromBasketCallback,
@@ -6,7 +7,7 @@ export function embed({
     changeItemSizeCallback,
 } = {}) {
     // Kollekt PLAY
-    const version = `0.0.0 - (12)`
+    const version = `0.0.0 - (13)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -134,7 +135,7 @@ export function embed({
 
     document.body.appendChild(wrapperEl)
 
-    const contentWindow = iframeEl.contentWindow
+    let contentWindow = iframeEl.contentWindow
 
     // Add click listener
     // ON SHOW FUNCTION
@@ -151,13 +152,17 @@ export function embed({
         const iFrameBaseUrl = `${appUrl}/#/play/watch/`
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
         wrapperEl.style.display = 'block'
-        // iframeEl.contentWindow.location.href = iframeEl.src
 
         // Trigger get basket on creation
         // Add delay to ensure loading is done
-        setTimeout(() => {
+
+        iframeEl.onload = () => {
+            console.log('iframe on load')
             if (getBasketCallback) getBasketCallback()
-        }, 1000)
+        }
+        // setTimeout(() => {
+        //     if (getBasketCallback) getBasketCallback()
+        // }, 1000)
     })
 
     function toggleFullscreenMode() {
@@ -181,6 +186,10 @@ export function embed({
             wrapperEl.style.display = 'none'
             iframeEl.remove()
             iframeEl = createIframe()
+
+            // Reset the contentWindow
+            contentWindow = iframeEl.contentWindow
+            if (contentWindowChangeCallback) contentWindowChangeCallback(contentWindow)
         }
     }
 
