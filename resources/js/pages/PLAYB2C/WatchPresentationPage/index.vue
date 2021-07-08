@@ -96,6 +96,7 @@ export default {
                             })
                             return !!variant
                         })
+                        console.log('syncing basket. The item', item, 'the variant', variant, 'the detail', sizeDetail)
                         if (variant && sizeDetail) {
                             this.$store.commit('basket/ADD_ITEM', { variant, sizeDetail, quantity: item.quantity })
                         }
