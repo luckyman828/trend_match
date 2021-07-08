@@ -10,13 +10,7 @@ export default {
     state: {
         workspaces: [],
         databases: [],
-        currentWorkspaceId: () => {
-            try {
-                return localStorage.getItem('workspace-id') || null
-            } catch (e) {
-                return null
-            }
-        },
+        currentWorkspaceId: null,
         loading: true,
         availableWorkspaceRoles: [
             {
@@ -36,7 +30,13 @@ export default {
 
     getters: {
         loadingWorkspaces: state => state.loading,
-        getCurrentWorkspaceId: state => state.currentWorkspaceId,
+        getCurrentWorkspaceId: state => {
+            try {
+                return state.currentWorkspaceId || localStorage.getItem('workspace-id') || null
+            } catch (e) {
+                return null
+            }
+        },
         workspaces: state => state.workspaces,
         getWorkspaces: state => state.workspaces,
         availableWorkspaceRoles: (state, getters, rootState, rootGetters) =>
