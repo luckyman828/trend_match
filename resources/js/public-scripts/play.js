@@ -160,9 +160,6 @@ export function embed({
             console.log('iframe on load')
             if (getBasketCallback) getBasketCallback()
         }
-        // setTimeout(() => {
-        //     if (getBasketCallback) getBasketCallback()
-        // }, 1000)
     })
 
     function toggleFullscreenMode() {
@@ -194,6 +191,7 @@ export function embed({
     }
 
     function createIframe() {
+        console.log('CREATE I FRAME')
         const newIframe = document.createElement('iframe')
         newIframe.setAttribute('allow', 'fullscreen')
         newIframe.id = `embed-${version}`
