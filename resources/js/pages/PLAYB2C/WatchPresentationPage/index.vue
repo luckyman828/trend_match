@@ -21,6 +21,7 @@ import PageLoader from '../../../components/common/PageLoader'
 import MobileWatchPresentationPage from './Mobile/WatchPresentationPage'
 import DekstopWatchPresentationPage from './Desktop/WatchPresentationPage'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import basket from '../../../store/modules/playb2c/basket'
 export default {
     name: 'play.watchPresentationPageLoader',
     components: {
@@ -96,7 +97,16 @@ export default {
                             })
                             return !!variant
                         })
-                        console.log('syncing basket. The item', item, 'the variant', variant, 'the detail', sizeDetail)
+                        console.log(
+                            'syncing basket. The item',
+                            item,
+                            'the variant',
+                            variant,
+                            'the detail',
+                            sizeDetail,
+                            'local basket',
+                            this.$store.getters['basket/getBasket']
+                        )
                         if (variant && sizeDetail) {
                             this.$store.commit('basket/ADD_ITEM', { variant, sizeDetail, quantity: item.quantity })
                         }
