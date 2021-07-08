@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <!-- SIZE -->
-                <v-popover trigger="click">
+                <v-popover trigger="click" ref="sizePopover">
                     <div class="flex-list flex-v space-sm">
                         <div class="ft-12 ft-color-soft ft-md">Size</div>
                         <div class="square color">
@@ -53,6 +53,7 @@
                         :variant="item.variant"
                         ref="sizeSelector"
                         v-model="item.sizeDetail"
+                        @submit="$refs.sizePopover.hide()"
                     />
                 </v-popover>
             </div>
@@ -115,7 +116,6 @@ export default {
     },
     watch: {
         sizeDetail(newSizeDetail, oldSizeDetail) {
-            console.log('size detail changed')
             this.changeItemSize({
                 item: this.item,
                 newSizeDetail,
