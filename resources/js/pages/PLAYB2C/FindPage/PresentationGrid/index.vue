@@ -23,20 +23,27 @@
                 <div class="item-group">
                     <BaseContextMenuItem
                         iconClass="far fa-play"
-                        hotkey="KeyP"
+                        hotkey="KeyW"
                         @click="onGoToWatchPresentation(contextPresentation)"
                     >
-                        <u>P</u>review presentation
+                        <u>W</u>atch preview
                     </BaseContextMenuItem>
                     <BaseContextMenuItem
                         iconClass="far fa-edit"
                         hotkey="KeyE"
                         @click="onGoToEditPresentation(contextPresentation)"
                     >
-                        <span>Go to <u>E</u>dit presentation</span>
+                        <span>Go to <u>e</u>dit presentation</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-tshirt"
+                        hotkey="KeyP"
+                        @click="onGoToEditPresentationProducts(contextPresentation)"
+                    >
+                        <span>Go to edit <u>p</u>roducts</span>
+                    </BaseContextMenuItem>
                     <BaseContextMenuItem iconClass="far fa-pen" hotkey="KeyR" @click="onRename(contextPresentation)">
                         <u>R</u>ename
                     </BaseContextMenuItem>
@@ -130,6 +137,9 @@ export default {
             } else {
                 this.onShowNewPresentationModal(presentation)
             }
+        },
+        onGoToEditPresentationProducts(presentation) {
+            this.$router.push({ name: 'play.editPresentationProducts', params: { presentationId: presentation.id } })
         },
         onGoToWatchPresentation(presentation) {
             this.$router.push({ name: 'play.watchPresentation', params: { presentationId: presentation.id } })

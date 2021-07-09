@@ -334,11 +334,14 @@ const routes = [
                 component: () =>
                     import(/* webpackChunkName: "playEditPresentationPage" */ './pages/PLAYB2C/EditPresentationPage/'),
             },
-            // {
-            //     path: 'home',
-            //     name: 'play.home',
-            //     component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
-            // },
+            {
+                path: 'presentation/:presentationId/products/edit',
+                name: 'play.editPresentationProducts',
+                component: () =>
+                    import(
+                        /* webpackChunkName: "editPresentationProductsPage" */ './pages/PLAYB2C/EditPresentationProductsPage/'
+                    ),
+            },
             {
                 path: 'watch/:presentationId',
                 name: 'play.watchPresentation',
