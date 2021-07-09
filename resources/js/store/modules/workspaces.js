@@ -81,9 +81,8 @@ export default {
                 return getters.getFeatureFlags.includes(app.featureFlag)
             })
         },
-        getWebshop: () => {
-            // return { url: `https://kollektteststore.myshopify.com` }
-            return { url: `https://bap-qa.bap-test.com` }
+        getWebshop: (state, getters) => {
+            return getters.getCurrentWorkspace && getters.getCurrentWorkspace.play_shop
         },
     },
 

@@ -15,12 +15,10 @@ let contentWindow = embed({
 })
 
 async function onContentWindowChange(newContentWindow) {
-    console.log('new content window', newContentWindow)
     contentWindow = newContentWindow
 }
 
 async function getBasket() {
-    console.log('GET BASKET')
     await fetch('/cart.js', {
         method: 'GET',
         headers: {
