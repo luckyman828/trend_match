@@ -53,6 +53,7 @@ export default {
             // If we have added new products
             if (!oldVal || newVal.lenght > oldVal.lenght) {
                 // Process the queue
+                console.log('products are now here', newVal, postMessageQueue)
                 for (const queuedEvent of postMessageQueue) {
                     console.log('process this queued event', queuedEvent)
                     this.postMessageHandler(queuedEvent)
