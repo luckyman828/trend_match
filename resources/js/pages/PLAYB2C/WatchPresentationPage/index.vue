@@ -49,13 +49,11 @@ export default {
     },
     watch: {
         products(newVal, oldVal) {
-            console.log('something happened to products', JSON.parse(JSON.stringify(newVal)), oldVal, newVal.length)
             // If we have added new products
             if (!oldVal || newVal.length > oldVal.length) {
                 // Process the queue
-                console.log('products are now here', newVal, this.postMessageQueue)
                 for (const queuedEvent of this.postMessageQueue) {
-                    console.log('process this queued event', queuedEvent)
+                    // console.log('process this queued event', queuedEvent)
                     this.postMessageHandler(queuedEvent)
                 }
                 // Reset the queue
@@ -95,12 +93,9 @@ export default {
 
             if (!event.origin == acceptedOrigin) return
             const msgData = event.data
-            console.log('VUE, message recieved', msgData)
 
             if (msgData.action == 'syncBasket') {
-                console.log('sync basket', msgData, this.products.length)
                 if (this.products.length <= 0) {
-                    console.log('push to message queue')
                     this.postMessageQueue.push(event)
                 }
                 msgData.items.map(item => {
@@ -121,16 +116,16 @@ export default {
                             })
                             return !!variant
                         })
-                        console.log(
-                            'syncing basket. The item',
-                            item,
-                            'the variant',
-                            variant,
-                            'the detail',
-                            sizeDetail,
-                            'local products',
-                            this.$store.getters['products/getProducts']
-                        )
+                        // console.log(
+                        //     'syncing basket. The item',
+                        //     item,
+                        //     'the variant',
+                        //     variant,
+                        //     'the detail',
+                        //     sizeDetail,
+                        //     'local products',
+                        //     this.$store.getters['products/getProducts']
+                        // )
                         if (variant && sizeDetail) {
                             this.$store.commit('basket/ADD_ITEM', { variant, sizeDetail, quantity: item.quantity })
                         }

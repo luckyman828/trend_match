@@ -154,7 +154,6 @@ export default {
                     commit('SET_TIMINGS_READY', true)
 
                     const products = response.data.products
-                    console.log('products fetched from vidoe', products, response.data)
                     await dispatch('products/initProducts', products, { root: true })
                     commit('products/SET_PRODUCTS', products, { root: true })
 
