@@ -840,7 +840,7 @@ i {
             width: auto;
             // COLORS
             @each $color in $brand-colors {
-                .#{nth($color,1)} & {
+                .#{nth($color,1)}:not(.ghost):not(.invisible) & {
                     text-shadow: -1px -1px 0 nth($color, 2), 1px -1px 0 nth($color, 2), -1px 1px 0 nth($color, 2),
                         1px 1px 0 nth($color, 2);
                 }
