@@ -341,10 +341,15 @@ export default {
             const products = getters.products
             const buyView = rootGetters['productFilters/getBuyView']
             const selection = rootGetters['selections/getCurrentSelection']
+            const currentApp = rootGetters['kollektApps/getCurrentApp']
 
             if (!selection) return products
 
             let productsToReturn = [...products]
+            if (currentApp.name == 'select') {
+                const selectProducts = rootGetters['selectionProducts/getProducts']
+                productsToReturn = [...selectProducts]
+            }
 
             if (selection.type == 'Summed') {
                 // Filter out variats with no QTY
@@ -1699,27 +1704,6 @@ export default {
         },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index
-        },
-        SET_QUANTITY(state, { alignment, variantId, deliveryDate, size, assortment, quantity }) {
-            if (!alignment) return
-            const existingQuantityDetail = alignment.quantity_details.find(detail => {
-                if (variantId && detail.variant_id != variantId) return false
-                if (deliveryDate && detail.delivery_date != deliveryDate) return false
-                if (size && detail.variant_size != size) return false
-                if (assortment && detail.assortment != assortment) return false
-                return true
-            })
-            if (existingQuantityDetail) {
-                existingQuantityDetail.quantity = quantity
-            } else {
-                alignment.quantity_details.push({
-                    variant_id: variantId,
-                    delivery_date: deliveryDate,
-                    variant_size: size,
-                    assortment,
-                    quantity,
-                })
-            }
         },
     },
 }

@@ -119,19 +119,25 @@ export default {
         deliveryAssortment() {
             return this.assortment.deliveries.find(delivery => delivery.delivery_date == this.deliveryDate)
         },
+        assortmentQuantity() {
+            return this.assortment.quantity
+        },
     },
     watch: {
         deliveryDate() {
             this.localQuantity = this.deliveryAssortment.quantity
         },
+        assortmentQuantity(newVal) {
+            this.localQuantity = newVal
+        },
     },
     methods: {
         ...mapActions('actions', ['updateAlignments']),
-        ...mapMutations('products', ['SET_QUANTITY']),
+        ...mapActions('buyProducts', ['updateQuantity']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onQtyInput(newQty) {
             if (!newQty || newQty < 0) newQty = 0
-            this.SET_QUANTITY({
+            this.updateQuantity({
                 alignment: this.variant.selectionAlignment.productAlignment,
                 variantId: this.variant.id,
                 assortment: this.assortment.name,
