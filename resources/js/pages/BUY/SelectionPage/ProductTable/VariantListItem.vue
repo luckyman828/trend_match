@@ -135,6 +135,7 @@ export default {
             document.activeElement.blur()
         },
         async onSubmitQty() {
+            console.log('on submit qty')
             const newQty = this.localQuantity
             // Find the weight split of the style and brand
             const sizes = this.variant.ean_sizes
@@ -151,7 +152,10 @@ export default {
                 precision,
                 attemptCount
             )
+
             if (!result.combination) return
+
+            this.localQuantity = result.quantity
 
             // Loop through the assortments in the generated combination and set their quantities
             for (const assortmentName of Object.keys(result.combination)) {

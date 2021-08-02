@@ -34,7 +34,7 @@ export default (assortments, desiredSizeSplit, desiredSize, precision, iteration
                 // Test how much adding the assortment will reduce our diff
                 const testCombo = JSON.parse(JSON.stringify(combo))
                 testCombo[assortment.name]++
-                const testComboSizeSplit = JSON.parse(JSON.stringify(baseSizeSplit))
+                const testComboSizeSplit = JSON.parse(JSON.stringify(comboSizeSplit))
 
                 // Calculate the size split of our new combo
                 for (const assortmentSize of assortment.sizeQuantities) {
@@ -47,9 +47,7 @@ export default (assortments, desiredSizeSplit, desiredSize, precision, iteration
 
                 // Calculate the diff of the combo
                 let diff = 0
-                // for (const sizeQuantity of desiredSizeSplit) {
-                //     const desiredQuantity = sizeQuantity.qty
-                // }
+
                 for (const sizeName of Object.keys(testComboSizeSplit)) {
                     const matchingSize = desiredSizeSplit.find(x => x.name == sizeName)
                     const desiredQuantity = matchingSize ? matchingSize.qty : 0
