@@ -12,7 +12,6 @@ export default (assortments, desiredSizeSplit, desiredSize, precision, iteration
     const combo = baseCombo
     let comboSize = 0
     let comboBoxCount = 0
-    const comboSizeSplit = {}
     let comboDiff = 0
 
     // Generate a base sizesplit
@@ -20,6 +19,8 @@ export default (assortments, desiredSizeSplit, desiredSize, precision, iteration
     desiredSizeSplit.map(sizeQuantity => {
         baseSizeSplit[sizeQuantity.name] = 0
     })
+
+    const comboSizeSplit = JSON.parse(JSON.stringify(baseSizeSplit))
 
     // Start picking random assortments
     while (comboSize <= maxSize) {
