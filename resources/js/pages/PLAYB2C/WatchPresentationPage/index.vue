@@ -98,8 +98,9 @@ export default {
             console.log('VUE, message recieved', msgData)
 
             if (msgData.action == 'syncBasket') {
-                console.log('sync basket', msgData)
-                if (this.products.lenght <= 0) {
+                console.log('sync basket', msgData, this.products.length)
+                if (this.products.length <= 0) {
+                    console.log('push to message queue')
                     this.postMessageQueue.push(event)
                 }
                 msgData.items.map(item => {
