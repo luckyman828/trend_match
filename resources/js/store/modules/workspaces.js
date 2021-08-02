@@ -81,9 +81,7 @@ export default {
                 return getters.getFeatureFlags.includes(app.featureFlag)
             })
         },
-        getWebshop: (state, getters) => {
-            return getters.getCurrentWorkspace && getters.getCurrentWorkspace.play_shop
-        },
+        getWebshop: (state, getters) => getters.getCurrentWorkspace && getters.getCurrentWorkspace.play_shop,
     },
 
     actions: {
