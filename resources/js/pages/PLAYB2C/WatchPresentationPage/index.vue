@@ -42,6 +42,7 @@ export default {
         }),
         ...mapGetters('products', {
             products: 'getProducts',
+            productStatus: 'getStatus',
         }),
         status() {
             return this.videoStatus == '404' ? 'error' : this.loadingData ? 'loading' : 'success'
@@ -49,7 +50,7 @@ export default {
     },
     watch: {
         products(newVal, oldVal) {
-            console.log('something happened to products', newVal, oldVal, newVal.lenght, oldVal.lenght)
+            console.log('something happened to products', JSON.parse(JSON.stringify(newVal)), oldVal, newVal.lenght)
             // If we have added new products
             if (!oldVal || newVal.lenght > oldVal.lenght) {
                 // Process the queue
@@ -61,6 +62,9 @@ export default {
                 // Reset the queue
                 postMessageQueue = []
             }
+        },
+        productStatus(newVal) {
+            console.log('productStatus changed', newVal)
         },
     },
     methods: {
