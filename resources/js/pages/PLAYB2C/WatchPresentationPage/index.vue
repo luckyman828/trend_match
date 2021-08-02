@@ -49,6 +49,7 @@ export default {
     },
     watch: {
         products(newVal, oldVal) {
+            console.log('something happened to products', newVal)
             // If we have added new products
             if (!oldVal || newVal.lenght > oldVal.lenght) {
                 // Process the queue
