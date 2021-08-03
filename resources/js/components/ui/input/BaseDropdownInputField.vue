@@ -44,6 +44,14 @@
         <!-- DROPDOWN -->
         <div slot="popover" v-close-popover="type == 'radio'" v-if="!readOnly">
             <!-- <BaseSelectButtonsContextMenu :options="options" :emitOnChange="true" :inline="true" :search="search" /> -->
+            <BaseSelectButton
+                v-if="showSelectAll && type != 'radio'"
+                label="Select all"
+                :modelValue="value.length > 0"
+                @input="onSelectAll"
+            >
+                <span>Select all</span>
+            </BaseSelectButton>
             <BaseSelectButtons
                 ref="selectButtons"
                 :options="options"
@@ -92,6 +100,7 @@ export default {
         'allowManualEntry',
         'uniqueKey',
         'resize',
+        'showSelectAll',
     ],
     data: function() {
         return {
@@ -193,6 +202,14 @@ export default {
                     }
                     this.$refs.selectButtons.focusSearch()
                 }, 100)
+            }
+        },
+        async onSelectAll() {
+            const shouldBeChecked = this.value.length != this.options.length
+            for (const optionBox of this.$refs.selectButtons.$refs.selectBox) {
+                await this.$nextTick(() => {
+                    if (optionBox.shouldBeChecked != shouldBeChecked) optionBox.check()
+                })
             }
         },
     },

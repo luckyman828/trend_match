@@ -33,7 +33,7 @@
                 ></div>
             </BaseImageSizer>
         </div>
-        <div class="flex-list flex-v fill space-md details-section">
+        <div class="flex-list flex-v fill space-sm details-section">
             <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
 
             <!-- Details -->
@@ -60,6 +60,22 @@
                 </div>
             </div>
             <!-- End Details -->
+
+            <div class="delivery-selector">
+                <BaseSegmentedControl
+                    activeClass="white"
+                    sizeClass="sm"
+                    theme="light"
+                    v-model="product.currentDeliveryDate"
+                    :options="
+                        product.delivery_dates.map(delivery => ({
+                            label: getPrettyDate(delivery, 'medium'),
+                            value: delivery,
+                        }))
+                    "
+                />
+            </div>
+
             <div class="variant-list flex-list space-md" v-dragscroll>
                 <VariantListItem
                     :variant="variant"

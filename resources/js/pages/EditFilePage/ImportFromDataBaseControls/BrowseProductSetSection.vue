@@ -47,6 +47,7 @@
                 class="full-width import-button"
                 buttonClass="primary full-width lg"
                 :disabled="selectedSeasons.length <= 0"
+                style="margin-bottom: 20px;"
                 @click="onImportProducts"
             >
                 <span>Import Products</span>
@@ -60,6 +61,7 @@ import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'browseProductSetSection',
+    props: ['labelsToSet', 'selectedCurrencies'],
     data() {
         return {
             selectedSeasons: [],
@@ -102,6 +104,7 @@ export default {
             const products = await this.fetchProducts({
                 seasons: this.selectedSeasons,
                 brands: this.selectedBrands,
+                currencies: this.selectedCurrencies,
                 progressCallback: progressObj => {
                     this.fetchProgress = progressObj
                 },
@@ -129,11 +132,18 @@ export default {
                     })
                 })
 
-                // Show variants with images first
+                // Process products
                 products.map(product => {
+                    // Show variants with images first
                     product.variants.sort((a, b) => {
                         if (!!a.pictures.find(x => !!x.url) && !b.pictures.find(x => !!x.url)) return -1
                         if (!!b.pictures.find(x => !!x.url) && !a.pictures.find(x => !!x.url)) return 1
+                    })
+
+                    // Add selected labels if any
+                    product.labels = this.labelsToSet
+                    product.variants.map(variant => {
+                        variant.labels = this.labelsToSet
                     })
                 })
 
