@@ -60,6 +60,9 @@ export default {
             this.updateCurrentVideo()
         }
     },
+    created() {
+        this.SET_VIDEO_TYPE('live')
+    },
 }
 </script>
 
