@@ -9,6 +9,7 @@ export default {
 
     state: {
         workspaces: [],
+        playShop: null,
         databases: [],
         currentWorkspaceId: null,
         loading: true,
@@ -81,7 +82,8 @@ export default {
                 return getters.getFeatureFlags.includes(app.featureFlag)
             })
         },
-        getWebshop: (state, getters) => getters.getCurrentWorkspace && getters.getCurrentWorkspace.play_shop,
+        getWebshop: (state, getters) =>
+            state.playShop || (getters.getCurrentWorkspace && getters.getCurrentWorkspace.play_shop),
     },
 
     actions: {
@@ -434,6 +436,9 @@ export default {
         UPDATE_WORKSPACE(state, workspace) {
             const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
             Object.assign(stateWorkspace, workspace)
+        },
+        SET_PLAY_SHOP(state, playShop) {
+            state.playShop = playShop
         },
     },
 }
