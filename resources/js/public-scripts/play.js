@@ -109,6 +109,14 @@ export function embed({
                     top: 8px;
                     right: 8px; 
                 }
+                .kollekt-close-button > svg {
+                    height: 15px;
+                    width: 32px;
+                    margin-top: 8px;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                }
                 
             }
         </style>`
