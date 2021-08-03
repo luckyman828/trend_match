@@ -27,7 +27,7 @@ export function embed({
                 margin: auto;
                 height: 100vh; 
                 width: 100vw; 
-                z-index: 99999; 
+                z-index: 999999999999; 
                 display: none;
                 scroll-behavior: smooth;
             }
