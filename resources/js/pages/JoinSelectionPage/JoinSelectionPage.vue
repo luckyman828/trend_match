@@ -44,6 +44,11 @@
                 </button>
             </LoginInputField>
 
+            <router-link class="button invisible" :to="{ name: 'recoverPassword' }">
+                <span>Forgot your password</span>
+                <i class="far fa-question-circle"></i>
+            </router-link>
+
             <div class="error-wrapper" v-if="error">
                 <i class="far fa-exclamation-triangle"></i>
                 <span>{{ error }}</span>
