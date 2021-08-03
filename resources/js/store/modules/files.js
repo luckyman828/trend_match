@@ -195,17 +195,18 @@ export default {
                 Vue.set(file, 'owners', response.data)
             })
         },
-        instantiateBaseFile() {
-            return {
-                id: null,
-                name: '',
-                type: 'File',
-                video_count: 0,
-                parent_id: 0,
-                thumbnail: null,
-                children: [],
-            }
-        },
+        // instantiateBaseFile() {
+        //     return {
+        //         id: null,
+        //         name: '',
+        //         type: 'File',
+        //         video_count: 0,
+        //         parent_id: 0,
+        //         thumbnail: null,
+        //         children: [],
+        //         apps: [],
+        //     }
+        // },
         async insertOrUpdateFile({ commit, dispatch, rootGetters }, { file, addToState = true }) {
             const workspaceId = rootGetters['workspaces/getCurrentWorkspaceId']
             // Assume update
@@ -665,6 +666,7 @@ export default {
                 type: 'File',
                 parent_id: 0,
                 children: [],
+                apps: [],
                 workspace_id: rootGetters['workspaces/getCurrentWorkspaceId'],
             }
             await dispatch('initFiles', [newFile])

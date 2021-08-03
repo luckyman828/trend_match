@@ -86,36 +86,81 @@
                 </div>
             </div>
 
-            <div class="form-section" v-if="isSystemAdmin">
-                <h3>System admin settings</h3>
-                <h4>Enabled features</h4>
-                <div class="form-element" v-for="(feature, index) in allFeatures" :key="index">
-                    <BaseCheckboxInputField
-                        v-model="workspace.feature_flags"
-                        :modelValue="feature"
-                        @input="onUpdateWorkspaceDetails"
-                    >
-                        <span>{{ feature }}</span>
-                    </BaseCheckboxInputField>
-                </div>
-                <div class="form-element">
-                    <button class="ghost" @click="showDangerousOptions = !showDangerousOptions">
-                        <i class="far fa-eye"></i>
-                        <span>Show dangerous options</span>
+            <template v-if="isSystemAdmin">
+                <h1>System admin settings</h1>
+
+                <!-- PLAY SHOP -->
+                <div class="form-section">
+                    <h4>PLAY SHOP</h4>
+                    <div class="form-element">
+                        <BaseCheckboxInputField
+                            :value="!!workspace.play_shop"
+                            :modelValue="true"
+                            @input="onTogglePlayShop"
+                        >
+                            <span>Link PLAY Shop</span>
+                        </BaseCheckboxInputField>
+                    </div>
+                    <template v-if="workspace.play_shop">
+                        <div class="form-element">
+                            <BaseDropdownInputField
+                                type="radio"
+                                v-model="workspace.play_shop.type"
+                                innerlabel="Shop type"
+                                :options="['SHOPIFY', 'DKC_BAP']"
+                            />
+                        </div>
+                        <div class="form-element">
+                            <BaseInputField
+                                v-model="workspace.play_shop.url"
+                                innerlabel="Shop URL"
+                                placeholder="https://my-webshop.com"
+                            />
+                        </div>
+                        <div class="form-element">
+                            <BaseInputField
+                                v-model="workspace.play_shop.checkout_url"
+                                innerlabel="Shop checkout URL"
+                                placeholder="https://my-webshop.com/checkout"
+                            />
+                        </div>
+                    </template>
+                    <button class="primary full-width lg" @click="onUpdateWorkspaceDetails">
+                        <span>Save PLAY Shop changes</span>
                     </button>
                 </div>
-                <div class="form-element" v-if="showDangerousOptions">
-                    <BaseButton
-                        buttonClass="red"
-                        @click="onDeleteWorkspace"
-                        :disabled="!users || users.length > 0"
-                        disabledTooltip="Workspace still has users. You must remove all users before you can delete this workspace."
-                    >
-                        <i class="far fa-trash"></i>
-                        <span>Delete workspace</span>
-                    </BaseButton>
+
+                <!-- WORKSPACE FEATURES  -->
+                <div class="form-section">
+                    <h4>Enabled features</h4>
+                    <div class="form-element" v-for="(feature, index) in allFeatures" :key="index">
+                        <BaseCheckboxInputField
+                            v-model="workspace.feature_flags"
+                            :modelValue="feature"
+                            @input="onUpdateWorkspaceDetails"
+                        >
+                            <span>{{ feature }}</span>
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element">
+                        <button class="ghost" @click="showDangerousOptions = !showDangerousOptions">
+                            <i class="far fa-eye"></i>
+                            <span>Show dangerous options</span>
+                        </button>
+                    </div>
+                    <div class="form-element" v-if="showDangerousOptions">
+                        <BaseButton
+                            buttonClass="red"
+                            @click="onDeleteWorkspace"
+                            :disabled="!users || users.length > 0"
+                            disabledTooltip="Workspace still has users. You must remove all users before you can delete this workspace."
+                        >
+                            <i class="far fa-trash"></i>
+                            <span>Delete workspace</span>
+                        </BaseButton>
+                    </div>
                 </div>
-            </div>
+            </template>
         </div>
 
         <BaseDialog ref="confirmDeleteWorkspace" type="confirm" confirmColor="red">
@@ -149,6 +194,11 @@ export default {
             uploadingLogo: false,
             showDangerousOptions: false,
             prevRoute: null,
+            basePlayShop: {
+                type: 'SHOPIFY',
+                url: '',
+                checkout_url: '',
+            },
         }
     },
     computed: {
@@ -196,6 +246,14 @@ export default {
         async onUpdateWorkspaceDetails() {
             this.workspace.style_option_enabled = this.workspace.feature_flags.includes('bestseller_style_option')
             await this.updateWorkspaceDetails(this.workspace)
+        },
+        onTogglePlayShop(shopEnabled) {
+            if (this.workspace.play_shop) {
+                this.basePlayShop = this.workspace.play_shop
+                this.workspace.play_shop = null
+            } else {
+                this.workspace.play_shop = this.basePlayShop
+            }
         },
     },
     created() {

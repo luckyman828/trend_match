@@ -18,9 +18,9 @@ export default {
 
     actions: {
         async instantiateBasePresentation({ dispatch }) {
-            console.log('instatniate base presentation')
             const newPresentation = await dispatch('files/instantiateBaseFile', null, { root: true })
             newPresentation.name = `New presentation`
+            newPresentation.apps.push('play')
             await dispatch('initPresentations', [newPresentation])
             return newPresentation
         },
