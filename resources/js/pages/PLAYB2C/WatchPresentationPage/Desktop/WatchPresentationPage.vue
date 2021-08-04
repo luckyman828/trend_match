@@ -43,14 +43,20 @@
                     :disabled="!currentTiming"
                     :variants="currentTiming && currentTiming.variantList"
                 />
-                <v-popover trigger="click" :autoHide="false" :disabled="!currentTiming" ref="addToBasketPopover">
+                <v-popover
+                    trigger="click"
+                    :autoHide="false"
+                    :disabled="!currentTiming && (!$refs.addToBasketPopover || !$refs.addToBasketPopover.isOpen)"
+                    ref="addToBasketPopover"
+                    @show="onShowAddToBasketPopover"
+                >
                     <BaseButtonV2 class="pill white" :disabled="!currentTiming">
                         <i class="far fa-shopping-bag"></i>
                         <span>Add to basket</span>
                     </BaseButtonV2>
                     <AddToBasketPopover
                         slot="popover"
-                        :variants="currentTiming && currentTiming.variantList"
+                        :variants="addToBasketPopoverVariantList"
                         @hide="$refs.addToBasketPopover.hide()"
                     />
                 </v-popover>
@@ -110,6 +116,7 @@ export default {
             showChatInput: false,
             addToBasketVariant: null,
             showTimingList: null,
+            addToBasketPopoverVariantList: [],
         }
     },
     computed: {
@@ -138,6 +145,9 @@ export default {
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
+        onShowAddToBasketPopover() {
+            this.addToBasketPopoverVariantList = this.currentTiming ? this.currentTiming.variantList : []
+        },
     },
 }
 </script>

@@ -69,11 +69,12 @@ Vue.use(VTooltip, {
     defaultBoundariesElement: 'window',
     defaultOffset: 4,
     defaultDelay: { show: 100, hide: 0 },
-    defaultContainer: 'body',
+    defaultContainer: '#app',
     popover: {
         defaultTrigger: 'hover focus',
         defaultBaseClass: 'base-popover popover',
         defaultOffset: 0,
+        defaultContainer: '#app',
     },
 })
 
