@@ -126,6 +126,20 @@ export function embed({
     const wrapperEl = document.createElement('div')
     wrapperEl.classList.add('kollekt-play-wrapper')
 
+    // Prevent scrolling background from within the player
+    let playerVisible = false
+    let scrollX
+    let scrollY
+    window.addEventListener('scroll', onScroll)
+    function onScroll(e) {
+        if (playerVisible) {
+            e.preventDefault()
+            e.stopPropagation()
+            window.scrollTo(scrollX, scrollY)
+            return false
+        }
+    }
+
     // Create Player
     const playerEl = document.createElement('div')
     playerEl.classList.add('kollekt-player')
@@ -173,6 +187,9 @@ export function embed({
         iframeEl.onload = () => {
             if (getBasketCallback) getBasketCallback()
         }
+        playerVisible = true
+        scrollX = window.scrollX
+        scrollY = window.scrollY
     })
 
     function toggleFullscreenMode() {
@@ -201,6 +218,7 @@ export function embed({
             // Reset the contentWindow
             contentWindow = iframeEl.contentWindow
             if (contentWindowChangeCallback) contentWindowChangeCallback(contentWindow)
+            playerVisible = false
         }
     }
 
@@ -222,7 +240,7 @@ export function embed({
     document.addEventListener('MSFullscreenChange', fullscreenChangeHandler, false)
     document.addEventListener('webkitfullscreenchange', fullscreenChangeHandler, false)
 
-    // Interact with shopify
+    // Interact with webshop
     window.addEventListener('message', async event => {
         const testOrigins =
             process.env.NODE_ENV == 'production' ? [] : ['https://kollekt_feature.test', 'https://kollekt_release.test']

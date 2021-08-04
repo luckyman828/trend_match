@@ -1,4 +1,13 @@
 <template>
+    <!-- <div
+        class="watch-video-page"
+        @wheel.capture.prevent="onScroll"
+        :class="[
+            `desired-${desiredStatus}`,
+            { 'recently-started': recentlyStarted },
+            { 'show-timing-list': showTimingList },
+        ]"
+    > -->
     <div
         class="watch-video-page"
         :class="[
