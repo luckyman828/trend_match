@@ -63,6 +63,7 @@ export default {
     },
     methods: {
         ...mapActions('playPresentation', ['fetchPresentationVideo']),
+        ...mapActions('wishlist', ['fetchWishlist']),
         // ...mapActions('productGroups', ['fetchFileProductGroups']),
         // ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapActions('videos', ['fetchVideoUrls']),
@@ -78,6 +79,7 @@ export default {
                 // this.fetchFileProductGroups(presentationId),
                 // this.fetchVideoComments({ video }),
                 this.fetchVideoUrls(video),
+                this.fetchWishlist(presentationId),
             ])
 
             // Set the desired quality to the highest available on the video
