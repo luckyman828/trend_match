@@ -15,7 +15,6 @@
                 >
                     <i :class="[slotProps.option.iconClass]"></i>
                     <span>{{ slotProps.option.name }}</span>
-                    <span>{{ slotProps.option.count }}</span>
                 </BaseSegmentedControl>
                 <div></div>
             </div>
