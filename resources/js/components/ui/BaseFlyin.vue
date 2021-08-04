@@ -1,6 +1,5 @@
 <template>
     <div class="flyin-wrapper" :class="[{ visible: isVisible }]">
-        <div class="overlay" @click="close"></div>
         <div
             class="flyin"
             ref="flyIn"
@@ -28,6 +27,7 @@
 
             <slot name="alwaysVisible" />
         </div>
+        <div class="overlay" @click="close"></div>
     </div>
 </template>
 

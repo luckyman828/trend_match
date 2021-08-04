@@ -243,3 +243,16 @@ export default {
     }
 }
 </style>
+
+<style lang="scss">
+.watch-video-page {
+    .flyin-wrapper .overlay {
+        z-index: 1;
+        width: calc(100% - 384px);
+    }
+    .flyin.placement-right + .overlay {
+        left: auto;
+        right: 0;
+    }
+}
+</style>
