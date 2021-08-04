@@ -255,6 +255,12 @@ $desktop-width: 920px;
     }
 }
 
+@mixin iphone-x {
+    @media (max-width: #{$tablet-width}) and (min-height: 800px) {
+        @content;
+    }
+}
+
 @mixin desktop-md {
     @media (min-width: #{$screenSm}) {
         @content;

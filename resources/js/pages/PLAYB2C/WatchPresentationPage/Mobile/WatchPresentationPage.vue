@@ -227,6 +227,16 @@ export default {
             }
         }
     }
+    @include iphone-x {
+        .bottom-aligned {
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: 20px;
+            .timeline {
+                bottom: calc(48px + env(safe-area-inset-bottom));
+                bottom: 60px;
+            }
+        }
+    }
 }
 @include desktop {
     .watch-video-page {
