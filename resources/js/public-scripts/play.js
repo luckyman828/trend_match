@@ -281,6 +281,11 @@ export function embed({
             // updateDetail: { item, newSizeDetail, oldSizeDetail }
             changeItemSizeCallback(msgData.updateDetail)
         }
+
+        // GO TO CHECKOUT
+        if (msgData.action == 'goToCheckout') {
+            window.location = msgData.url
+        }
     })
 
     function postMessage(msg) {

@@ -56,7 +56,8 @@
             <BaseButton
                 class="checkout-button full-width"
                 buttonClass="dark full-width pill lg checkout-button"
-                :disabled="basket.length <= 0 || !isEmbedded"
+                :disabled="basket.length <= 0 || !isEmbedded || !(playShop && playShop.checkout_url)"
+                @click="onGoToCheckout"
             >
                 <template v-slot:iconLeft>
                     <i class="far fa-credit-card white"></i>
@@ -95,6 +96,9 @@ export default {
         ...mapGetters('player', {
             isEmbedded: 'getIsEmbedded',
         }),
+        ...mapGetters('workspaces', {
+            playShop: 'getWebshop',
+        }),
         userCurrency() {
             return this.wishlist.length > 0
                 ? this.wishlist[0].yourPrice.currency
@@ -107,6 +111,11 @@ export default {
                 { name: 'wishlist', iconClass: 'far fa-heart', size: this.wishlist.length },
                 { name: 'basket', iconClass: 'far fa-shopping-bag', size: this.basket.length },
             ]
+        },
+    },
+    methods: {
+        onGoToCheckout() {
+            this.$store.dispatch('basket/goToCheckout')
         },
     },
     watch: {

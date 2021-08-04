@@ -83,6 +83,15 @@ export default {
                 { root: true }
             )
         },
+        goToCheckout({ dispatch, rootGetters }) {
+            const playShop = rootGetters['workspaces/getWebshop']
+            if (!playShop) {
+                console.log('no shop linked')
+                return
+            }
+            const checkoutUrl = playShop.checkout_url
+            dispatch('playEmbed/postMessage', { action: 'goToCheckout', url: checkoutUrl }, { root: true })
+        },
     },
 
     mutations: {
