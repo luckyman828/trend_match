@@ -46,14 +46,30 @@
                 <v-popover
                     trigger="click"
                     :autoHide="false"
-                    :disabled="!currentTiming && (!$refs.addToBasketPopover || !$refs.addToBasketPopover.isOpen)"
+                    :disabled="!currentTiming && !addToBasketPopoverIsVisible"
                     ref="addToBasketPopover"
                     @show="onShowAddToBasketPopover"
+                    @hide="onHideBasketPopover"
                 >
-                    <BaseButtonV2 class="pill white" :disabled="!currentTiming">
-                        <i class="far fa-shopping-bag"></i>
-                        <span>Add to basket</span>
-                    </BaseButtonV2>
+                    <BaseStateAlternatingButton
+                        buttonClass="pill"
+                        :disabled="!currentTiming"
+                        :active="
+                            addToBasketPopoverIsVisible ? addToBasketPopoverVariantIsInBasket : currentTimingIsInBasket
+                        "
+                        :baseState="{
+                            class: 'white',
+                            iconLeft: 'far fa-shopping-bag',
+                            text: 'Add to basket',
+                        }"
+                        :activeState="{
+                            class: 'primary',
+                            iconLeft: 'far fa-shopping-bag white',
+                            text: 'Added to basket',
+                            nestedIconLeft: 'fas fa-check pos-bottom pos-right white',
+                        }"
+                    >
+                    </BaseStateAlternatingButton>
                     <AddToBasketPopover
                         slot="popover"
                         :variants="addToBasketPopoverVariantList"
@@ -117,6 +133,7 @@ export default {
             addToBasketVariant: null,
             showTimingList: null,
             addToBasketPopoverVariantList: [],
+            addToBasketPopoverIsVisible: false,
         }
     },
     computed: {
@@ -141,12 +158,25 @@ export default {
         }),
         ...mapGetters('basket', {
             basket: 'getBasket',
+            getVariantIsInBasket: 'getVariantIsInBasket',
         }),
+        addToBasketPopoverVariantIsInBasket() {
+            return this.addToBasketPopoverVariantList.find(variant => this.getVariantIsInBasket(variant))
+        },
+        currentTimingIsInBasket() {
+            return (
+                this.currentTiming && this.currentTiming.variantList.find(variant => this.getVariantIsInBasket(variant))
+            )
+        },
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
         onShowAddToBasketPopover() {
+            this.addToBasketPopoverIsVisible = true
             this.addToBasketPopoverVariantList = this.currentTiming ? this.currentTiming.variantList : []
+        },
+        onHideBasketPopover() {
+            this.addToBasketPopoverIsVisible = false
         },
     },
 }
