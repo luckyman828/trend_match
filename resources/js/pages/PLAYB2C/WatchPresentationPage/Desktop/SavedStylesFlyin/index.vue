@@ -129,6 +129,7 @@ export default {
             width: 384px;
             .body {
                 padding: 8px;
+                background: $bluegrey250;
             }
         }
         .overlay {

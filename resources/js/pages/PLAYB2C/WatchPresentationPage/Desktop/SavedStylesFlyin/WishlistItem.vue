@@ -52,9 +52,6 @@
         </div>
         <!-- ACTIONS  -->
         <div class="action-list flex-list center-v">
-            <div class="button invisible circle sm">
-                <i class="far fa-ellipsis-h"></i>
-            </div>
             <AddToWishlistButton class="circle sm" :variants="[variant]" />
             <AddToBasketButton buttonClass="circle sm invisible" :variant="variant" textStyle="none" />
         </div>
@@ -113,6 +110,7 @@ export default {
     .color-preview {
         background-size: 50000%;
         background-position: center;
+        margin: 0 -2px;
     }
     .details {
         overflow: hidden;
@@ -120,7 +118,7 @@ export default {
         position: relative;
         .name-section {
             overflow: hidden;
-            margin-top: 20px;
+            margin-top: 24px;
             padding-left: 4px;
         }
         .add-to-basket {

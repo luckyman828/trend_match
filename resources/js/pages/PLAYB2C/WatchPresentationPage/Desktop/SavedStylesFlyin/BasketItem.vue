@@ -1,5 +1,5 @@
 <template>
-    <div class="basket-item flex-list space-min bg-theme-white">
+    <div class="basket-item flex-list bg-theme-white theme-border">
         <BaseImageSizer fit="cover" class="image" @click.native="SET_PDP_ITEM({ variant, product: variant.product })">
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
@@ -7,47 +7,55 @@
         <div class="flex-list flex-v justify details">
             <!-- TOP -->
 
-            <div class="name-section flex-list flex-v space-sm">
-                <div class="flex-v lh-xs">
+            <div class="name-section flex-list flex-v">
+                <div class="flex-list flex-v lh-xs space-sm">
                     <div class="brand ft-10 ft-md ft-color-soft ft-uppercase">
                         {{ variant.product.brand }}
                     </div>
                     <div class="product-name ft-bd ft-14">
-                        <span>{{ variant.product.name }}</span>
+                        <span class="truncate">{{ variant.product.name }}</span>
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-14">
-                        {{
-                            variant.yourPrice.wholesale_price
-                                ? variant.yourPrice.wholesale_price
-                                : variant.yourPrice.recommended_retail_price
-                        }}
-                        {{ variant.yourPrice.currency }}
+                    <div class="current-price ft-bd ft-12">
+                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
                     </div>
-                    <div class="old-price ft-strike ft-12 ft-md" v-if="variant.yourPrice.wholesale_price">
+                    <div class="old-price ft-strike ft-12 ft-bd">
                         {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
                     </div>
                 </div>
             </div>
 
             <!-- BOTTOM -->
-            <div class="flex-list">
+            <div class="flex-list justify">
                 <!-- COLOR -->
-                <div class="flex-list flex-v space-sm">
-                    <div class="ft-12 ft-color-soft ft-md">Color</div>
-                    <div class="square color">
-                        <span class="ft-bd">{{ variant.name }}</span>
-                    </div>
-                </div>
+                <v-popover trigger="click" class="fill">
+                    <button class="color pill sm">
+                        <span
+                            class="circle xxs color-preview"
+                            :style="{ backgroundImage: `url(${variantImage(variant)})` }"
+                        ></span>
+                        <span class="ft-bd truncate" style="margin-right: auto;">{{ variant.name }}</span>
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <BaseSelectButtons
+                        header="Change color"
+                        slot="popover"
+                        type="radio"
+                        :submitOnChange="true"
+                        :options="variant.product.variants"
+                        :value="variant"
+                        optionNameKey="name"
+                        @change="onChangeVariant"
+                    />
+                </v-popover>
                 <!-- SIZE -->
-                <v-popover trigger="click" ref="sizePopover">
-                    <div class="flex-list flex-v space-sm">
-                        <div class="ft-12 ft-color-soft ft-md">Size</div>
-                        <div class="square color">
-                            <span class="ft-bd">{{ item.sizeDetail.size }}</span>
-                        </div>
-                    </div>
+                <v-popover trigger="click" ref="sizePopover" class="fill">
+                    <button class="pill sm">
+                        <span class="ft-bd truncate">Size</span>
+                        <span class="ft-bd" style="margin-right: auto;">{{ item.sizeDetail.size }}</span>
+                        <i class="fas fa-caret-down"></i>
+                    </button>
                     <ChooseSizePopover
                         slot="popover"
                         :variant="item.variant"
@@ -56,36 +64,26 @@
                         @submit="$refs.sizePopover.hide()"
                     />
                 </v-popover>
-            </div>
-
-            <!-- ACTIONS  -->
-            <div class="action-list flex-list center-v pos-top-right pas-sm">
-                <AddToWishlistButton
-                    class="invisible true-square float-icon-hover"
-                    :variants="[variant]"
-                    theme="invisible"
-                />
-                <div
-                    class="button invisible ghost-hover circle"
-                    v-show-contextmenu="{ ref: 'moreContext', placement: 'bottom' }"
-                >
-                    <i class="fas fa-ellipsis-h"></i>
+                <div class="pill sm flex-list justify quantity-selector">
+                    <div class="decrement flex-list center-v center-h" @click="decrementQty">
+                        <i class="fas fa-minus ft-color-soft"></i>
+                    </div>
+                    <div class="quantity ft-bd">{{ item.quantity }}</div>
+                    <div class="increment sm light flex-list center-v center-h" @click="incrementQty">
+                        <i class="fas fa-plus ft-color-soft"></i>
+                    </div>
                 </div>
             </div>
-            <div class="ui-square flex-list justify quantity-selector pos-bot-right pad-sm">
-                <div class="decrement flex-list center-v center-h" @click="decrementQty">
-                    <i class="fas fa-minus ft-color-soft"></i>
-                </div>
-                <div class="flex-list flex-v quantity-col space-min justify">
-                    <span class="ft-bd ft-color-soft ft-10">QTY</span>
-                    <span class="ft-bd">{{ item.quantity }}</span>
-                </div>
-                <div class="increment sm light flex-list center-v center-h" @click="incrementQty">
-                    <i class="fas fa-plus ft-color-soft"></i>
-                </div>
-            </div>
-            <!-- END ACTIONS  -->
         </div>
+
+        <!-- ACTION  -->
+        <div class="action-list flex-list center-v">
+            <AddToWishlistButton class="circle sm" :variants="[variant]" />
+            <button class="circle sm invisible bg-hover" @click="onRemoveFromBasket">
+                <i class="far fa-trash"></i>
+            </button>
+        </div>
+        <!-- END ACTIONS  -->
 
         <BaseContextMenu ref="moreContext" class="more-context">
             <div class="item-group">
@@ -101,10 +99,12 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import ChooseSizePopover from '../../ChooseSizePopover'
+import variantImage from '../../../../../mixins/variantImage'
 
 export default {
     name: 'basketItem',
     components: { AddToWishlistButton, ChooseSizePopover },
+    mixins: [variantImage],
     props: ['item', 'moreContext'],
     computed: {
         variant() {
@@ -125,7 +125,7 @@ export default {
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
-        ...mapActions('basket', ['updateItemQty', 'removeFromBasket', 'changeItemSize']),
+        ...mapActions('basket', ['updateItemQty', 'removeFromBasket', 'changeItemSize', 'addToBasket']),
         decrementQty() {
             this.updateItemQty({ item: this.item, quantity: this.item.quantity - 1 })
         },
@@ -134,6 +134,10 @@ export default {
         },
         onRemoveFromBasket() {
             this.removeFromBasket({ variant: this.item.variant, sizeDetail: this.item.sizeDetail })
+        },
+        onChangeVariant(newVariant) {
+            this.addToBasket({ variant: newVariant, sizeDetail: this.item.sizeDetail })
+            this.onRemoveFromBasket()
         },
     },
 }
@@ -144,40 +148,43 @@ export default {
 
 .basket-item {
     background: white;
-    box-shadow: $shadowXs;
+    border-radius: $borderRadiusMd;
+    padding: 8px;
+    position: relative;
     .image {
         width: 100px;
         cursor: pointer;
     }
+    .action-list {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+    }
     .details {
         overflow: hidden;
         flex: 1;
-        padding: 8px;
+        // padding: 8px;
+        // padding-right: 0px;
         position: relative;
         .name-section {
             overflow: hidden;
-            padding-right: 80px;
+            margin-top: 24px;
+            padding-left: 4px;
         }
-        .action-list {
-            position: absolute;
-            top: 4px;
-            right: 4px;
+        .color-preview {
+            background-size: 50000%;
+            background-position: center;
+            margin: 0 -2px;
         }
         .quantity-selector {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            padding: 0;
-            height: 48px;
+            position: relative;
             overflow: hidden;
-            .quantity-col {
-                padding: 4px 0;
-                height: 100%;
-            }
+            flex-shrink: 0;
             .decrement,
             .increment {
                 height: 100%;
                 width: 16px;
+                // display: none;
                 transition: background 0.1s ease-in;
                 cursor: pointer;
                 &:hover {
@@ -185,6 +192,24 @@ export default {
                 }
                 &:active {
                     background: $themeGreyBgActive;
+                }
+            }
+            .decrement {
+                margin-left: -6px;
+            }
+            .increment {
+                margin-right: -6px;
+            }
+            .quantity {
+                margin: 0 2px 0 -2px;
+            }
+            &:not(:hover) {
+                .decrement,
+                .increment {
+                    display: none;
+                }
+                .quantity {
+                    margin: 0 2px;
                 }
             }
             i {
@@ -200,6 +225,15 @@ export default {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+    .v-popover.fill {
+        overflow: hidden;
+        > .trigger {
+            width: 100%;
+            > button {
+                width: 100%;
+            }
+        }
     }
 }
 </style>

@@ -568,6 +568,9 @@ input[type='submit'] {
             // }
         }
     }
+    &.bg-hover:hover {
+        background: $bluegrey250 !important;
+    }
     &:active {
         // background: $grey400;
         // border-color: $grey500;
@@ -1772,6 +1775,10 @@ input::placeholder {
     &.fill,
     > .fill {
         flex-grow: 1;
+    }
+    &.no-shrink,
+    > .no-shrink {
+        flex-shrink: 0;
     }
     &.equal-width {
         > * {
