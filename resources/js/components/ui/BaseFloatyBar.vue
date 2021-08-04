@@ -56,12 +56,23 @@ export default {
         animation: fly-in forwards ease-out 0.2s;
         animation-delay: 0.1s;
     }
+
     @keyframes fly-in {
         from {
             bottom: -64px;
         }
         to {
             bottom: 8px;
+        }
+    }
+    @include iphone-x {
+        @keyframes fly-in {
+            from {
+                bottom: -64px;
+            }
+            to {
+                bottom: 28px;
+            }
         }
     }
 }
