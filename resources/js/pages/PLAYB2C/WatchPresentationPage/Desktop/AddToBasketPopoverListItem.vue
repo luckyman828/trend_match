@@ -28,14 +28,19 @@
 
             <!-- BOTTOM -->
             <div class="flex-list">
-                <v-popover trigger="click">
+                <v-popover trigger="click" ref="sizePopover">
                     <button class="dark ghost full-width pill sm">
                         <i class="far fa-ruler"></i>
                         <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
                         <span v-else>Choose size</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <ChooseSizePopover slot="popover" :variant="variant" v-model="selectedSizeDetail" />
+                    <ChooseSizePopover
+                        slot="popover"
+                        :variant="variant"
+                        v-model="selectedSizeDetail"
+                        @submit="$refs.sizePopover.hide()"
+                    />
                 </v-popover>
                 <AddToBasketButton
                     buttonClass="pill sm w-lg"
@@ -58,7 +63,7 @@ export default {
     props: ['variant'],
     data() {
         return {
-            selectedSizeDetail: this.variant.ean_sizes[0],
+            selectedSizeDetail: null,
         }
     },
 }

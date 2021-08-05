@@ -2,7 +2,7 @@
     <div class="add-to-basket-selector flex-list bg-blur">
         <AddToWishlistButton class="circle" :variants="[variant]" />
         <div class="flex-list justify equal-width flex-1">
-            <v-popover trigger="click" class="size-button">
+            <v-popover trigger="click" class="size-button" ref="sizePopover">
                 <button class="white full-width pill">
                     <i class="far fa-ruler"></i>
                     <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
@@ -15,6 +15,7 @@
                     v-model="selectedSizeDetail"
                     :variant="variant"
                     ref="sizeSelector"
+                    @submit="$refs.sizePopover.hide()"
                 />
             </v-popover>
 

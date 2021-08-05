@@ -113,14 +113,14 @@ export default {
             ]
         },
     },
-    methods: {
-        onGoToCheckout() {
-            this.$store.dispatch('basket/goToCheckout')
-        },
-    },
     watch: {
         show(isVisible) {
             if (isVisible) this.wishlistSnapshot = [...this.wishlist]
+        },
+    },
+    methods: {
+        onGoToCheckout() {
+            this.$store.dispatch('basket/goToCheckout')
         },
     },
 }

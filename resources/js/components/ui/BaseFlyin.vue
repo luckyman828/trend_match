@@ -136,7 +136,7 @@ export default {
     }
 }
 .overlay {
-    z-index: 11;
+    z-index: 10;
     position: fixed;
     top: 0;
     left: 0;
