@@ -41,7 +41,7 @@
                             <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
                                 <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                             </button>
-                            <VolumeControl />
+                            <VolumeControl :disableSlider="true" />
                         </div>
                         <div class="center">
                             <div class="timing-count pill bg-blur" @click="showTimingList = !showTimingList">

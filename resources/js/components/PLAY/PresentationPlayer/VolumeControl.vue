@@ -1,5 +1,5 @@
 <template>
-    <v-popover popoverClass="min volume-control-wrapper" placement="top">
+    <v-popover popoverClass="min volume-control-wrapper" placement="top" :disabled="disableSlider">
         <button class="invisible white circle  ghost-hover" @click="togglePlayerMuted()">
             <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume'"></i>
         </button>
@@ -20,6 +20,7 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'volumeControl',
+    props: ['disableSlider'],
     computed: {
         ...mapGetters('player', {
             isMuted: 'getIsMuted',
