@@ -140,7 +140,7 @@ export default {
             showCart: false,
             showChatInput: false,
             addToBasketVariant: null,
-            showTimingList: null,
+            showTimingList: false,
             addToBasketPopoverVariantList: [],
             addToBasketPopoverIsVisible: false,
         }

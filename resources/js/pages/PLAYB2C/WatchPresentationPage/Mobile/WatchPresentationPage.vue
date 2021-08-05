@@ -44,7 +44,7 @@
                             <VolumeControl />
                         </div>
                         <div class="center">
-                            <div class="timing-count pill bg-blur">
+                            <div class="timing-count pill bg-blur" @click="showTimingList = !showTimingList">
                                 <i class="fas fa-tshirt"></i>
                                 <span>{{ currentTimingIndex + 1 }} of {{ videoTimings.length }}</span>
                             </div>
@@ -74,6 +74,8 @@
                     </div>
                 </div>
 
+                <TimingListDrawer :show="showTimingList" @close="showTimingList = false" />
+
                 <ProductDetailsDrawer :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
                 <SavedStylesDrawer
                     :show="!!showSavedProductsDrawer"
@@ -96,6 +98,7 @@ import PresentationTitle from './PresentationTitle'
 import PreviewList from './PreviewList'
 import AddToWishlistButton from '../AddToWishlistButton'
 import AddToBasketButton from '../AddToBasketButton'
+import TimingListDrawer from './TimingListDrawer/'
 
 import ProductDetailsDrawer from './ProductDetailsDrawer/'
 import SavedStylesDrawer from './SavedStylesDrawer/'
@@ -113,6 +116,7 @@ export default {
         AddToWishlistButton,
         AddToBasketButton,
         VolumeControl,
+        TimingListDrawer,
     },
     data: function() {
         return {
@@ -122,6 +126,7 @@ export default {
             showCart: false,
             showChatInput: false,
             recentlyStarted: false,
+            showTimingList: false,
         }
     },
     computed: {
