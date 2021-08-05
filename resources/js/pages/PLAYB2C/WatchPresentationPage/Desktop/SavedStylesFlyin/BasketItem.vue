@@ -84,14 +84,6 @@
             </button>
         </div>
         <!-- END ACTIONS  -->
-
-        <BaseContextMenu ref="moreContext" class="more-context">
-            <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-trash" hotkey="KeyD" @click="onRemoveFromBasket">
-                    <u>R</u>emove from Basket
-                </BaseContextMenuItem>
-            </div>
-        </BaseContextMenu>
     </div>
 </template>
 
@@ -105,7 +97,7 @@ export default {
     name: 'basketItem',
     components: { AddToWishlistButton, ChooseSizePopover },
     mixins: [variantImage],
-    props: ['item', 'moreContext'],
+    props: ['item'],
     computed: {
         variant() {
             return this.item.variant

@@ -22,7 +22,6 @@
                     :submitOnChange="true"
                     :options="item.ean_sizes"
                     optionNameKey="size"
-                    optionValueKey="size"
                     v-model="selectedSizeDetail"
                     @change="onChangeSize"
                 />
