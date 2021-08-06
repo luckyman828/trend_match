@@ -1,7 +1,14 @@
 <template>
-    <div class="preview-list flex-list flex-v bg-blur">
+    <div class="preview-list  bg-blur">
         <template v-if="currentTiming">
-            <PreviewListItem v-for="variant in currentTiming.variantList" :variant="variant" :key="variant.id" />
+            <div class="rail flex-list flex-v">
+                <PreviewListItem
+                    v-for="variant in currentTiming.variantList"
+                    :variant="variant"
+                    :key="variant.id"
+                    class="no-shrink"
+                />
+            </div>
         </template>
     </div>
 </template>
@@ -26,5 +33,9 @@ export default {
     margin-left: auto;
     padding: 8px;
     border-radius: 8px;
+    .rail {
+        overflow-y: auto;
+        max-height: 50vh;
+    }
 }
 </style>
