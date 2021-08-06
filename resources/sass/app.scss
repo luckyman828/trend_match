@@ -875,19 +875,19 @@ i {
         --fa-secondary-opacity: 1;
     }
     &.xs {
-        font-size: 10px;
+        font-size: 10px !important;
     }
     &.sm {
-        font-size: 12px;
+        font-size: 12px !important;
     }
     &.md {
-        font-size: 18px;
+        font-size: 18px !important;
     }
     &.lg {
-        font-size: 40px;
+        font-size: 40px !important;
     }
     &.xl {
-        font-size: 64px;
+        font-size: 64px !important;
     }
     &.medium {
         font-size: 18px;
