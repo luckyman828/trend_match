@@ -8,6 +8,12 @@
                 <BaseImageSizer class="img-wrapper" fit="cover">
                     <BaseVariantImage :variant="variant" />
                 </BaseImageSizer>
+                <div class="icon-list">
+                    <div class="pill yellow xs" v-if="timing.variantList.length > 1">
+                        <i class="far fa-layer-group"></i>
+                        <span>{{ timing.variantList.length }}</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="timestamp flex-list center-h">
@@ -57,6 +63,12 @@ export default {
         .body {
             border-radius: 0 0 $borderRadiusSm $borderRadiusSm;
             overflow: hidden;
+            position: relative;
+            .icon-list {
+                position: absolute;
+                bottom: 4px;
+                right: 4px;
+            }
         }
         &.active {
             .body {
