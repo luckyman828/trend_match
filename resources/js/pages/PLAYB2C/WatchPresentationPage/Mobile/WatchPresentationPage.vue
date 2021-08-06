@@ -29,6 +29,7 @@
                                     :disabled="!currentTiming"
                                     :variant="currentTiming && currentTiming.variant"
                                     textStyle="none"
+                                    :resetOnSubmit="true"
                                 />
                             </div>
                         </div>

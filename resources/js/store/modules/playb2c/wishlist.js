@@ -18,6 +18,8 @@ export default {
 
     actions: {
         fetchWishlist({ rootGetters, commit }, presentationId) {
+            const localStorageEnabled = rootGetters['persist/getLocalStorageEnabled']
+            if (!localStorageEnabled) return
             const storedWishlist = localStorage.getItem(`play-wishlist-${presentationId}`)
             if (!storedWishlist) return
             const wishlist = JSON.parse(storedWishlist)
