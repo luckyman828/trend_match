@@ -1,9 +1,17 @@
 <template>
-    <v-popover trigger="hover" placement="right" popoverClass="min pad-xs" ref="popover">
+    <v-popover
+        trigger="hover"
+        :open="showPopover || sizePopoverOpen"
+        placement="right"
+        popoverClass="min pad-xs allow-overflow"
+        ref="popover"
+        @hide="onHidePopover"
+    >
         <div
             class="preview-list-item flex-list flex-v min"
             v-if="variant"
             @click="SET_PDP_ITEM({ product: variant.product, variant })"
+            @mouseenter="showPopover = true"
         >
             <BaseImageSizer class="img-wrapper" fit="cover">
                 <BaseVariantImage :variant="variant" size="sm" />
@@ -29,7 +37,7 @@
                 </button>
             </div>
         </div>
-        <div class="action-list flex-list space-xs" slot="popover">
+        <div class="action-list flex-list space-xs" slot="popover" ref="actionPopover" id="action-popover">
             <AddToWishlistButton
                 :variants="[variant]"
                 class="invisible true-square float-icon-hover"
@@ -40,6 +48,8 @@
                 textStyle="none"
                 buttonClass="invisible true-square float-icon-hover"
                 :resetOnSubmit="true"
+                popoverContainer="#action-popover"
+                :sizePopoverOpen.sync="sizePopoverOpen"
             />
         </div>
     </v-popover>
@@ -54,6 +64,12 @@ export default {
     name: 'PreviewListItem',
     components: { AddToWishlistButton, AddToBasketButton },
     props: ['variant'],
+    data() {
+        return {
+            sizePopoverOpen: false,
+            showPopover: false,
+        }
+    },
     computed: {
         ...mapGetters('basket', {
             getItemIsInBasket: 'getItemIsInBasket',
@@ -70,10 +86,20 @@ export default {
             })
         },
     },
+    watch: {
+        sizePopoverOpen(isOpen) {
+            if (!isOpen) this.hidePopover()
+        },
+    },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
         hidePopover() {
             this.$refs.popover.hide()
+        },
+        onHidePopover() {
+            if (this.sizePopoverOpen) {
+                this.$refs.popover.show()
+            }
         },
     },
 }

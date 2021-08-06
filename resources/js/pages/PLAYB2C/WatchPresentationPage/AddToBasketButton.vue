@@ -1,5 +1,11 @@
 <template>
-    <v-popover trigger="click" :disabled="!variant || !!variantAddedToBasket || !!sizeDetail">
+    <v-popover
+        trigger="click"
+        :disabled="!variant || !!variantAddedToBasket || !!sizeDetail"
+        :container="popoverContainer"
+        @show="$emit('update:sizePopoverOpen', true)"
+        @hide="$emit('update:sizePopoverOpen', false)"
+    >
         <BaseStateAlternatingButton
             :buttonClass="[buttonClass, variantAddedToBasket && 'active']"
             :active="variantAddedToBasket"
@@ -46,6 +52,7 @@ export default {
         'activeHoverClass',
         'sizeDetail',
         'resetOnSubmit',
+        'popoverContainer',
     ],
     data() {
         return {

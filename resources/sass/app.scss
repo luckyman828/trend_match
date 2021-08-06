@@ -1159,6 +1159,11 @@ i {
             border: none;
         }
     }
+    &.allow-overflow {
+        .tooltip-inner {
+            overflow: visible;
+        }
+    }
     &.pad-xs {
         .popover-inner {
             padding: 8px;
