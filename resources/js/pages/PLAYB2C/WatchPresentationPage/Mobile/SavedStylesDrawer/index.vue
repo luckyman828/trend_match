@@ -62,7 +62,11 @@
                 <template v-slot:iconLeft>
                     <i class="far fa-credit-card white"></i>
                 </template>
-                <span>Go to Checkout</span>
+                <span
+                    >Go to Checkout<template v-if="basket.length > 0">
+                        - {{ basketTotal }} {{ basketCurrency }}</template
+                    ></span
+                >
             </BaseButton>
         </BaseFloatyBar>
     </BaseDrawer>
@@ -92,6 +96,7 @@ export default {
         ...mapGetters('basket', {
             basket: 'getBasket',
             basketTotal: 'getBasketTotal',
+            basketCurrency: 'getBasketCurrency',
         }),
         ...mapGetters('player', {
             isEmbedded: 'getIsEmbedded',

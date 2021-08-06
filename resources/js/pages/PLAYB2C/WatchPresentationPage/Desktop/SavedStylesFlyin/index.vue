@@ -54,7 +54,10 @@
                 <template v-slot:iconLeft>
                     <i class="far fa-credit-card white"></i>
                 </template>
-                <span>Go to Checkout</span>
+                <span
+                    >Go to Checkout
+                    <template v-if="basket.length > 0"> - {{ basketTotal }} {{ basketCurrency }}</template></span
+                >
             </BaseButton>
         </div>
     </BaseFlyin>
@@ -85,6 +88,7 @@ export default {
         ...mapGetters('basket', {
             basket: 'getBasket',
             basketTotal: 'getBasketTotal',
+            basketCurrency: 'getBasketCurrency',
         }),
         ...mapGetters('player', {
             isEmbedded: 'getIsEmbedded',
@@ -92,13 +96,6 @@ export default {
         ...mapGetters('workspaces', {
             playShop: 'getWebshop',
         }),
-        userCurrency() {
-            return this.wishlist.length > 0
-                ? this.wishlist[0].yourPrice.currency
-                : this.basket.length > 0
-                ? this.basket[0].variant.yourPrice.currency
-                : ''
-        },
         segmentedControlOptions() {
             return [
                 { name: 'Wishlist', iconClass: 'far fa-heart', count: this.wishlist.length },
