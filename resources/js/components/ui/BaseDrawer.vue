@@ -116,7 +116,7 @@ export default {
             bottom: 0;
             border-radius: 16px 16px 0 0;
             transform: translateY(100%);
-            max-height: 90vh;
+            max-height: 85vh;
             .body {
                 overflow: auto;
             }
