@@ -23,7 +23,7 @@
             <div class="saved-item-list flex-list flex-v space-sm">
                 <template v-if="view == 'Wishlist'">
                     <WishlistItem
-                        v-for="item in wishlistSnapshot"
+                        v-for="item in wishlist"
                         :key="item.id"
                         :variant="item"
                         @update="saveWishlistSnapshot"

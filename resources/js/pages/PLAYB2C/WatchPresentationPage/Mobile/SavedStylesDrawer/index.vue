@@ -33,7 +33,7 @@
             <div class="saved-item-list flex-list flex-v min">
                 <template v-if="view == 'wishlist'">
                     <WishlistItem
-                        v-for="item in wishlistSnapshot"
+                        v-for="item in wishlist"
                         :key="item.id"
                         :variant="item"
                         @add-to-basket="$event => (addToBasketItem = $event)"
