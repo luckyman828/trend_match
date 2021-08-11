@@ -55,7 +55,7 @@ export default {
             if (this.zoomActive) {
                 // Set the zoom position
                 const img = this.$refs.img
-                const wrapper = this.$refs.imgWrapper.getBoundingClientRect()
+                const wrapper = this.$refs.imgWrapper.$el.getBoundingClientRect()
                 const wrapperLeft = wrapper.left
                 const wrapperWidth = wrapper.width
                 const wrapperTop = wrapper.top
