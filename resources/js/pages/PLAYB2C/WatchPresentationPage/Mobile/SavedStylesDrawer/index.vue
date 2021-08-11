@@ -37,6 +37,7 @@
                         :key="item.id"
                         :variant="item"
                         @add-to-basket="$event => (addToBasketItem = $event)"
+                        @edit-wishlist-variants="$event => onEditWishlistVariants($event, item)"
                     />
                 </template>
                 <template v-else>
@@ -44,6 +45,7 @@
                 </template>
             </div>
         </template>
+
         <AddToBasketSelector
             :item="addToBasketItem"
             :show="addToBasketItem"
@@ -52,6 +54,13 @@
             @hide="addToBasketItem = null"
             @click.native="addToBasketItem = null"
         />
+
+        <Portal to="popover">
+            <BaseContextMenu ref="addToWishlistPopover" :autoWidth="true">
+                <AddToWishlistPopover :product="popoverProduct" />
+            </BaseContextMenu>
+        </Portal>
+
         <BaseFloatyBar v-if="view == 'basket'" :show="show" pos="bottom" classes="rounded">
             <BaseButton
                 class="checkout-button full-width"
@@ -77,15 +86,17 @@ import { mapGetters } from 'vuex'
 import WishlistItem from './WishlistItem'
 import BasketItem from './BasketItem'
 import AddToBasketSelector from '../AddToBasketSelector'
+import AddToWishlistPopover from './AddToWishlistPopover'
 
 export default {
     name: 'savedStylesDrawer',
-    components: { BasketItem, WishlistItem, AddToBasketSelector },
+    components: { BasketItem, WishlistItem, AddToBasketSelector, AddToWishlistPopover },
     props: ['view', 'show'],
     data() {
         return {
             wishlistSnapshot: [],
             addToBasketItem: null,
+            popoverProduct: null,
         }
     },
     computed: {
@@ -126,6 +137,10 @@ export default {
     methods: {
         onGoToCheckout() {
             this.$store.dispatch('basket/goToCheckout')
+        },
+        onEditWishlistVariants(mouseEvent, variant) {
+            this.popoverProduct = variant.product
+            this.$refs.addToWishlistPopover.show(mouseEvent)
         },
     },
 }

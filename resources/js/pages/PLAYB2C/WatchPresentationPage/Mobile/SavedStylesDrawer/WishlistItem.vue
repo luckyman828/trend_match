@@ -29,7 +29,7 @@
             </div>
             <!-- Bottom row -->
             <div class="flex-list justify flex-end-v">
-                <div class="ui-square">
+                <div class="ui-square" @click="$emit('edit-wishlist-variants', $event)">
                     <div class="flex-list flex-v xs truncate">
                         <label>Color</label>
                         <div class="ft-bd truncate ft-12">{{ variant.name }}</div>

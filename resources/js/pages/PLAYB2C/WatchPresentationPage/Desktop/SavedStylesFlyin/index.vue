@@ -52,6 +52,7 @@
                 >
             </BaseButton>
         </div>
+
         <BaseContextMenu ref="addToWishlistPopover" :autoWidth="true">
             <AddToWishlistPopover :product="popoverProduct" />
         </BaseContextMenu>
