@@ -13,9 +13,14 @@
                     <div class="product-name">{{ variant.name }}</div>
                     <div class="price flex-list md">
                         <div class="current-price">
-                            {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
+                            {{
+                                variant.yourPrice.wholesale_price
+                                    ? variant.yourPrice.wholesale_price
+                                    : variant.yourPrice.recommended_retail_price
+                            }}
+                            {{ variant.yourPrice.currency }}
                         </div>
-                        <div class="old-price">
+                        <div class="old-price" v-if="variant.yourPrice.wholesale_price">
                             {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
                         </div>
                     </div>
