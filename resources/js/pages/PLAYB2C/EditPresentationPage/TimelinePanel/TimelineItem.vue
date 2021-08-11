@@ -285,6 +285,7 @@ export default {
             flex-shrink: 0;
             opacity: 0;
             transition: 0.1s ease-out;
+            display: none;
         }
     }
     &:focus,
@@ -293,6 +294,9 @@ export default {
         // color: white;
         border-color: $primary;
         &:not(.dragged):not(.drag-caps) {
+            .delete-button {
+                display: inline-flex;
+            }
             .controls,
             .controls .delete-button {
                 opacity: 1;

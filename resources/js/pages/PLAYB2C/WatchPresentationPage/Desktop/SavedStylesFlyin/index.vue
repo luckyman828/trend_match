@@ -26,7 +26,6 @@
                         v-for="item in wishlistSnapshot"
                         :key="item.id"
                         :variant="item"
-                        @add-to-basket="$event => (addToBasketVariant = $event)"
                         @update="saveWishlistSnapshot"
                     />
                 </template>
@@ -35,14 +34,6 @@
                 </template>
             </div>
         </template>
-        <AddToBasketSelector
-            class="add-to-basket-selector"
-            :class="{ show: !!addToBasketVariant }"
-            :variant="addToBasketVariant"
-            :hideWishlist="true"
-            :autoHide="true"
-            @hide="addToBasketVariant = null"
-        />
         <div class="cta-wrapper">
             <BaseButton
                 v-if="view == 'Basket'"
