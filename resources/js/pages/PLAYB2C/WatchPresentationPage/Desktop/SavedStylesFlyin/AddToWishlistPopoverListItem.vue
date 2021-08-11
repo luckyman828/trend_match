@@ -4,16 +4,12 @@
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
 
-        <div class="flex-list flex-v justify details">
-            <!-- TOP -->
-
+        <div class="flex-list justify details">
+            <!-- LEFT  -->
             <div class="name-section flex-list flex-v space-sm">
                 <div class="flex-list flex-v lh-min space-xs">
-                    <div class="brand ft-8 ft-md ft-color-soft ft-uppercase">
-                        {{ variant.product.brand }}
-                    </div>
                     <div class="product-name ft-bd ft-12">
-                        <span class="truncate">{{ variant.product.name }}</span>
+                        <span class="truncate">{{ variant.name }}</span>
                     </div>
                 </div>
                 <div class="price flex-list center-v">
@@ -26,28 +22,9 @@
                 </div>
             </div>
 
-            <!-- BOTTOM -->
+            <!-- RIGHt  -->
             <div class="flex-list">
-                <v-popover trigger="click" ref="sizePopover">
-                    <button class="dark ghost full-width pill sm">
-                        <i class="far fa-ruler"></i>
-                        <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
-                        <span v-else>Choose size</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <ChooseSizePopover
-                        slot="popover"
-                        :variant="variant"
-                        v-model="selectedSizeDetail"
-                        @submit="$refs.sizePopover.hide()"
-                    />
-                </v-popover>
-                <AddToWishlistButton
-                    buttonClass="pill sm w-lg"
-                    :variant="variant"
-                    :sizeDetail="selectedSizeDetail"
-                    textStyle="short"
-                />
+                <AddToWishlistButton class="circle sm" :variants="[variant]" />
             </div>
         </div>
     </div>
@@ -62,9 +39,7 @@ export default {
     components: { ChooseSizePopover, AddToWishlistButton },
     props: ['variant'],
     data() {
-        return {
-            selectedSizeDetail: null,
-        }
+        return {}
     },
 }
 </script>
@@ -80,6 +55,10 @@ export default {
         width: 60px;
         border-radius: $borderRadiusSm;
         overflow: hidden;
+    }
+    .name-section {
+        max-width: 160px;
+        padding-right: 8px;
     }
 }
 </style>

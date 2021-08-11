@@ -27,6 +27,7 @@
                         :key="item.id"
                         :variant="item"
                         @update="saveWishlistSnapshot"
+                        @edit-wishlist-variants="$event => onEditWishlistVariants($event, item)"
                     />
                 </template>
                 <template v-else>
@@ -51,6 +52,9 @@
                 >
             </BaseButton>
         </div>
+        <BaseContextMenu ref="addToWishlistPopover" :autoWidth="true">
+            <AddToWishlistPopover :product="popoverProduct" />
+        </BaseContextMenu>
     </BaseFlyin>
 </template>
 
@@ -58,17 +62,16 @@
 import { mapGetters } from 'vuex'
 import WishlistItem from './WishlistItem'
 import BasketItem from './BasketItem'
-import AddToBasketSelector from '../AddToBasketSelector'
-import RequestInputAreaVue from '../../../../SelectionPage/ProductFlyin/RequestInputArea.vue'
+import AddToWishlistPopover from './AddToWishlistPopover'
 
 export default {
     name: 'savedStylesFlyin',
-    components: { BasketItem, WishlistItem, AddToBasketSelector },
+    components: { BasketItem, WishlistItem, AddToWishlistPopover },
     props: ['view', 'show'],
     data() {
         return {
             wishlistSnapshot: [],
-            addToBasketVariant: null,
+            popoverProduct: null,
         }
     },
     computed: {
@@ -111,6 +114,10 @@ export default {
         onGoToCheckout() {
             this.$store.dispatch('basket/goToCheckout')
         },
+        onEditWishlistVariants(mouseEvent, variant) {
+            this.popoverProduct = variant.product
+            this.$refs.addToWishlistPopover.show(mouseEvent)
+        },
     },
 }
 </script>
@@ -122,9 +129,11 @@ export default {
         .flyin {
             min-width: 0;
             width: 384px;
-            .body {
-                padding: 8px;
-                background: $bluegrey250;
+            > .flyin-inner {
+                > .body {
+                    padding: 8px;
+                    background: $bluegrey250;
+                }
             }
         }
         .overlay {

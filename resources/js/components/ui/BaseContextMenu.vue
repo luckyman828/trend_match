@@ -5,7 +5,7 @@
         class="context-menu"
         ref="contextMenu"
         :style="menuWidth"
-        :class="{ inline: inline }"
+        :class="[{ inline: inline }, `theme-${theme}`]"
     >
         <div class="item-group header" v-if="hasHeader">
             <strong>
@@ -34,6 +34,8 @@ export default {
             default: () => [],
         },
         inline: { default: false },
+        theme: {},
+        autoWidth: {},
     },
     data: function() {
         return {
@@ -52,6 +54,7 @@ export default {
             return !!this.$slots.footer || !!this.$scopedSlots.footer
         },
         menuWidth() {
+            if (this.autoWidth) return
             // if (this.columns) {
             const columnCount = this.columns ? this.columns : 1
             const baseWidth = 240
@@ -211,6 +214,11 @@ export default {
     flex-direction: column;
     &.inline {
         position: relative;
+    }
+    &.theme-none {
+        border: none;
+        border-radius: 0;
+        background: none;
     }
     .columns {
         display: flex;

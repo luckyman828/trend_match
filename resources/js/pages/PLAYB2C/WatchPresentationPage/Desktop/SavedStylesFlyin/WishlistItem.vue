@@ -28,26 +28,14 @@
 
             <!-- BOTTOM -->
             <div class="flex-list">
-                <v-popover trigger="click">
-                    <div class="color pill sm">
-                        <span
-                            class="circle xxs color-preview"
-                            :style="{ backgroundImage: `url(${variantImage(variant)})` }"
-                        ></span>
-                        <span class="ft-bd truncate">{{ variant.name }}</span>
-                        <i class="fas fa-caret-down"></i>
-                    </div>
-                    <BaseSelectButtons
-                        header="Change color"
-                        slot="popover"
-                        type="radio"
-                        :submitOnChange="true"
-                        :options="variant.product.variants"
-                        :value="variant"
-                        optionNameKey="name"
-                        @change="onChangeVariant"
-                    />
-                </v-popover>
+                <div class="color pill sm" @click="$emit('edit-wishlist-variants', $event)">
+                    <span
+                        class="circle xxs color-preview"
+                        :style="{ backgroundImage: `url(${variantImage(variant)})` }"
+                    ></span>
+                    <span class="ft-bd truncate">{{ variant.name }}</span>
+                    <i class="fas fa-caret-down"></i>
+                </div>
             </div>
         </div>
         <!-- ACTIONS  -->
