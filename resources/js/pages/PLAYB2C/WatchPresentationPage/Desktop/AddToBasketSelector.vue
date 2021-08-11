@@ -61,7 +61,8 @@ export default {
     watch: {
         variant(newVal, oldVal) {
             if (!oldVal || newVal.id != oldVal.id) {
-                this.presetSize()
+                this.selectedSizeDetail = null
+                // this.presetSize()
             }
         },
     },

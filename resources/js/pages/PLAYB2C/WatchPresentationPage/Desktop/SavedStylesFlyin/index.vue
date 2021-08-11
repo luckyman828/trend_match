@@ -141,6 +141,9 @@ export default {
             opacity: 0;
         }
     }
+    .saved-item-list {
+        padding-bottom: 60px;
+    }
     .header-inner {
         padding: 8px;
         background: white;
