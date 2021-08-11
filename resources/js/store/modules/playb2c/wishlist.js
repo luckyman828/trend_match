@@ -80,8 +80,11 @@ export default {
         SET_WISHLIST(state, wishlist) {
             state.wishlist = wishlist
         },
-        REMOVE_ITEM(state, index) {
-            state.wishlist.splice(index, 1)
+        REMOVE_ITEM(state, variant) {
+            const index = state.wishlist.findIndex(x => x.id == variant.id)
+            if (index >= 0) {
+                state.wishlist.splice(index, 1)
+            }
         },
         ADD_ITEM(state, item) {
             state.wishlist.push(item)
