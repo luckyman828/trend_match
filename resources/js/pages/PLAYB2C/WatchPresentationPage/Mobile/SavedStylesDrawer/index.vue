@@ -140,7 +140,9 @@ export default {
         },
         onEditWishlistVariants(mouseEvent, variant) {
             this.popoverProduct = variant.product
-            this.$refs.addToWishlistPopover.show(mouseEvent)
+            this.$nextTick(() => {
+                this.$refs.addToWishlistPopover.show(mouseEvent)
+            })
         },
     },
 }
