@@ -46,6 +46,7 @@
                     buttonClass="pill sm w-lg"
                     :variant="variant"
                     :sizeDetail="selectedSizeDetail"
+                    :resetOnSubmit="true"
                     textStyle="short"
                 />
             </div>
