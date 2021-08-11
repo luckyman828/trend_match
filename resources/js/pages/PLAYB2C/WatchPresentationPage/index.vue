@@ -156,6 +156,8 @@ export default {
     },
     destroyed() {
         this.removePostMessageListeners()
+        this.$store.commit('basket/SET_BASKET', [])
+        this.$store.commit('wishlist/SET_WISHLIST', [])
     },
 }
 </script>
