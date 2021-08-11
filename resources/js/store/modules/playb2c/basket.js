@@ -11,7 +11,9 @@ export default {
         getBasket: state => state.basket,
         getBasketTotal: state =>
             state.basket.reduce((acc, curr) => {
-                return (acc += curr.variant.yourPrice.wholesale_price * curr.quantity)
+                return (acc += curr.variant.yourPrice.wholesale_price
+                    ? curr.variant.yourPrice.wholesale_price
+                    : curr.variant.yourPrice.recommended_retail_price * curr.quantity)
             }, 0),
         getBasketCurrency: state => (state.basket.length > 0 ? state.basket[0].variant.yourPrice.currency : null),
         getVariantIsInBasket: state => variant => state.basket.find(basketItem => basketItem.variant.id == variant.id),

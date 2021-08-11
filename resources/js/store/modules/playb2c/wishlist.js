@@ -9,7 +9,9 @@ export default {
         getWishlist: state => state.wishlist,
         getWishlistTotal: state =>
             state.wishlist.reduce((acc, curr) => {
-                return (acc += curr.yourPrice.wholesale_price)
+                return (acc += curr.yourPrice.wholesale_price
+                    ? curr.yourPrice.wholesale_price
+                    : curr.yourPrice.recommended_retail_price)
             }, 0),
         getVariantIsInWishlist: state => variant => {
             return !!state.wishlist.find(wishlistItem => wishlistItem.id == variant.id)
