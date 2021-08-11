@@ -4,7 +4,7 @@
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
 
-        <div class="flex-list flex-v justify details">
+        <div class="flex-list flex-v justify details fill">
             <!-- TOP -->
 
             <div class="name-section flex-list flex-v space-sm">
@@ -28,7 +28,7 @@
 
             <!-- BOTTOM -->
             <div class="flex-list">
-                <v-popover trigger="click" ref="sizePopover">
+                <v-popover trigger="click" ref="sizePopover" :container="false">
                     <button class="dark ghost full-width pill sm">
                         <i class="far fa-ruler"></i>
                         <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
@@ -48,6 +48,7 @@
                     :sizeDetail="selectedSizeDetail"
                     :resetOnSubmit="true"
                     textStyle="short"
+                    :popoverContainer="false"
                 />
             </div>
         </div>
@@ -81,6 +82,9 @@ export default {
         width: 60px;
         border-radius: $borderRadiusSm;
         overflow: hidden;
+    }
+    .product-name {
+        max-width: 120px;
     }
 }
 </style>

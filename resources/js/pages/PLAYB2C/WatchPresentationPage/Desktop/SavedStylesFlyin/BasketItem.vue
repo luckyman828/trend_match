@@ -29,26 +29,16 @@
             <!-- BOTTOM -->
             <div class="flex-list justify">
                 <!-- COLOR -->
-                <v-popover trigger="click" class="fill">
-                    <button class="color pill sm">
-                        <span
-                            class="circle xxs color-preview"
-                            :style="{ backgroundImage: `url(${variantImage(variant)})` }"
-                        ></span>
-                        <span class="ft-bd truncate" style="margin-right: auto;">{{ variant.name }}</span>
-                        <i class="fas fa-caret-down"></i>
-                    </button>
-                    <BaseSelectButtons
-                        header="Change color"
-                        slot="popover"
-                        type="radio"
-                        :submitOnChange="true"
-                        :options="variant.product.variants"
-                        :value="variant"
-                        optionNameKey="name"
-                        @change="onChangeVariant"
-                    />
-                </v-popover>
+
+                <button class="color pill sm" @click="$emit('edit-basket-variants', $event)">
+                    <span
+                        class="circle xxs color-preview"
+                        :style="{ backgroundImage: `url(${variantImage(variant)})` }"
+                    ></span>
+                    <span class="ft-bd truncate" style="margin-right: auto;">{{ variant.name }}</span>
+                    <i class="fas fa-caret-down"></i>
+                </button>
+
                 <!-- SIZE -->
                 <v-popover trigger="click" ref="sizePopover" class="fill">
                     <button class="pill sm">

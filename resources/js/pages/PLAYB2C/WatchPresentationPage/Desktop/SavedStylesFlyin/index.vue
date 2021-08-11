@@ -31,7 +31,12 @@
                     />
                 </template>
                 <template v-else>
-                    <BasketItem v-for="item in basket" :key="item.id" :item="item" />
+                    <BasketItem
+                        v-for="item in basket"
+                        :key="item.id"
+                        :item="item"
+                        @edit-basket-variants="$event => onEditBasketVariants($event, item)"
+                    />
                 </template>
             </div>
         </template>
@@ -56,6 +61,10 @@
         <BaseContextMenu ref="addToWishlistPopover" :autoWidth="true">
             <AddToWishlistPopover :product="popoverProduct" />
         </BaseContextMenu>
+
+        <BaseContextMenu ref="addToBasketPopover" :autoWidth="true">
+            <AddToBasketPopover :variants="popoverProduct ? popoverProduct.variants : []" />
+        </BaseContextMenu>
     </BaseFlyin>
 </template>
 
@@ -64,10 +73,11 @@ import { mapGetters } from 'vuex'
 import WishlistItem from './WishlistItem'
 import BasketItem from './BasketItem'
 import AddToWishlistPopover from './AddToWishlistPopover'
+import AddToBasketPopover from '../AddToBasketPopover'
 
 export default {
     name: 'savedStylesFlyin',
-    components: { BasketItem, WishlistItem, AddToWishlistPopover },
+    components: { BasketItem, WishlistItem, AddToWishlistPopover, AddToBasketPopover },
     props: ['view', 'show'],
     data() {
         return {
@@ -118,6 +128,10 @@ export default {
         onEditWishlistVariants(mouseEvent, variant) {
             this.popoverProduct = variant.product
             this.$refs.addToWishlistPopover.show(mouseEvent)
+        },
+        onEditBasketVariants(mouseEvent, basketItem) {
+            this.popoverProduct = basketItem.variant.product
+            this.$refs.addToBasketPopover.show(mouseEvent)
         },
     },
 }
