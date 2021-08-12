@@ -584,7 +584,6 @@ export default {
                 })
         },
         instantiateNewProduct({ commit }, productData = {}) {
-            console.log('instantiate product from this', productData)
             return {
                 title: productData.title || 'Untitled product',
                 datasource_id: productData.datasource_id || null,
@@ -613,6 +612,7 @@ export default {
                 id: variantData.id || uuidv4(),
                 color: variantData.color || null,
                 variant: variantData.variant || null,
+                name: variantData.name || null,
                 delivery_dates: variantData.delivery_dates || [],
                 ean_sizes: variantData.ean_sizes || [], // {ean, quantity, ref_id, size}
                 extra_data: variantData.extra_data || {},

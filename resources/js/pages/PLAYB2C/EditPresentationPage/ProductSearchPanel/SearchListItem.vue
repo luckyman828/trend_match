@@ -20,10 +20,13 @@
                             <span class="truncate">{{ product.name }}</span>
                         </div>
                         <div class="price flex-list center-v">
-                            <div class="current-price ft-bd ft-10">
+                            <div class="current-price ft-bd ft-10" v-if="product.yourPrice.wholesale_price">
                                 {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
                             </div>
-                            <div class="old-price ft-strike ft-10 ft-bd">
+                            <div
+                                class="old-price ft-10 ft-bd"
+                                :class="{ 'ft-strike': !!product.yourPrice.wholesale_price }"
+                            >
                                 {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
                             </div>
                         </div>
@@ -32,15 +35,23 @@
 
                 <!-- BOTTOM -->
                 <div class="flex-list" v-if="variant">
-                    <v-popover trigger="click" class="variant-selector" ref="variantSelector">
-                        <div class="color pill sm full-width">
+                    <v-popover
+                        trigger="click"
+                        class="variant-selector"
+                        ref="variantSelector"
+                        :disabled="product.variants.length <= 1"
+                    >
+                        <button
+                            class="color pill sm full-width color-button"
+                            :class="{ multiple: product.variants.length > 1 }"
+                        >
                             <span
                                 class="circle xxs color-preview"
                                 :style="{ backgroundImage: `url(${variantImage(variant)})` }"
                             ></span>
-                            <span class="ft-bd truncate">{{ variant.name }}</span>
-                            <i class="fas fa-caret-down"></i>
-                        </div>
+                            <span class="ft-bd truncate auto-right">{{ variant.name }}</span>
+                            <i class="fas fa-caret-down" v-if="product.variants.length > 1"></i>
+                        </button>
                         <BaseSelectButtons
                             header="Change color"
                             slot="popover"
@@ -199,6 +210,14 @@ export default {
     .color-preview {
         background-size: 50000%;
         background-position: center;
+    }
+    .color-button {
+        &:not(.multiple) {
+            cursor: default;
+        }
+        .auto-right {
+            margin-right: auto;
+        }
     }
     .details {
         overflow: hidden;

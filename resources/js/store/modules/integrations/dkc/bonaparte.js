@@ -23,7 +23,8 @@ export default {
                         'products/instantiateNewProductVariant',
                         {
                             color: product.color,
-                            pictures: [{ name: 'image_link_large', url: product.image_link_large }],
+                            name: product.color,
+                            pictures: [{ name: 'image_link', url: product.image_link }],
                             ean_sizes: product.sizes.map(sizeDetail => ({
                                 size: sizeDetail.size,
                                 ref_id: sizeDetail.gtin,
@@ -43,10 +44,12 @@ export default {
                             {
                                 datasource_id: productId,
                                 sale_description: product.description,
+                                category: product.title,
                                 prices: [
                                     {
                                         currency: product.price.currency,
                                         recommended_retail_price: product.price.price,
+                                        wholesale_price: 0,
                                     },
                                 ],
                                 brand: product.brand,

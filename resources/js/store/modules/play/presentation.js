@@ -218,6 +218,14 @@ export default {
                     commit('SET_STATUS', 'error')
                 })
         },
+        async syncExternalProducts({ dispatch, getters }) {
+            const products = await dispatch('bonaparte/fetchWebshopProductsFromFeed', null, { root: true })
+            await dispatch(
+                'products/insertProducts',
+                { file: getters.getPresentation, products, addToState: true },
+                { root: true }
+            )
+        },
 
         // OLD
 

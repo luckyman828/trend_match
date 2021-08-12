@@ -490,6 +490,8 @@ export default {
         },
         async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
             return new Promise(async (resolve, reject) => {
+                Vue.set(file, 'productImageSyncStatus', { msg: 'syncing', chunkCount: 0, chunkIndex: 0 })
+
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
 
@@ -524,6 +526,7 @@ export default {
                         .map((_, index) => index * chunk_size)
                         .map(begin => array.slice(begin, begin + chunk_size))
                 const imageMapChunks = array_chunks(imageMaps, 8)
+                file.productImageSyncStatus.chunkCount = imageMapChunks.length
 
                 // Upload a chunk at a time
                 let chunkIndex = 1
@@ -563,10 +566,12 @@ export default {
                                 )
                                 if (!productAlreadyAdded) productsToUpdate.push(product)
                             })
+                            Vue.set
                         })
                         .catch(err => {
                             reject(err)
                         })
+                    file.productImageSyncStatus.chunkIndex++
                     chunkIndex++
                 }
 
@@ -582,6 +587,9 @@ export default {
                 ).catch(err => {
                     reject(err)
                 })
+
+                Vue.set(file, 'productImageSyncStatus', 'done')
+
                 resolve()
             })
         },

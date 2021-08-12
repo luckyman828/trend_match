@@ -27,38 +27,47 @@
                 </button>
             </ProductFilters>
         </div>
-        <RecycleScroller
-            :key="currentTab"
-            v-if="currentTab != 'Looks'"
-            class="result-list item-list"
-            :items="filteredBySearch.items"
-            :item-size="118"
-            key-field="id"
-            v-slot="{ item }"
-        >
-            <SearchListItem :product="item" @create-look="onStartNewLook" />
-        </RecycleScroller>
-        <RecycleScroller
-            v-else
-            :key="currentTab"
-            class="result-list look-list"
-            :items="filteredBySearch.looks"
-            :item-size="118"
-            key-field="id"
-            v-slot="{ item }"
-        >
-            <SearchListLook
-                :look="item"
-                :ref="`look-${item.id}`"
-                @edit-look="onEditLook"
-                v-show-contextmenu="{
-                    trigger: 'contextmenu',
-                    ref: 'moreContext',
-                    item: item,
-                }"
-                :contextMenuVisible="contextLook && contextLook.id == item.id"
-            />
-        </RecycleScroller>
+        <BaseLoader v-if="productSyncStatus" :msg="productSyncStatus" />
+        <template v-else>
+            <RecycleScroller
+                :key="currentTab"
+                v-if="currentTab != 'Looks'"
+                class="result-list item-list"
+                :items="filteredBySearch.items"
+                :item-size="118"
+                key-field="id"
+                v-slot="{ item }"
+            >
+                <SearchListItem :product="item" @create-look="onStartNewLook" />
+            </RecycleScroller>
+            <RecycleScroller
+                v-else
+                :key="currentTab"
+                class="result-list look-list"
+                :items="filteredBySearch.looks"
+                :item-size="118"
+                key-field="id"
+                v-slot="{ item }"
+            >
+                <SearchListLook
+                    :look="item"
+                    :ref="`look-${item.id}`"
+                    @edit-look="onEditLook"
+                    v-show-contextmenu="{
+                        trigger: 'contextmenu',
+                        ref: 'moreContext',
+                        item: item,
+                    }"
+                    :contextMenuVisible="contextLook && contextLook.id == item.id"
+                />
+            </RecycleScroller>
+            <div class="no-products" v-if="allProducts.length <= 0">
+                <button class="primary full-width md" @click="onFetchProducts">
+                    <i class="far fa-sync"></i>
+                    <span>Sync products</span>
+                </button>
+            </div>
+        </template>
         <EditLookPopover v-if="currentLook" />
 
         <BaseContextMenu ref="moreContext" class="more-context" @show="contextLook = $event" @hide="contextLook = null">
@@ -106,11 +115,13 @@ export default {
             currentTab: 'All',
             filteredBySearch: { items: [], looks: [] },
             contextLook: null,
+            syncingProducts: false,
         }
     },
     computed: {
         ...mapGetters('products', {
             items: 'getProductsFiltered',
+            allProducts: 'getProducts',
         }),
         ...mapGetters('productGroups', {
             currentLook: 'getCurrentProductGroup',
@@ -122,6 +133,18 @@ export default {
         }),
         arraysToSearch() {
             return { items: this.items, looks: this.looks }
+        },
+        productSyncStatus() {
+            if (
+                !this.syncingProducts &&
+                (!this.presentation.productImageSyncStatus || this.presentation.productImageSyncStatus.msg != 'syncing')
+            )
+                return
+            if (this.presentation.productImageSyncStatus && this.presentation.productImageSyncStatus.msg == 'syncing')
+                return `Syncing images. ${this.presentation.productImageSyncStatus.chunkIndex + 1} of ${
+                    this.presentation.productImageSyncStatus.chunkCount
+                }<br>Please don't exit this page`
+            if (this.syncingProducts) return 'Syncing products'
         },
     },
     methods: {
@@ -150,6 +173,11 @@ export default {
                 this.removeTimings(linkedTimings)
                 this.deleteProductGroup({ fileId: this.presentation.id, productGroup: look })
             }
+        },
+        async onFetchProducts() {
+            this.syncingProducts = true
+            await this.$store.dispatch('playPresentation/syncExternalProducts')
+            this.syncingProducts = false
         },
     },
 }
