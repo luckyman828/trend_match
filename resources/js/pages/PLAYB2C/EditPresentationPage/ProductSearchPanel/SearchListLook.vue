@@ -89,6 +89,8 @@
                     buttonClass="invisible circle ghost-hover"
                     targetAreaPadding="4px"
                     @click="onAddTiming"
+                    :disabled="look.variants.length <= 0"
+                    disabledTooltip="Can't add an empty look"
                     tabindex="-1"
                     v-tooltip="'Add to timeline'"
                 >

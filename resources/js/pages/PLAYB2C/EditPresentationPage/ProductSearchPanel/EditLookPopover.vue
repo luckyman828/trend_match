@@ -59,10 +59,16 @@
                 <i class="far fa-ellipsis-h primary"></i>
             </button>
 
-            <button v-if="!linkedTiming" class="pill sm" @click="onAddTiming">
+            <BaseButtonV2
+                v-if="!linkedTiming"
+                class="pill sm"
+                @click="onAddTiming"
+                :disabled="look.variants.length <= 0"
+                disabledTooltip="Can't add an empty look"
+            >
                 <i class="far fa-plus"></i>
                 <span>To timeline</span>
-            </button>
+            </BaseButtonV2>
             <!-- EDITING TIMING -->
             <template v-else>
                 <button class="pill sm" @click="onClose">
