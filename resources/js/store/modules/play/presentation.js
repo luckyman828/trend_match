@@ -241,6 +241,8 @@ export default {
             if (!newTiming.end_at_ms) newTiming.end_at_ms = 5
 
             await dispatch('initTimings', [newTiming])
+
+            console.log('new timing after init', newTiming)
             const allTimings = getters.getTimings
             // First find out what index to give the new timing, so we insert it at it's correct spot
             // We will insert the new timing at the current timestamp

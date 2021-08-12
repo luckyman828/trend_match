@@ -157,6 +157,7 @@ export default {
                 id: null,
                 start_at_ms: null,
                 end_at_ms: null,
+                product_group_id: this.look.id,
                 variants: JSON.parse(JSON.stringify(this.look.variantMaps)),
             }
             await this.addTiming({ newTiming })
