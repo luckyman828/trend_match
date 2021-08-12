@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import variantImage from '../../../../mixins/variantImage'
 
 export default {
@@ -62,19 +62,27 @@ export default {
     props: ['variantMap', 'look'],
     mixins: [variantImage],
     computed: {
+        ...mapGetters('playPresentation', {
+            timings: 'getTimings',
+            presentation: 'getPresentation',
+        }),
         variant() {
             return this.variantMap.variant
         },
         product() {
             return this.variant.product
         },
+        linkedTimings() {
+            return this.timings.filter(timing => timing.product_group_id == this.look.id)
+        },
     },
     methods: {
-        ...mapActions('productGroups', ['removeVariantMap']),
-        // onChangeVariant(newVariant) {
-        //     this.look.variantMaps[this.variant.index].variant_id = newVariant.id
-        // },
-        onRemoveVariant() {
+        ...mapActions('playPresentation', ['removeTimings']),
+        ...mapActions('productGroups', ['removeVariantMap', 'deleteProductGroup']),
+        async onRemoveVariant() {
+            if (this.look.variantMaps.length <= 1 && this.linkedTimings.length > 0) {
+                await this.removeTimings(this.linkedTimings)
+            }
             this.removeVariantMap({ productGroup: this.look, variant: this.variant })
         },
     },

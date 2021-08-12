@@ -148,10 +148,17 @@ export default {
         lookIsSaved() {
             return this.looks.find(look => look.id == this.look.id)
         },
+        linkedTimings() {
+            return this.timings.filter(timing => timing.product_group_id == this.look.id)
+        },
     },
     watch: {
-        variantMapLength() {
-            this.onSaveLook()
+        variantMapLength(newLength) {
+            if (newLength == 0 && this.linkedTimings) {
+                this.onDeleteLook()
+            } else {
+                this.onSaveLook()
+            }
         },
     },
     methods: {
@@ -176,9 +183,8 @@ export default {
             this.SET_CURRENT_GROUP(null)
         },
         async onDeleteLook() {
-            const linkedTimings = this.timings.filter(timing => timing.product_group_id == this.look.id)
-            if (!linkedTimings.length > 0 || (await this.$refs.confirmDeleteDialog.confirm())) {
-                this.removeTimings(linkedTimings)
+            if (!this.linkedTimings.length > 0 || (await this.$refs.confirmDeleteDialog.confirm())) {
+                this.removeTimings(this.linkedTimings)
 
                 this.deleteProductGroup({ fileId: this.presentation.id, productGroup: this.look })
             }
