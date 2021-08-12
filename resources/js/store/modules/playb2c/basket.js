@@ -9,12 +9,14 @@ export default {
 
     getters: {
         getBasket: state => state.basket,
-        getBasketTotal: state =>
-            state.basket.reduce((acc, curr) => {
+        getBasketTotal: state => {
+            const number = state.basket.reduce((acc, curr) => {
                 return (acc += curr.variant.yourPrice.wholesale_price
                     ? curr.variant.yourPrice.wholesale_price
                     : curr.variant.yourPrice.recommended_retail_price * curr.quantity)
-            }, 0),
+            }, 0)
+            return Math.round((number + Number.EPSILON) * 100) / 100
+        },
         getBasketCurrency: state => (state.basket.length > 0 ? state.basket[0].variant.yourPrice.currency : null),
         getVariantIsInBasket: state => variant => state.basket.find(basketItem => basketItem.variant.id == variant.id),
         getItemIsInBasket: state => item => {

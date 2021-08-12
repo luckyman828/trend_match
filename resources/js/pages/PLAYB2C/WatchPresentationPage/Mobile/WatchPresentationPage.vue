@@ -23,14 +23,48 @@
                                     :disabled="!currentTiming"
                                     :variants="currentTiming && currentTiming.variantList"
                                 />
-                                <AddToBasketButton
+
+                                <v-popover
+                                    trigger="click"
+                                    :autoHide="false"
+                                    :disabled="!currentTiming && !addToBasketPopoverIsVisible"
+                                    ref="addToBasketPopover"
+                                    @show="onShowAddToBasketPopover"
+                                    @hide="onHideBasketPopover"
+                                >
+                                    <BaseStateAlternatingButton
+                                        buttonClass="circle lg"
+                                        :disabled="!currentTiming"
+                                        :active="
+                                            addToBasketPopoverIsVisible
+                                                ? addToBasketPopoverVariantIsInBasket
+                                                : currentTimingIsInBasket
+                                        "
+                                        :baseState="{
+                                            class: 'white',
+                                            iconLeft: 'far fa-shopping-bag',
+                                        }"
+                                        :activeState="{
+                                            class: 'primary',
+                                            iconLeft: 'far fa-shopping-bag white',
+                                            nestedIconLeft: 'fas fa-check pos-bottom pos-right white',
+                                        }"
+                                    >
+                                    </BaseStateAlternatingButton>
+                                    <AddToBasketPopover
+                                        slot="popover"
+                                        :variants="addToBasketPopoverVariantList"
+                                        @hide="$refs.addToBasketPopover.hide()"
+                                    />
+                                </v-popover>
+                                <!-- <AddToBasketButton
                                     buttonClass="lg circle"
                                     baseClass="white"
                                     :disabled="!currentTiming"
                                     :variant="currentTiming && currentTiming.variant"
                                     textStyle="none"
                                     :resetOnSubmit="true"
-                                />
+                                /> -->
                             </div>
                         </div>
                     </div>
@@ -103,6 +137,7 @@ import TimingListDrawer from './TimingListDrawer/'
 
 import ProductDetailsDrawer from './ProductDetailsDrawer/'
 import SavedStylesDrawer from './SavedStylesDrawer/'
+import AddToBasketPopover from './AddToBasketPopover'
 
 export default {
     name: 'watchVideoPage',
@@ -118,6 +153,7 @@ export default {
         AddToBasketButton,
         VolumeControl,
         TimingListDrawer,
+        AddToBasketPopover,
     },
     data: function() {
         return {
@@ -128,6 +164,8 @@ export default {
             showChatInput: false,
             recentlyStarted: false,
             showTimingList: false,
+            addToBasketPopoverVariantList: [],
+            addToBasketPopoverIsVisible: false,
         }
     },
     computed: {
@@ -156,11 +194,27 @@ export default {
         }),
         ...mapGetters('basket', {
             basket: 'getBasket',
+            getVariantIsInBasket: 'getVariantIsInBasket',
         }),
+        addToBasketPopoverVariantIsInBasket() {
+            return this.addToBasketPopoverVariantList.find(variant => this.getVariantIsInBasket(variant))
+        },
+        currentTimingIsInBasket() {
+            return (
+                this.currentTiming && this.currentTiming.variantList.find(variant => this.getVariantIsInBasket(variant))
+            )
+        },
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
         ...mapActions('player', ['togglePlayerMuted', 'togglePlaying']),
+        onShowAddToBasketPopover() {
+            this.addToBasketPopoverIsVisible = true
+            this.addToBasketPopoverVariantList = this.currentTiming ? this.currentTiming.variantList : []
+        },
+        onHideBasketPopover() {
+            this.addToBasketPopoverIsVisible = false
+        },
     },
 }
 </script>

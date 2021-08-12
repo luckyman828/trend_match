@@ -35,24 +35,12 @@
             <!-- Bottom row -->
             <div class="flex-list justify flex-end-v">
                 <!-- COLOR -->
-                <v-popover trigger="click" class="fill">
-                    <div class="ui-square">
-                        <div class="flex-list flex-v xs truncate">
-                            <label>Color</label>
-                            <div class="ft-bd ft-12 truncate">{{ variant.name }}</div>
-                        </div>
+                <div class="ui-square" @click="$emit('edit-basket-variants', $event)">
+                    <div class="flex-list flex-v xs truncate">
+                        <label>Color</label>
+                        <div class="ft-bd ft-12 truncate">{{ variant.name }}</div>
                     </div>
-                    <BaseSelectButtons
-                        header="Change color"
-                        slot="popover"
-                        type="radio"
-                        :submitOnChange="true"
-                        :options="variant.product.variants"
-                        :value="variant"
-                        optionNameKey="name"
-                        @change="onChangeVariant"
-                    />
-                </v-popover>
+                </div>
                 <!-- SIZE -->
                 <v-popover trigger="click" ref="sizePopover" class="fill">
                     <div class="ui-square size-square">

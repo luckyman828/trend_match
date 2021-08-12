@@ -41,7 +41,12 @@
                     />
                 </template>
                 <template v-else>
-                    <BasketItem v-for="item in basket" :key="item.id" :item="item" />
+                    <BasketItem
+                        v-for="item in basket"
+                        :key="item.id"
+                        :item="item"
+                        @edit-basket-variants="$event => onEditBasketVariants($event, item)"
+                    />
                 </template>
             </div>
         </template>
@@ -58,6 +63,13 @@
         <Portal to="popover">
             <BaseContextMenu ref="addToWishlistPopover" :autoWidth="true">
                 <AddToWishlistPopover :product="popoverProduct" />
+            </BaseContextMenu>
+
+            <BaseContextMenu ref="addToBasketPopover" :autoWidth="true">
+                <AddToBasketPopover
+                    :variants="popoverProduct ? popoverProduct.variants : []"
+                    :sizePopoverContainer="false"
+                />
             </BaseContextMenu>
         </Portal>
 
@@ -87,10 +99,11 @@ import WishlistItem from './WishlistItem'
 import BasketItem from './BasketItem'
 import AddToBasketSelector from '../AddToBasketSelector'
 import AddToWishlistPopover from './AddToWishlistPopover'
+import AddToBasketPopover from '../AddToBasketPopover'
 
 export default {
     name: 'savedStylesDrawer',
-    components: { BasketItem, WishlistItem, AddToBasketSelector, AddToWishlistPopover },
+    components: { BasketItem, WishlistItem, AddToBasketSelector, AddToWishlistPopover, AddToBasketPopover },
     props: ['view', 'show'],
     data() {
         return {
@@ -142,6 +155,12 @@ export default {
             this.popoverProduct = variant.product
             this.$nextTick(() => {
                 this.$refs.addToWishlistPopover.show(mouseEvent)
+            })
+        },
+        onEditBasketVariants(mouseEvent, basketItem) {
+            this.popoverProduct = basketItem.variant.product
+            this.$nextTick(() => {
+                this.$refs.addToBasketPopover.show(mouseEvent)
             })
         },
     },

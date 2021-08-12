@@ -46,6 +46,7 @@
                 class="checkout-button full-width"
                 buttonClass="dark full-width checkout-button"
                 :disabled="basket.length <= 0 || !isEmbedded || !(playShop && playShop.checkout_url)"
+                :disabledTooltip="!isEmbedded ? 'Presentation must be opened from webshop to go to checkout' : ''"
                 @click="onGoToCheckout"
             >
                 <template v-slot:iconLeft>
@@ -63,7 +64,10 @@
         </BaseContextMenu>
 
         <BaseContextMenu ref="addToBasketPopover" :autoWidth="true">
-            <AddToBasketPopover :variants="popoverProduct ? popoverProduct.variants : []" />
+            <AddToBasketPopover
+                :variants="popoverProduct ? popoverProduct.variants : []"
+                :sizePopoverContainer="false"
+            />
         </BaseContextMenu>
     </BaseFlyin>
 </template>
@@ -133,6 +137,9 @@ export default {
             this.popoverProduct = basketItem.variant.product
             this.$refs.addToBasketPopover.show(mouseEvent)
         },
+    },
+    created() {
+        console.log('hello')
     },
 }
 </script>
