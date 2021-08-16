@@ -148,6 +148,16 @@ export default {
                     code: 'JC',
                     company: 'DkCompanyVejle',
                 },
+                {
+                    name: 'FQ1924',
+                    code: 'FQ',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Atelier Réve',
+                    code: 'AR',
+                    company: 'DkCompanyVejle',
+                },
                 // DKV Mens dept. A/S
                 {
                     name: 'Solid',
