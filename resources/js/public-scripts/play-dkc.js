@@ -1,5 +1,5 @@
 import { embed } from './play.js'
-const version = `0.0.0 - (4)`
+const version = `0.0.0 - (5)`
 console.log('Init PLAY DKC embed script. Version: ' + version)
 
 const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
