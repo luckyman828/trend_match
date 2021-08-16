@@ -19,6 +19,7 @@ async function onContentWindowChange(newContentWindow) {
 }
 
 async function getBasket() {
+    console.log('dkc get basket')
     const shopBasket = await window.w2mInterop.getBasket()
     // Transform the basket response to a kollekt-compatible model
 
