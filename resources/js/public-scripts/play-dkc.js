@@ -19,7 +19,7 @@ async function onContentWindowChange(newContentWindow) {
 }
 
 async function getBasket() {
-    console.log('dkc get basket')
+    console.log('[PLAY] dkc get basket')
     const shopBasket = await window.w2mInterop.getBasket()
     // Transform the basket response to a kollekt-compatible model
 
@@ -40,6 +40,7 @@ async function getBasket() {
 }
 
 async function addToBasket(items) {
+    console.log('[PLAY] dkc add to basket')
     await window.w2mInterop.addMultipleToBasket(items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 })))
 
     const newBasket = await w2mInterop.getBasket()
