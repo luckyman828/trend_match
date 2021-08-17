@@ -457,7 +457,8 @@ export default {
         margin-left: -6px;
         .interval-mark {
             color: white;
-            border-left: solid $grey800 1px;
+            // border-left: solid $grey800 1px;
+            box-shadow: 1px -2px 1px 0px inset $grey800;
             height: 100%;
             position: relative;
             font-size: 10px;

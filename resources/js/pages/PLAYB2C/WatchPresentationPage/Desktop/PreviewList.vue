@@ -1,5 +1,5 @@
 <template>
-    <div class="preview-list-wrapper">
+    <div class="preview-list-wrapper" :class="{ 'pdp-open': pdpOpen }">
         <div class="preview-list bg-blur fly-out" ref="previewList">
             <div class="rail flex-list flex-v" @scroll="onScroll">
                 <template v-if="currentTiming">
@@ -29,7 +29,11 @@ export default {
     computed: {
         ...mapGetters('playPresentation', {
             timing: 'getCurrentTiming',
+            pdpItem: 'getPdpItem',
         }),
+        pdpOpen() {
+            return !!this.pdpItem
+        },
     },
     watch: {
         timing(newVal, oldVal) {
@@ -79,10 +83,19 @@ export default {
 @import '~@/_variables.scss';
 .preview-list-wrapper {
     transition: transform $videoPauseTransition;
+    transform-origin: top left;
     pointer-events: none !important;
+    position: absolute;
+    z-index: 2;
     .desired-paused &,
     .recently-started & {
         transform: translateY(60px);
+        &.pdp-open {
+            transform: translateY(60px) translateX(384px) scale(0.5);
+        }
+    }
+    &.pdp-open {
+        transform: translateX(384px) scale(0.5);
     }
 }
 .preview-list {

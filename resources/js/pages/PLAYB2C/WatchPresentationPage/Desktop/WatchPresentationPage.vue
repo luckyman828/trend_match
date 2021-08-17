@@ -14,6 +14,7 @@
             `desired-${desiredStatus}`,
             { 'recently-started': recentlyStarted },
             { 'show-timing-list': showTimingList },
+            { 'pdp-open': !!pdpItem },
         ]"
     >
         <VideoPlayer :video="video" :autoplay="false">
