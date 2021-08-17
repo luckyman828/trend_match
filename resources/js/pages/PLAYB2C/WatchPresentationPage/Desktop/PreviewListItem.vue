@@ -37,7 +37,12 @@
                 </button>
             </div>
         </div>
-        <div class="action-list flex-list space-xs" slot="popover" ref="actionPopover" id="action-popover">
+        <div
+            class="action-list flex-list space-xs"
+            slot="popover"
+            ref="actionPopover"
+            :id="`action-popover-${variant.id}`"
+        >
             <AddToWishlistButton
                 :variants="[variant]"
                 class="invisible true-square float-icon-hover"
@@ -48,7 +53,7 @@
                 textStyle="none"
                 buttonClass="invisible true-square float-icon-hover"
                 :resetOnSubmit="true"
-                popoverContainer="#action-popover"
+                :popoverContainer="`#action-popover-${variant.id}`"
                 :sizePopoverOpen.sync="sizePopoverOpen"
             />
         </div>
