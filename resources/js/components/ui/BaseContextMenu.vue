@@ -62,6 +62,15 @@ export default {
             // }
         },
     },
+    watch: {
+        visible(isVisible) {
+            if (isVisible) {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'disableClose' })
+            } else {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'enableClose' })
+            }
+        },
+    },
     methods: {
         ...mapMutations('contextMenu', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
         show(e, item, clickOffset = { x: 0, y: 0 }) {

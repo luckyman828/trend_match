@@ -52,6 +52,11 @@ export default {
     watch: {
         show(isVisible) {
             this.extendAmount = 0
+            if (isVisible) {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'disableClose' })
+            } else {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'enableClose' })
+            }
         },
     },
     methods: {

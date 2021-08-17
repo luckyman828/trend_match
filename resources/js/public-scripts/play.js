@@ -242,6 +242,7 @@ export function embed({
 
     // Interact with webshop
     window.addEventListener('message', async event => {
+        console.log('message received', event)
         const testOrigins =
             process.env.NODE_ENV == 'production' ? [] : ['https://kollekt_feature.test', 'https://kollekt_release.test']
         const acceptedOrigins = [
@@ -285,6 +286,15 @@ export function embed({
         // GO TO CHECKOUT
         if (msgData.action == 'goToCheckout') {
             window.location = msgData.url
+        }
+
+        // MODAL OPEN / DISABLE CLOSE
+        if (msgData.action == 'disableClose') {
+            closeButton.style.display = 'None'
+        }
+        // MODAL CLOSED / ENABLE CLOSE
+        if (msgData.action == 'enableClose') {
+            closeButton.style.display = 'Block'
         }
     })
 
