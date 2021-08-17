@@ -153,6 +153,7 @@ export default {
                 const intervalDuration = 10000 // 10 sec
                 const statusInterval = setInterval(async () => {
                     const newStatus = await dispatch('checkVideoStatus', video)
+                    console.log('new status', newStatus)
                     if (newStatus == 'Available') {
                         clearInterval(statusInterval)
                         resolve(newStatus)

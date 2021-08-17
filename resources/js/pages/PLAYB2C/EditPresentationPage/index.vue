@@ -70,7 +70,9 @@ export default {
                 if (status == 'Available') {
                     await this.fetchVideoUrls(video)
                 } else {
-                    this.startVideoStatusCheckJob(this.video)
+                    this.startVideoStatusCheckJob(this.video).then(() => {
+                        this.initVideo()
+                    })
                 }
             }
 
