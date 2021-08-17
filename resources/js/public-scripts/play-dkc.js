@@ -40,7 +40,7 @@ async function getBasket() {
 }
 
 async function addToBasket(items) {
-    console.log('[PLAY] dkc add to basket')
+    console.log('[PLAY] dkc add to basket', items)
     await window.w2mInterop.addMultipleToBasket(items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 })))
 
     const newBasket = await w2mInterop.getBasket()
