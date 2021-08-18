@@ -169,6 +169,29 @@ const routes = [
         ],
     },
 
+    // INTERNAL Routes
+    {
+        path: '/internal',
+        name: 'internal',
+        component: () => import(/* webpackChunkName: "rootRoot" */ './pages/INTERNAL/'),
+        redirect: 'internal/',
+        meta: {
+            isRoot: true,
+        },
+        children: [
+            {
+                path: 'components',
+                name: 'internalRoot',
+                meta: {
+                    isPublic: true,
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "selectApp" */ './pages/INTERNAL/ComponentShowcasePage/'),
+            },
+        ],
+    },
+
     // SELECT Routes
     {
         path: '/select',

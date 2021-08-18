@@ -1,5 +1,5 @@
 <template>
-    <div class="root-select" :class="[{ 'full-screen': $route.meta.isFullscreen }]">
+    <div class="root-internal" :class="[{ 'full-screen': $route.meta.isFullscreen }]">
         <RootLoader v-if="isLoading" />
         <template v-else>
             <template v-if="!$route.meta.isFullscreen">
@@ -33,33 +33,20 @@ export default {
         TheSnackbarSpawner,
         RootLoader,
     },
+    data() {
+        return {
+            isLoading: false,
+        }
+    },
     computed: {
-        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
-        isLoading() {
-            return !this.currentWorkspace //Check if we have a workspace
-        },
-    },
-    watch: {
-        $route(to, from) {
-            // Reset main window scroll on navigation
-            if (this.$refs.main) {
-                this.$refs.main.scrollTo(0, 0)
-            }
-        },
-    },
-    methods: {
-        ...mapMutations('kollektApps', ['SET_KOLLEKT_APP']),
-    },
-    created() {
-        this.SET_KOLLEKT_APP('select')
     },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.root-select {
+.root-internal {
     scroll-behavior: smooth;
     min-height: 100vh;
     min-width: 100vw;
