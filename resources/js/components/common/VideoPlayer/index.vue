@@ -47,6 +47,12 @@
 
         <div class="click-to-pause" @click="!isLive && togglePlaying()" />
         <div class="player-overlay">
+            <slot name="beforeStart" v-if="!playerStarted" />
+
+            <slot name="ended" v-if="playerStatus == 'ended'" />
+
+            <slot name="paused" v-if="desiredStatus == 'paused'" />
+
             <slot />
         </div>
     </div>
@@ -65,6 +71,7 @@ export default {
             lastTimestamp: 0,
             intanceId: 0,
             liveDurationFetched: false,
+            playerStartedTester: false,
         }
     },
     computed: {
@@ -79,6 +86,7 @@ export default {
             isLive: 'getIsLive',
             currentTiming: 'getCurrentTiming',
             desiredStatus: 'getDesiredStatus',
+            playerStarted: 'getPlayerStarted',
         }),
         isVimeoPrivateLink() {
             const url = this.providerVideoId
@@ -100,6 +108,12 @@ export default {
                 this.intanceId++
             }
         },
+        desiredStatus(newStatus) {
+            console.log('desired status changed', newStatus)
+            if (newStatus == 'playing' && !this.playerStarted) {
+                this.onStartPlaying()
+            }
+        },
     },
     methods: {
         ...mapActions('videoPlayer', [
@@ -107,6 +121,7 @@ export default {
             'getCurrentTimestamp',
             'togglePlaying',
             'makeLastTimingCurrent',
+            'play',
         ]),
         ...mapMutations('videoPlayer', [
             'SET_PLAYER_REFERENCE',
@@ -115,8 +130,25 @@ export default {
             'SET_PLAYER_STATUS',
             'SET_IFRAME_REFERENCE',
             'SET_DESIRED_STATUS',
+            'SET_PLAYER_STARTED',
+            'SET_RECENTLY_STARTED',
+            'RESET_PLAYER',
         ]),
-        ...mapMutations('videoPresentation', ['SET_TIMELINE_ZOOM']),
+        onStartPlaying() {
+            const interval = 200
+            this.playerStartedTester = setInterval(() => {
+                console.log('is playing', this.isPlaying, this.desiredStatus)
+                if (!this.isPlaying && this.desiredStatus == 'playing') {
+                    this.play()
+                } else {
+                    this.SET_PLAYER_STARTED(true)
+                    clearInterval(this.playerStartedTester)
+                }
+            }, interval)
+
+            // Add a class to the player to tell that it has recently been started
+            this.SET_RECENTLY_STARTED(4000)
+        },
         onProgress(e) {
             if (this.isLive && !this.liveDurationFetched) {
                 const newDuration = e.seconds
@@ -242,11 +274,10 @@ export default {
         },
     },
     destroyed() {
+        this.RESET_PLAYER()
         this.clearTimerListener()
-        this.SET_CURRENT_PLAYER_TIMESTAMP(0)
-        this.SET_PLAYER_STATUS(null)
         this.removeEventListeners()
-        this.SET_TIMELINE_ZOOM(1)
+        if (this.playerStartedTester) clearInterval(this.playerStartedTester)
     },
 }
 </script>

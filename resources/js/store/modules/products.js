@@ -33,6 +33,7 @@ export default {
         loadingProducts: state => state.loading,
         getPdpVariantIndex: state => state.pdpVariantIndex,
         productsStatus: state => state.status,
+        getStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
         getPDFModalVisible: state => state.showPDFModal,
@@ -582,43 +583,43 @@ export default {
                     )
                 })
         },
-        instantiateNewProduct({ commit }) {
+        instantiateNewProduct({ commit }, productData = {}) {
             return {
-                title: 'Untitled product',
-                datasource_id: null,
-                short_description: null,
-                sale_description: null,
-                min_order: null,
-                min_variant_order: null,
-                brand: null,
-                category: null,
-                delivery_date: null,
-                delivery_dates: [],
-                buying_group: null,
-                is_editor_choice: null,
-                compositions: null,
-                labels: [],
-                prices: [],
-                variants: [],
-                assortments: [],
-                eans: [],
-                assortment_sizes: [],
-                extra_data: {},
-                labels: [],
+                title: productData.title || 'Untitled product',
+                datasource_id: productData.datasource_id || null,
+                short_description: productData.short_description || null,
+                sale_description: productData.sale_description || null,
+                min_order: productData.min_order || null,
+                min_variant_order: productData.min_variant_order || null,
+                brand: productData.delivery_date || null,
+                category: productData.delivery_date || null,
+                delivery_date: productData.delivery_date || null,
+                delivery_dates: productData.delivery_dates || [],
+                buying_group: productData.buying_group || null,
+                is_editor_choice: productData.is_editor_choice || null,
+                compositions: productData.compositions || null,
+                labels: productData.labels || [],
+                prices: productData.prices || [],
+                variants: productData.variants || [],
+                assortments: productData.assortments || [],
+                eans: productData.eans || [],
+                assortment_sizes: productData.assortment_sizes || [],
+                extra_data: productData.extra_data || {},
             }
         },
-        instantiateNewProductVariant({ commit }) {
+        instantiateNewProductVariant({ commit }, variantData = {}) {
             return {
-                id: uuidv4(),
-                color: null,
-                variant: null,
-                delivery_dates: [],
-                ean_sizes: [],
-                extra_data: {},
-                min_order: null,
-                labels: [],
-                pictures: [],
-                style_option_id: null,
+                id: variantData.id || uuidv4(),
+                color: variantData.color || null,
+                variant: variantData.variant || null,
+                name: variantData.name || null,
+                delivery_dates: variantData.delivery_dates || [],
+                ean_sizes: variantData.ean_sizes || [], // {ean, quantity, ref_id, size}
+                extra_data: variantData.extra_data || {},
+                min_order: variantData.min_order || null,
+                labels: variantData.labels || [],
+                pictures: variantData.pictures || [],
+                style_option_id: variantData.style_option_id || null,
             }
         },
         setCurrentProduct({ commit }, product) {
@@ -1402,6 +1403,7 @@ export default {
 
                 product.variants.forEach((variant, variantIndex) => {
                     Vue.set(variant, 'isInit', true)
+                    Vue.set(variant, 'product_id', product.id)
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
@@ -1424,6 +1426,7 @@ export default {
                             return product
                         },
                     })
+
                     Object.defineProperty(variant, 'yourPrice', {
                         get: function() {
                             return product.yourPrice

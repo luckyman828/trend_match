@@ -9,8 +9,9 @@ export default {
 
     state: {
         workspaces: [],
+        playShop: null,
         databases: [],
-        currentWorkspaceId: localStorage.getItem('workspace-id') || null,
+        currentWorkspaceId: null,
         loading: true,
         availableWorkspaceRoles: [
             {
@@ -30,7 +31,13 @@ export default {
 
     getters: {
         loadingWorkspaces: state => state.loading,
-        getCurrentWorkspaceId: state => state.currentWorkspaceId,
+        getCurrentWorkspaceId: state => {
+            try {
+                return state.currentWorkspaceId || localStorage.getItem('workspace-id') || null
+            } catch (e) {
+                return null
+            }
+        },
         workspaces: state => state.workspaces,
         getWorkspaces: state => state.workspaces,
         availableWorkspaceRoles: (state, getters, rootState, rootGetters) =>
@@ -43,6 +50,13 @@ export default {
             if (!getters.currentWorkspace) return 'Undefined'
             if (getters.currentWorkspace.role == 'Owner') return 'Admin'
             return getters.currentWorkspace ? getters.currentWorkspace.role : 'Undefined'
+        },
+        getAuthUserWorkspaceRole: (state, getters) => getters.authUserWorkspaceRole,
+        getAuthUserAppRole: (state, getters, rootState, rootGetters) => {
+            const currentApp = rootGetters['kollektApps/getCurrentApp']
+            if (!getters.getCurrentWorkspace || !currentApp) return
+            const appRole = getters.getCurrentWorkspace.apps.find(app => app.name == currentApp.name)
+            return appRole ? appRole.role : 'None'
         },
         getRealWorkspaceRole: (state, getters) => {
             if (!getters.currentWorkspace) return 'Undefined'
@@ -68,6 +82,8 @@ export default {
                 return getters.getFeatureFlags.includes(app.featureFlag)
             })
         },
+        getWebshop: (state, getters) =>
+            state.playShop || (getters.getCurrentWorkspace && getters.getCurrentWorkspace.play_shop),
     },
 
     actions: {
@@ -308,6 +324,7 @@ export default {
         async initWorkspaces({}, workspaces) {
             workspaces.map(workspace => {
                 if (!workspace.feature_flags) Vue.set(workspace, 'feature_flags', [])
+                if (!workspace.apps) Vue.set(workspace, 'apps', [])
                 // Object.defineProperty(workspace, 'logoUrl', {
                 //     get: function() {
                 //         return `${Vue.$cdnBaseUrl}/workspaces/${workspace.id}/logo.jpg`
@@ -419,6 +436,9 @@ export default {
         UPDATE_WORKSPACE(state, workspace) {
             const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
             Object.assign(stateWorkspace, workspace)
+        },
+        SET_PLAY_SHOP(state, playShop) {
+            state.playShop = playShop
         },
     },
 }

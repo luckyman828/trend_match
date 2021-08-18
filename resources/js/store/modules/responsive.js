@@ -10,7 +10,7 @@ export default {
 
     getters: {
         getIsMobile: state => {
-            return window.innerWidth < state.mobileBreakpoint
+            return window.innerWidth < state.mobileBreakpoint || window.innerHeight > window.innerWidth
         },
     },
 

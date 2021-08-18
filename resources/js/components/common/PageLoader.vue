@@ -46,7 +46,7 @@ export default {
     height: 500px;
     &.fit-page {
         height: 100%;
-        .loader {
+        > .loader {
             position: absolute;
             left: 50%;
             top: 50%;

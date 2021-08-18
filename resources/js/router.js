@@ -169,6 +169,29 @@ const routes = [
         ],
     },
 
+    // INTERNAL Routes
+    {
+        path: '/internal',
+        name: 'internal',
+        component: () => import(/* webpackChunkName: "rootRoot" */ './pages/INTERNAL/'),
+        redirect: 'internal/',
+        meta: {
+            isRoot: true,
+        },
+        children: [
+            {
+                path: 'components',
+                name: 'internalRoot',
+                meta: {
+                    isPublic: true,
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "selectApp" */ './pages/INTERNAL/ComponentShowcasePage/'),
+            },
+        ],
+    },
+
     // SELECT Routes
     {
         path: '/select',
@@ -301,6 +324,7 @@ const routes = [
     {
         path: '/play',
         name: 'play',
+        redirect: 'play/',
         meta: {
             root: 'play',
             app: 'play',
@@ -309,22 +333,52 @@ const routes = [
         component: () => import(/* webpackChunkName: "playRoot" */ './pages/PLAYB2C/'),
         children: [
             {
-                path: 'home',
-                name: 'playHome',
-                component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
+                path: 'find',
+                name: 'play.find',
+                component: () => import(/* webpackChunkName: "playFind" */ './pages/PLAYB2C/FindPage/'),
             },
             {
-                path: 'watch/:videoId',
-                name: 'watchVideo',
+                path: 'users',
+                name: 'play.users',
+                component: () => import(/* webpackChunkName: "playFind" */ './pages/PLAYB2C/UsersPage/'),
+            },
+            {
+                path: 'file/:fileId/video',
+                name: 'play.fileVideo',
+                component: () => import(/* webpackChunkName: "playFileVideoPage" */ './pages/PLAYB2C/FileVideoPage/'),
+            },
+            {
+                path: 'presentation/:presentationId/edit',
+                name: 'play.editPresentation',
+                meta: {
+                    hideSidebar: true,
+                    noScroll: true,
+                },
+                component: () =>
+                    import(/* webpackChunkName: "playEditPresentationPage" */ './pages/PLAYB2C/EditPresentationPage/'),
+            },
+            {
+                path: 'presentation/:presentationId/products/edit',
+                name: 'play.editPresentationProducts',
+                component: () =>
+                    import(
+                        /* webpackChunkName: "editPresentationProductsPage" */ './pages/PLAYB2C/EditPresentationProductsPage/'
+                    ),
+            },
+            {
+                path: 'watch/:presentationId',
+                name: 'play.watchPresentation',
                 meta: {
                     isFullscreen: true,
                     hideCrisp: true,
+                    isPublic: true,
                 },
-                component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PLAYB2C/WatchVideoPage/'),
+                component: () =>
+                    import(/* webpackChunkName: "watchPresentationPage" */ './pages/PLAYB2C/WatchPresentationPage/'),
             },
             {
                 path: '*',
-                redirect: 'home',
+                redirect: { name: 'play.find' },
             },
         ],
     },
@@ -410,6 +464,12 @@ router.afterEach((to, from) => {
     store.commit('selectionProducts/SET_SELECTIONS', [])
     store.commit('files/SET_CURRENT_FOLDER', null)
     store.commit('files/SET_CURRENT_PATH_FOLDER', null)
+
+    // PLAY
+    store.commit('playPresentation/SET_PRESENTATION', null)
+    store.commit('playPresentation/SET_VIDEO', null)
+    store.commit('playPresentation/SET_TIMINGS', [])
+    store.commit('playPresentation/SET_TIMINGS_READY', false)
 })
 
 export default router

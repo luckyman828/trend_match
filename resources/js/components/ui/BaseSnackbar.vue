@@ -57,6 +57,14 @@ export default {
         count() {
             return this.snackbar.count
         },
+        iconClass() {
+            // Define default icons for the different classes
+            if (this.snackbar && this.snackbar.iconClass) return this.snackbar.iconClass
+            if (this.snackbar.type == 'info') return 'fa-info-circle'
+            if (this.snackbar.type == 'warning') return 'fa-exclamation-triangle'
+            if (this.snackbar.type == 'danger') return 'fa-exclamation-circle'
+            if (this.snackbar.type == 'succes') return 'fa-check'
+        },
     },
     watch: {
         count(newVal, oldVal) {

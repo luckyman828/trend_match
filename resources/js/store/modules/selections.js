@@ -345,7 +345,30 @@ export default {
             })
             return settings
         },
-        async insertSelection({ commit, dispatch }, { file, selection, addToState = true }) {
+        async instantiateBaseSelection() {
+            const newSelection = {
+                id: null,
+                name: 'New Selection',
+                type: 'Normal',
+                currency: null,
+                user_count: 0,
+                team_count: 0,
+                children: [],
+                visible_from: null,
+                visible_to: null,
+                open_from: null,
+                open_to: null,
+                completed_at: null,
+                your_role: null,
+                your_job: null,
+                is_presenting: null,
+                budget: 0,
+                budget_spend: 0,
+                total_quantity: 0,
+            }
+            return newSelection
+        },
+        async insertSelection({ commit, dispatch }, { file, selection, addToState = true, displaySnackbar = true }) {
             // Check if we are inserting a master or a child
             let apiUrl = ''
 
@@ -364,18 +387,20 @@ export default {
                     if (addToState) {
                         commit('insertSelections', { file, selections: [selection] })
                     }
-                    // Display message
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Selection created',
-                            iconClass: 'fa-check',
-                            type: 'success',
-                            callback: () => showNewSelectionUsersFlyin(),
-                            callbackLabel: 'Manage users',
-                        },
-                        { root: true }
-                    )
+                    if (displaySnackbar) {
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Selection created',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                                callback: () => showNewSelectionUsersFlyin(),
+                                callbackLabel: 'Manage users',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(err => {
                     // Display message

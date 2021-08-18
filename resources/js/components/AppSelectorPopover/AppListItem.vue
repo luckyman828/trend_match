@@ -54,7 +54,7 @@ export default {
             availableApps: 'getEnabledApps',
         }),
         isDisabled() {
-            return this.isCurrent || !this.app.isReleased
+            return this.isCurrent
         },
         isCurrent() {
             return this.currentApp && this.currentApp.name == this.app.name

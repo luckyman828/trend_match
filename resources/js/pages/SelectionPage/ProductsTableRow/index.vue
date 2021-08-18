@@ -704,7 +704,7 @@ td.action {
             &:hover {
                 overflow: visible;
                 .fly-over .inner {
-                    background: $bgWhiteHover;
+                    background: $themeWhiteBgHover;
                 }
                 button.options {
                     display: none;
@@ -732,7 +732,7 @@ td.action {
                 top: 0;
                 left: -40px;
                 width: 40px;
-                background: linear-gradient(90deg, transparent, $bgWhiteHover);
+                background: linear-gradient(90deg, transparent, $themeWhiteBgHover);
                 pointer-events: none;
             }
         }

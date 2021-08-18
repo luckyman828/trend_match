@@ -33,6 +33,7 @@ export default {
         currentFolder: state => state.currentFolder,
         getCurrentFolder: state => state.currentFolder,
         files: state => state.files,
+        getFiles: state => state.files,
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
         getViewNewFile: state => state.viewNewFile,
@@ -194,7 +195,20 @@ export default {
                 Vue.set(file, 'owners', response.data)
             })
         },
-        async insertOrUpdateFile({ commit, dispatch }, { file, addToState = true }) {
+        // instantiateBaseFile() {
+        //     return {
+        //         id: null,
+        //         name: '',
+        //         type: 'File',
+        //         video_count: 0,
+        //         parent_id: 0,
+        //         thumbnail: null,
+        //         children: [],
+        //         apps: [],
+        //     }
+        // },
+        async insertOrUpdateFile({ commit, dispatch, rootGetters }, { file, addToState = true }) {
+            const workspaceId = rootGetters['workspaces/getCurrentWorkspaceId']
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -206,8 +220,8 @@ export default {
                 if (addToState) commit('INSERT_FILE', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
-                if (file.parent_id == 0) {
-                    apiUrl = `/workspaces/${file.workspace_id}/files`
+                if (!file.parent_id || file.parent_id == 0) {
+                    apiUrl = `/workspaces/${workspaceId}/files`
                 } else {
                     apiUrl = `/files/${file.parent_id}/children`
                     requestBody = { type: file.type, name: file.name }
@@ -237,7 +251,10 @@ export default {
                         { root: true }
                     )
                     // Set the files ID if not already set
-                    if (wasCreated) file.id = response.data.id
+                    if (wasCreated) {
+                        Object.assign(file, response.data)
+                        // file.id = response.data.id
+                    }
                 })
                 .catch(err => {
                     // Display message
@@ -473,6 +490,8 @@ export default {
         },
         async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
             return new Promise(async (resolve, reject) => {
+                Vue.set(file, 'productImageSyncStatus', { msg: 'syncing', chunkCount: 0, chunkIndex: 0 })
+
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
 
@@ -507,6 +526,7 @@ export default {
                         .map((_, index) => index * chunk_size)
                         .map(begin => array.slice(begin, begin + chunk_size))
                 const imageMapChunks = array_chunks(imageMaps, 8)
+                file.productImageSyncStatus.chunkCount = imageMapChunks.length
 
                 // Upload a chunk at a time
                 let chunkIndex = 1
@@ -546,10 +566,12 @@ export default {
                                 )
                                 if (!productAlreadyAdded) productsToUpdate.push(product)
                             })
+                            Vue.set
                         })
                         .catch(err => {
                             reject(err)
                         })
+                    file.productImageSyncStatus.chunkIndex++
                     chunkIndex++
                 }
 
@@ -565,6 +587,9 @@ export default {
                 ).catch(err => {
                     reject(err)
                 })
+
+                Vue.set(file, 'productImageSyncStatus', 'done')
+
                 resolve()
             })
         },
@@ -649,6 +674,7 @@ export default {
                 type: 'File',
                 parent_id: 0,
                 children: [],
+                apps: [],
                 workspace_id: rootGetters['workspaces/getCurrentWorkspaceId'],
             }
             await dispatch('initFiles', [newFile])

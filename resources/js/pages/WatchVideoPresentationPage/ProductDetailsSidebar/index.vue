@@ -37,6 +37,9 @@ export default {
     methods: {
         ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
     },
+    created() {
+        console.log('hello')
+    },
 }
 </script>
 
@@ -45,6 +48,7 @@ export default {
 .product-details-sidebar {
     pointer-events: all;
     display: inline-block;
+    background: white;
     &::v-deep {
         .flyin-inner {
             background: white;

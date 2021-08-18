@@ -1,6 +1,5 @@
 <template>
     <div class="flyin-wrapper" :class="[{ visible: isVisible }]">
-        <div class="overlay" @click="close"></div>
         <div
             class="flyin"
             ref="flyIn"
@@ -19,15 +18,16 @@
 
                 <!-- Ready -->
                 <template v-else-if="isVisible">
-                    <slot name="header" :toggle="toggle" />
+                    <slot name="header" :toggle="toggle" :close="close" />
                     <div class="body" :style="columnStyle">
-                        <slot :toggle="toggle" />
+                        <slot :toggle="toggle" :close="close" />
                     </div>
                 </template>
             </div>
 
             <slot name="alwaysVisible" />
         </div>
+        <div class="overlay" @click="close"></div>
     </div>
 </template>
 
@@ -136,7 +136,7 @@ export default {
     }
 }
 .overlay {
-    z-index: 11;
+    z-index: 10;
     position: fixed;
     top: 0;
     left: 0;

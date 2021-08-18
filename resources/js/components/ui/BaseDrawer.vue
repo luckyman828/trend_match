@@ -52,6 +52,11 @@ export default {
     watch: {
         show(isVisible) {
             this.extendAmount = 0
+            if (isVisible) {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'disableClose' })
+            } else {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'enableClose' })
+            }
         },
     },
     methods: {
@@ -116,7 +121,7 @@ export default {
             bottom: 0;
             border-radius: 16px 16px 0 0;
             transform: translateY(100%);
-            max-height: 90vh;
+            max-height: 85vh;
             .body {
                 overflow: auto;
             }

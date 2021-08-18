@@ -10,6 +10,7 @@ export default {
         status: null,
         iframe: null,
         isMuted: false,
+        isStarted: false,
         volume: 1,
         isPlaying: false,
         desiredStatus: 'paused',
@@ -36,8 +37,19 @@ export default {
                 setVolume: 'setVolume',
                 volumeMultiplier: 100,
             },
+            awsvideo: {
+                play: 'play',
+                pause: 'pause',
+                mute: () => (state.player.muted = true),
+                unMute: () => (state.player.muted = false),
+                seekTo: timestamp => (state.player.currentTime = timestamp),
+                getTimestamp: () => state.player.currentTime,
+                setVolume: newVolume => (state.player.volume = newVolume),
+                volumeMultiplier: 1,
+            },
         },
         controlsHidden: false,
+        recentlyStarted: false,
     },
 
     getters: {
@@ -103,11 +115,12 @@ export default {
             return currentTiming.product
         },
         getControlsHidden: (state, getters) => state.controlsHidden && !!getters.getIsPlaying,
+        getPlayerStarted: state => state.isStarted,
+        getPlayerRecentlyStarted: state => state.recentlyStarted,
     },
 
     actions: {
         async togglePlayerMuted({ commit, getters }, muteOverride) {
-            console.log('set player muted', muteOverride)
             const player = getters.getPlayer
             if (!player) return
             const providerMap = getters.getProviderMap
@@ -120,7 +133,6 @@ export default {
             }
         },
         async setVolume({ commit, getters }, newVolume) {
-            console.log('set player volume')
             const player = getters.getPlayer
             if (!player) return
             const providerMap = getters.getProviderMap
@@ -129,6 +141,7 @@ export default {
             await player[providerMap.setVolume](newVolume * volumeMultiplier)
         },
         async togglePlaying({ commit, getters, dispatch }) {
+            console.log('toggle playing')
             if (getters.getIsLive && (getters.desiredStatus == 'playing' || getters.getStatus == 'playing')) return
             const player = getters.getPlayer
             if (!player) return
@@ -145,6 +158,23 @@ export default {
                 if (getters.getVideoType == 'live') {
                     dispatch('seekTo', getters.getDuration)
                 }
+            }
+        },
+        async play({ commit, getters, dispatch }) {
+            const player = getters.getPlayer
+            console.log('play', player)
+            commit('SET_DESIRED_STATUS', 'playing')
+            if (!player) return
+            const providerMap = getters.getProviderMap
+
+            // Restart the video if it has ended
+            if (getters.getStatus == 'ended') commit('SET_CURRENT_PLAYER_TIMESTAMP', 0)
+
+            player[providerMap.play]()
+
+            // If we are watching a livestream, seek to the end
+            if (getters.getVideoType == 'live') {
+                dispatch('seekTo', getters.getDuration)
             }
         },
         async seekTo({ commit, getters }, timestamp) {
@@ -221,6 +251,32 @@ export default {
         },
         SET_CONTROLS_HIDDEN(state, isHidden) {
             state.controlsHidden = isHidden
+        },
+        SET_PLAYER_STARTED(state, payload) {
+            state.isStarted = payload
+        },
+        SET_RECENTLY_STARTED(state, delay) {
+            state.recentlyStarted = true
+            setTimeout(() => {
+                state.recentlyStarted = false
+            }, delay)
+        },
+        RESET_PLAYER(state) {
+            state.controlsHidden = false
+            state.playerProvider = null
+            state.player = null
+            state.videoType = 'static'
+            state.timestamp = 0
+            state.duration = 0
+            state.status = null
+            state.iframe = null
+            state.isMuted = false
+            state.volume = 1
+            state.isPlaying = false
+            state.desiredStatus = 'paused'
+            state.isSeeking = false
+            state.timelineKnobIsBeingDragged = false
+            state.isStarted = false
         },
     },
 }

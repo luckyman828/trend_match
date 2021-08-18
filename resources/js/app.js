@@ -48,6 +48,8 @@ import horizontalScrollDirective from './directives/horizontalScrollDirective'
 Vue.use(horizontalScrollDirective)
 import hoverDirective from './directives/hoverDirective'
 Vue.use(hoverDirective)
+import showContextmenu from './directives/showContextmenu'
+Vue.use(showContextmenu)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'
@@ -67,11 +69,12 @@ Vue.use(VTooltip, {
     defaultBoundariesElement: 'window',
     defaultOffset: 4,
     defaultDelay: { show: 100, hide: 0 },
-    defaultContainer: 'body',
+    defaultContainer: '#app',
     popover: {
         defaultTrigger: 'hover focus',
         defaultBaseClass: 'base-popover popover',
         defaultOffset: 0,
+        defaultContainer: '#app',
     },
 })
 
@@ -127,10 +130,12 @@ requireComponent.keys().forEach(fileName => {
 })
 
 // Check if the user is logged in
-const token = localStorage.getItem('user-token')
-if (token) {
-    axios.defaults.headers.common['Authorization'] = token
-}
+try {
+    const token = localStorage.getItem('user-token')
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = token
+    }
+} catch (e) {}
 
 // Define global filters
 Vue.filter('truncate', function(value, limit) {
@@ -219,6 +224,9 @@ Vue.mixin({
             if (array.length == currentIndex + 1 && forwards) return 0
             if (currentIndex == 0 && !forwards) return array.length - 1
             return forwards ? currentIndex + 1 : currentIndex - 1
+        },
+        async _delay(duration) {
+            await new Promise(resolve => setTimeout(() => resolve(), duration))
         },
     },
 })

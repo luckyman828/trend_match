@@ -70,7 +70,6 @@ export default {
             getVideoTimings: 'getVideoTimings',
             zoom: 'getTimelineZoom',
             timelineRail: 'getTimelineRail',
-            timelineEl: 'getTimelineEl',
             snapThreshold: 'getSnapThreshold',
             zoomLevels: 'getZoomLevels',
         }),

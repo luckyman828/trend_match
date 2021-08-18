@@ -3,7 +3,9 @@
 $primary: #2a46ff;
 $primaryDark: mix(black, $primary, 10%);
 
-$primary300: #7f93ff; //#e0f5f9 //#c7d0ff
+$primary200: mix($primary, white, 8%); // #2A46FF14
+$primary300: mix($primary, white, 24%); // #2A46FF14
+// $primary300: #7f93ff; //#e0f5f9 //#c7d0ff
 $primary400: #5f76ff;
 $primary500: $primary;
 $primary600: #1e34db;
@@ -83,6 +85,7 @@ $grey450: #cfd8dd;
 $grey500: #c7d3db;
 $grey550: mix($dark, white, 60%);
 $grey600: #a7b2c2;
+$grey650: mix($dark, white, 75%);
 $grey700: #68849f;
 $grey800: #425e80;
 $grey900: #27416a;
@@ -110,9 +113,9 @@ $groupColors: (#3366ff), (#26abd6), (#20a720), (#b51f26), (#905b15);
 
 // BUTTON SIZES ($name, $height, $font-size, $padding, $icon-font-size, $inner-el-spacing, $borderRadius, $icon-bottom-padding)
 $button-sizes: ('min', 8px, 8px, 1px, 6px, 1px, 2px, 0), ('xxs', 14px, 10px, 1px, 7px, 2px, 4px, 0),
-    ('xs', 20px, 12px, 6px, 9px, 4px, 4px, 1px), ('sm', 24px, 12px, 6px, 12px, 6px, 4px, 0),
+    ('xs', 20px, 12px, 6px, 9px, 4px, 4px, 1px), ('sm', 24px, 12px, 6px, 15px, 6px, 4px, 0),
     ('md', 40px, 12px, 12px, 14px, 8px, 8px, 0), ('lg', 48px, 12px, 20px, 14px, 8px, 8px, 0),
-    ('xl', 60px, 18px, 24px, 20px, 8px, 8px, 0), ('xxl', 72px, 20px, 24px, 20px, 8px, 8px, 0);
+    ('xl', 60px, 18px, 24px, 20px, 8px, 8px, 0), ('xxl', 72px, 20px, 24px, 32px, 8px, 8px, 0);
 
 // Sidebar
 $sidebarWidth: 52px;
@@ -231,7 +234,8 @@ $screenSm: 1400px;
 $screenXs: 1260px;
 
 $tablet-width: 768px;
-$desktop-width: 1024px;
+// $desktop-width: 1024px;
+$desktop-width: 920px;
 
 @mixin mobile {
     @media (max-width: #{$tablet-width}) {
@@ -247,6 +251,24 @@ $desktop-width: 1024px;
 
 @mixin desktop {
     @media (min-width: #{$desktop-width}) {
+        @content;
+    }
+}
+
+@mixin iphone-x {
+    @media (max-width: #{$tablet-width}) and (min-height: 800px) {
+        @content;
+    }
+}
+
+@mixin desktop-md {
+    @media (min-width: #{$screenSm}) {
+        @content;
+    }
+}
+
+@mixin desktop-lg {
+    @media (min-width: #{$screenMd}) {
         @content;
     }
 }
@@ -272,6 +294,14 @@ $brand-colors: (
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount), 1),
     ('black', black, mix(white, black, $lightenAmount), white, black, 0.8),
     (
+        'bg-blur',
+        transparent,
+        mix(white, transparent, $lightenAmount),
+        white,
+        mix($dark05, transparent, $darkenAmount),
+        0
+    ),
+    (
         'light',
         $bluegrey250,
         mix(white, $bluegrey250, $lightenAmount),
@@ -279,35 +309,95 @@ $brand-colors: (
         mix($dark05, $bluegrey250, $darkenAmount),
         1
     ),
-    (
-        'grey',
-        $fontSoft,
-        mix(white, $bluegrey250, $lightenAmount),
-        $fontSoft,
-        mix($dark05, $bluegrey250, $darkenAmount),
-        1
-    );
+    ('grey', $fontSoft, mix(white, $bluegrey250, $lightenAmount), white, mix($dark05, $bluegrey250, $darkenAmount), 1);
 
-$bgWhite: white;
-$bgWhiteHover: $grey200;
-$bgWhiteActive: $grey100;
+$themeWhiteBg: white;
+$themeWhiteBgHover: $primary200;
+$themeWhiteBgActive: $primary300;
+$themeWhiteFontSoft: $bluegrey700;
+$themeWhiteBorder: $bluegrey300;
+$themeWhiteBorderHover: $primary300;
+$themeWhiteBorderActive: $primary400;
 
 // Light on white
-$bgLight: $grey100;
-$bgLightHover: $grey200;
-$bgLightActive: $grey200;
+$themeLightBg: $grey100;
+$themeLightBgHover: $primary200;
+$themeLightBgActive: $primary300;
+$themeLightFontSoft: $grey650;
+$themeLightBorder: $bluegrey300;
+$themeLightBorderHover: $primary300;
+$themeLightBorderActive: $primary400;
 
 // Grey on white
-$bgGrey: $grey200;
-$bgGreyHover: $grey300;
-$bgGreyActive: $grey300;
+$themeGreyBg: $grey200;
+$themeGreyBgHover: $grey500;
+$themeGreyBgActive: $grey400;
+$themeGreyFontSoft: $grey650;
+$themeGreyBorder: $bluegrey300;
+$themeGreyBorderHover: $primary300;
+$themeGreyBorderActive: $primary400;
 
-// BG THEMES ($colorName, $bg, $bgHover, $bgActive)
-$bg-themes: ('white', $bgWhite, $bgWhiteHover, $bgWhiteActive), ('light', $bgLight, $bgLightHover, $bgLightActive),
-    ('grey', $bgGrey, $bgGreyHover, $bgGreyActive);
+// Dark
+$themeDarkBg: $dark100;
+$themeDarkBgHover: $bluegrey900;
+$themeDarkBgActive: $dark200;
+$themeDarkFontSoft: $grey650;
+$themeDarkBorder: $bluegrey300;
+$themeDarkBorderHover: $primary300;
+$themeDarkBorderActive: $primary400;
+
+// BG THEMES ($colorName, $bg, $bgHover, $bgActive, $border, $borderHover, $borderActive, $font, $fontSoft)
+$bg-themes: (
+        'white',
+        $themeWhiteBg,
+        $themeWhiteBgHover,
+        $themeWhiteBgActive,
+        $themeWhiteBorder,
+        $themeWhiteBorderHover,
+        $themeWhiteBorderActive,
+        $themeWhiteFontSoft
+    ),
+    (
+        'light',
+        $themeLightBg,
+        $themeLightBgHover,
+        $themeLightBgActive,
+        $themeLightBorder,
+        $themeLightBorderHover,
+        $themeLightBorderActive,
+        $dark100,
+        $themeLightFontSoft
+    ),
+    (
+        'grey',
+        $themeGreyBg,
+        $themeGreyBgHover,
+        $themeGreyBgActive,
+        $themeGreyBorder,
+        $themeGreyBorderHover,
+        $themeGreyBorderActive,
+        $dark100,
+        $themeGreyFontSoft
+    ),
+    (
+        'dark',
+        $themeDarkBg,
+        $themeDarkBgHover,
+        $themeDarkBgActive,
+        $themeDarkBorder,
+        $themeDarkBorderHover,
+        $themeDarkBorderActive,
+        $dark100,
+        $themeDarkFontSoft
+    );
 
 // CARD SIZES ($sizeName, $padding; $borderRadius)
 $card-sizes: ('xs', 4px, 4px), ('sm', 8px, 8px), ('md', 16px, 16px);
 
 // UI SQUARE SIZES ($name, $height, $padding, $min-width)
 $ui-square-sizes: ('xs', 24px, 12px, 8px), ('sm', 40px, 6px, 24px), ('md', 44px, 14px, 16px), ('lg', 48px, 14px, 20px);
+
+@mixin bg-blur {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px) brightness(80%);
+}

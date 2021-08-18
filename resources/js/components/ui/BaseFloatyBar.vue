@@ -18,8 +18,12 @@ export default {
         onHide() {
             this.$emit('hide')
         },
-        onClickOutside() {
-            if (!this.autoHide) return
+        onClickOutside(e) {
+            if (
+                !this.autoHide ||
+                (e && e.target && (e.target.classList.contains('popover') || e.target.closest('.popover')))
+            )
+                return
             this.onHide()
         },
     },
@@ -41,6 +45,9 @@ export default {
     button {
         font-size: 12px;
     }
+    &.rounded {
+        border-radius: 50px;
+    }
     // transition: bottom 0.1s ease-out;
     // transition: transform 0.2s ease-out;
     // transform: translateY(calc(8px + 100%));
@@ -49,12 +56,23 @@ export default {
         animation: fly-in forwards ease-out 0.2s;
         animation-delay: 0.1s;
     }
+
     @keyframes fly-in {
         from {
             bottom: -64px;
         }
         to {
             bottom: 8px;
+        }
+    }
+    @include iphone-x {
+        @keyframes fly-in {
+            from {
+                bottom: -64px;
+            }
+            to {
+                bottom: 28px;
+            }
         }
     }
 }

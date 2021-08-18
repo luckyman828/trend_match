@@ -67,6 +67,7 @@ html,
     width: 100%;
     min-width: 100vw;
     background: $bg;
+    overflow: hidden;
 }
 // Headers
 h1,
@@ -121,25 +122,41 @@ textarea {
     word-wrap: break-word;
 }
 .ft-bd {
-    font-weight: 700;
+    font-weight: 800;
 }
 .ft-md {
     font-weight: 500;
 }
+.ft-8 {
+    font-size: 10px !important;
+}
+.ft-9 {
+    font-size: 10px !important;
+}
 .ft-10 {
-    font-size: 10px;
+    font-size: 10px !important;
 }
 .ft-12 {
-    font-size: 12px;
+    font-size: 12px !important;
 }
 .ft-14 {
-    font-size: 14px;
+    font-size: 14px !important;
 }
 .ft-16 {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 .ft-20 {
-    font-size: 20px;
+    font-size: 20px !important;
+}
+.ft-uppercase {
+    text-transform: uppercase;
+}
+.ft-lowercase {
+    text-transform: lowercase;
+}
+.ft-strike {
+    text-decoration: line-through;
+    opacity: 0.75;
 }
 .lh-min {
     line-height: 1;
@@ -150,8 +167,42 @@ textarea {
 .lh-sm {
     line-height: 1.4;
 }
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 // ---------- END FONTS
+
+// HELPERS
+.mg-bt-16 {
+    margin-bottom: 16px;
+}
+
+// END HELPERS
 
 .container {
     margin: auto;
@@ -276,6 +327,9 @@ textarea {
         }
     }
 }
+.drag-handle {
+    cursor: grab;
+}
 
 // NAVBAR
 .navbar {
@@ -398,6 +452,22 @@ input[type='submit'] {
         margin-left: 0 !important;
         margin-right: 0 !important;
     }
+    &.float-icon-hover {
+        i {
+            transition: transform 0.1s ease-in, opacity 0.1s ease-in;
+        }
+        &:not(.active) {
+            i {
+                opacity: 0.5;
+            }
+        }
+        &:hover {
+            i {
+                opacity: 1;
+                transform: translateY(-2px);
+            }
+        }
+    }
 
     // SIZES
     // Default
@@ -477,8 +547,8 @@ input[type='submit'] {
     }
 
     // COLORS
-    border-color: $bluegrey300;
-    background: $bluegrey300;
+    border-color: $bluegrey250;
+    background: $bluegrey250;
     color: $font;
     // color: $dark05;
     &:hover {
@@ -497,6 +567,9 @@ input[type='submit'] {
             //     font-weight: 900;
             // }
         }
+    }
+    &.bg-hover:hover {
+        background: $bluegrey250 !important;
     }
     &:active {
         // background: $grey400;
@@ -525,7 +598,7 @@ input[type='submit'] {
                     color: nth($color, 2);
                 }
             }
-            &.ghost {
+            &.ghost:not(.#{nth($color,1)}-hover) {
                 &:not(.ghost-hover):hover,
                 .button-hover-trigger:hover &:not(.ghost-hover) {
                     border-color: nth($color, 2);
@@ -551,55 +624,6 @@ input[type='submit'] {
                     color: nth($color, 2);
                 }
             }
-            // // Shapes in shapes
-            // button:not(.text-link),
-            // .button,
-            // .square,
-            // .true-square,
-            // .pill,
-            // .circle,
-            // input[type='submit'] {
-            //     border-color: nth($color, 4);
-            //     background: rgba(nth($color, 4), nth($color, 6));
-            //     color: nth($color, 2);
-            //     i {
-            //         color: nth($color, 2);
-            //     }
-            //     &.invisible,
-            //     &.ghost {
-            //         color: nth($color, 4);
-            //         i {
-            //             color: nth($color, 4);
-            //         }
-            //     }
-            //     &.ghost {
-            //         &:not(.ghost-hover):hover,
-            //         .button-hover-trigger:hover &:not(.ghost-hover) {
-            //             border-color: nth($color, 4);
-            //             background: rgba(nth($color, 4), nth($color, 6));
-            //             color: nth($color, 2);
-            //             i {
-            //                 color: nth($color, 2);
-            //             }
-            //             i.context {
-            //                 background: nth($color, 3);
-            //             }
-            //         }
-            //     }
-            //     &.ghost {
-            //         border-color: nth($color, 4);
-            //     }
-            //     &.ghost-hover:hover,
-            //     .button-hover-trigger:hover &.ghost-hover {
-            //         background: transparent;
-            //         color: nth($color, 4);
-            //         border-color: nth($color, 4);
-            //         i {
-            //             color: nth($color, 4);
-            //         }
-            //     }
-            // }
-            // // End shapes in shapes
         }
         &.#{nth($color,1)}-hover:hover,
         .button-hover-trigger:hover &.#{nth($color,1)}-hover {
@@ -628,16 +652,17 @@ input[type='submit'] {
             color: $font;
         }
     }
-    &.ghost,
+
     &.ghost-hover {
         &:hover,
         .button-hover-trigger:hover & {
-            // padding: 0;
             border: solid 2px $primary;
-            // i:not(.fa-times):not(.fa-ellipsis-h) {
-            //     font-weight: 900;
-            // }
         }
+    }
+    &.ghost:hover,
+    .button-hover-trigger:hover &.ghost {
+        background: $bluegrey250;
+        border: solid 2px $bluegrey250;
     }
     &.invisible {
         font-weight: 500;
@@ -692,6 +717,10 @@ input[type='submit'] {
         }
     }
 }
+.true-square,
+.circle {
+    flex-shrink: 0;
+}
 .pill,
 .circle {
     border-radius: 500px !important;
@@ -712,6 +741,46 @@ input[type='submit'] {
 }
 .pill {
     min-width: 32px;
+    &.w-xxs {
+        width: 32px * 1.5;
+    }
+    &.w-xs {
+        width: 32px * 1.8;
+    }
+    &.w-sm {
+        width: 32px * 2;
+    }
+    &.w-md {
+        width: 32px * 3;
+    }
+    &.w-lg {
+        width: 32px * 4;
+    }
+    &.w-xl {
+        width: 32px * 6;
+    }
+    &.p-none,
+    &.p-min {
+        padding: 0;
+    }
+    &.p-xxs {
+        padding: 0 calc(4px / 4);
+    }
+    &.p-xs {
+        padding: 0 calc(4px / 2);
+    }
+    &.p-sm {
+        padding: 0 calc(4px * 1);
+    }
+    &.p-md {
+        padding: 0 calc(4px * 2);
+    }
+    &.p-lg {
+        padding: 0 calc(4px * 4);
+    }
+    &.p-xl {
+        padding: 0 calc(4px * 8);
+    }
     @each $size in $button-sizes {
         &.#{nth($size,1)} {
             min-width: nth($size, 2);
@@ -733,21 +802,26 @@ input[type='submit'] {
             &.w-xl {
                 width: nth($size, 2) * 6;
             }
-            // > i {
-            //     &:first-child {
-            //         margin-left: nth($size, 4) * 1.5;
-            //     }
-            //     &:last-child {
-            //         margin-right: nth($size, 4) * 1.5;
-            //     }
-            // }
+
             padding: 0 nth($size, 4);
-            // > *:first-child {
-            //     margin-left: nth($size, 4);
-            // }
-            // > *:last-child {
-            //     margin-right: nth($size, 4);
-            // }
+            &.p-xxs {
+                padding: 0 calc(#{nth($size, 4)} / 4);
+            }
+            &.p-xs {
+                padding: 0 calc(#{nth($size, 4)} / 2);
+            }
+            &.p-sm {
+                padding: 0 calc(#{nth($size, 4)} * 1);
+            }
+            &.p-md {
+                padding: 0 calc(#{nth($size, 4)} * 2);
+            }
+            &.p-lg {
+                padding: 0 calc(#{nth($size, 4)} * 4);
+            }
+            &.p-xl {
+                padding: 0 calc(#{nth($size, 4)} * 8);
+            }
         }
     }
 }
@@ -770,7 +844,7 @@ i {
             width: auto;
             // COLORS
             @each $color in $brand-colors {
-                .#{nth($color,1)} & {
+                button.#{nth($color,1)}:not(.ghost):not(.invisible) & {
                     text-shadow: -1px -1px 0 nth($color, 2), 1px -1px 0 nth($color, 2), -1px 1px 0 nth($color, 2),
                         1px 1px 0 nth($color, 2);
                 }
@@ -801,19 +875,19 @@ i {
         --fa-secondary-opacity: 1;
     }
     &.xs {
-        font-size: 10px;
+        font-size: 10px !important;
     }
     &.sm {
-        font-size: 12px;
+        font-size: 12px !important;
     }
     &.md {
-        font-size: 18px;
+        font-size: 18px !important;
     }
     &.lg {
-        font-size: 40px;
+        font-size: 40px !important;
     }
     &.xl {
-        font-size: 64px;
+        font-size: 64px !important;
     }
     &.medium {
         font-size: 18px;
@@ -830,7 +904,7 @@ i {
 // OVERLAY
 .overlay {
     display: none;
-    z-index: 119;
+    z-index: 10;
     position: fixed;
     left: 0;
     top: 0;
@@ -1083,6 +1157,16 @@ i {
         min-width: 0;
         .tooltip-inner {
             border: none;
+        }
+    }
+    &.allow-overflow {
+        .tooltip-inner {
+            overflow: visible;
+        }
+    }
+    &.pad-xs {
+        .popover-inner {
+            padding: 8px;
         }
     }
     &.invisible {
@@ -1681,7 +1765,8 @@ input::placeholder {
 // FLEX-LIST
 .flex-list {
     display: flex;
-    &.flex-1 {
+    &.flex-1,
+    > .flex-1 {
         flex: 1;
     }
     &.full-w,
@@ -1692,15 +1777,20 @@ input::placeholder {
     &.full-height {
         height: 100%;
     }
-    &.fill {
+    &.fill,
+    > .fill {
         flex-grow: 1;
+    }
+    &.no-shrink,
+    > .no-shrink {
+        flex-shrink: 0;
     }
     &.equal-width {
         > * {
             flex-basis: 100%;
-            &:not(:last-child) {
-                margin-right: 0;
-            }
+            // &:not(:last-child) {
+            //     margin-right: 0;
+            // }
         }
         &.justify {
             > * {
@@ -1723,21 +1813,34 @@ input::placeholder {
             }
         }
     }
-    &.flex-end-h {
+    &.flex-end-h,
+    > :not(.flex-list).flex-end-h {
         justify-content: flex-end;
     }
-    &.flex-end-v {
+    &.flex-end-v,
+    > :not(.flex-list).flex-end-v {
         align-items: flex-end;
     }
+    &.flex-start-h,
+    > :not(.flex-list).flex-start-h {
+        justify-content: flex-start;
+    }
+    &.flex-start-v,
+    > :not(.flex-list).flex-start-v {
+        align-items: flex-start;
+    }
     &:not(.flex-v) {
-        &.center-h {
+        &.center-h,
+        > :not(.flex-list).center-h {
             justify-content: center;
         }
         &.center,
-        &.center-v {
+        &.center-v,
+        > :not(.flex-list).center-v {
             align-items: center;
         }
-        &.justify {
+        &.justify,
+        > :not(.flex-list).justify {
             justify-content: space-between;
         }
     }
@@ -1793,13 +1896,16 @@ input::placeholder {
     }
     &.flex-v {
         flex-direction: column;
-        &.center-h {
+        &.center-h,
+        > :not(.flex-list).center-h {
             align-items: center;
         }
-        &.center-v {
+        &.center-v,
+        > :not(.flex-list).center-v {
             justify-content: center;
         }
-        &.justify {
+        &.justify,
+        > :not(.flex-list).justify {
             justify-content: space-between;
         }
         > *:not(:first-child) {
@@ -1807,6 +1913,22 @@ input::placeholder {
         }
         > *:not(:last-child) {
             margin-right: 0;
+        }
+        &.flex-end-h,
+        > :not(.flex-list).flex-end-h {
+            align-items: flex-end;
+        }
+        &.flex-end-v,
+        > :not(.flex-list).flex-end-v {
+            justify-content: flex-end;
+        }
+        &.flex-start-h,
+        > :not(.flex-list).flex-start-h {
+            align-items: flex-start;
+        }
+        &.flex-start-v,
+        > :not(.flex-list).flex-start-v {
+            justify-content: flex-start;
         }
         &.min,
         &.space-min {
@@ -1839,6 +1961,20 @@ input::placeholder {
             }
         }
     }
+    > * {
+        &.auto-left {
+            margin-left: auto;
+        }
+        &.auto-right {
+            margin-right: auto;
+        }
+        &.auto-top {
+            margin-top: auto;
+        }
+        &.auto-bottom {
+            margin-bottom: auto;
+        }
+    }
 }
 
 // COLORS
@@ -1860,23 +1996,43 @@ input::placeholder {
 @each $theme in $bg-themes {
     .bg-theme-#{nth($theme,1)} {
         background: nth($theme, 2);
-        &.interactable:not(.disabled) {
+        &.interactable {
             transition: background 0.2s ease-in;
             cursor: pointer;
-            &:hover {
+            &:hover,
+            &.drag-active {
                 background: nth($theme, 3);
+            }
+            &.theme-border {
+                &:hover,
+                &.drag-active {
+                    border-color: nth($theme, 6);
+                }
+                &:active {
+                    border-color: nth($theme, 7);
+                }
             }
         }
         &.disabled {
             background: transparent;
+            transition: none;
+            cursor: default;
         }
-        &.active {
+        &.active,
+        &.interactable:active {
             background: nth($theme, 4);
         }
         &.bg-theme-hover {
             &:hover {
                 background: nth($theme, 3);
             }
+        }
+        &.theme-border {
+            border: solid 1px nth($theme, 5);
+        }
+        .color-ft-soft,
+        .ft-color-soft {
+            color: nth($theme, 8);
         }
     }
 }
@@ -2089,37 +2245,6 @@ body {
     }
 }
 
-.theme-dark {
-    background: $dark;
-    color: white;
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    button,
-    a,
-    th,
-    strong {
-        color: white;
-    }
-}
-.theme-light {
-    background: white;
-    color: $fontBody;
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    button,
-    a,
-    th,
-    strong {
-        color: $font;
-    }
-}
-
 .bg-blur {
     position: relative;
     overflow: hidden;
@@ -2141,13 +2266,3 @@ body {
         z-index: -1;
     }
 }
-
-// .card {
-//     background: white;
-//     &.theme-dark,
-//     .theme-dark & {
-//         background: $dark;
-//     }
-//     border-radius: 4px;
-//     padding: 8px;
-// }

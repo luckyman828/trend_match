@@ -226,6 +226,19 @@ export default {
         getInitDone: state => state.initDone,
         getAuthenticatedInitDone: state => state.authenticatedInitDone,
         uids: state => state.uids,
+        getLocalStorageEnabled: state => {
+            function lsTest() {
+                var test = 'test'
+                try {
+                    localStorage.setItem(test, test)
+                    localStorage.removeItem(test)
+                    return true
+                } catch (e) {
+                    return false
+                }
+            }
+            return lsTest()
+        },
         currentTeamId: state => {
             return state.currentTeamId
         },

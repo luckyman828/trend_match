@@ -1,7 +1,7 @@
 <template>
     <div
-        class="drop-area"
-        :class="{ 'drag-active': dragActive }"
+        class="drop-area interactable"
+        :class="[{ 'drag-active': dragActive }, theme && `theme-${theme} bg-theme-${theme} theme-border`]"
         @click.self="activate"
         @dragenter="dragEnter"
         @dragleave="dragLeave"
@@ -24,7 +24,7 @@
 <script>
 export default {
     name: 'droparea',
-    props: ['multiple', 'accept'],
+    props: ['multiple', 'accept', 'theme'],
     data: function() {
         return {
             dragActive: false,
@@ -51,7 +51,8 @@ export default {
         },
         onInput(e) {
             // Emit the new files
-            this.$emit('input', e.target.files)
+            const files = e.target.files
+            this.$emit('input', this.multiple ? files : files[0])
             // Reset the file input, to allow adding the same file multiple times
             e.target.value = ''
         },
@@ -69,7 +70,6 @@ export default {
     // outline: 2px dashed $light2;
     // outline-offset: -10px;
     border: 2px dashed $divider;
-    background: white;
     padding: 20px 16px 24px;
     min-height: 200px;
     position: relative;
@@ -102,15 +102,24 @@ export default {
         justify-content: center;
         align-items: center;
         z-index: 1;
-        background: white;
+        // background: white;
         flex-direction: column;
     }
     &.drag-active {
+        .body {
+            visibility: hidden;
+        }
         input[type='file'] {
             z-index: 2;
         }
         .drag-display {
             display: flex;
+        }
+    }
+    &.theme-light {
+        border-radius: $borderRadiusLg;
+        &:not(.drag-active) {
+            border-color: transparent !important;
         }
     }
 }
