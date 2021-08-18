@@ -341,10 +341,15 @@ export default {
             const products = getters.products
             const buyView = rootGetters['productFilters/getBuyView']
             const selection = rootGetters['selections/getCurrentSelection']
+            const currentApp = rootGetters['kollektApps/getCurrentApp']
 
             if (!selection) return products
 
             let productsToReturn = [...products]
+            if (currentApp.name == 'select') {
+                const selectProducts = rootGetters['selectionProducts/getProducts']
+                productsToReturn = [...selectProducts]
+            }
 
             if (selection.type == 'Summed') {
                 // Filter out variats with no QTY

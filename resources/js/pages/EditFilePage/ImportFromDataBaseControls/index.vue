@@ -17,16 +17,6 @@
                 </button>
             </h4>
 
-            <!-- BROWSE -->
-            <BrowseProductSetSection v-if="mode == 'Browse'" />
-
-            <!-- UPLOAD FILE -->
-            <UploadFileSection
-                v-if="mode == 'Upload'"
-                @submit="fetchProducts"
-                :selectedCompany.sync="selectedCompany"
-            />
-
             <BaseDropdownInputField
                 class="form-element"
                 v-if="['Scan', 'Search'].includes(mode)"
@@ -44,13 +34,38 @@
                 </button>
             </BaseDropdownInputField>
 
-            <!-- SEASON -->
-            <BaseInputField
-                class="form-element"
-                innerLabel="Season"
-                v-model="selectedSeason"
-                placeholder="Enter Season Code"
+            <!-- BROWSE -->
+            <BrowseProductSetSection
+                v-if="mode == 'Browse'"
+                :selectedCurrencies="selectedCurrencies"
+                :labelsToSet="selectedLabels"
             />
+
+            <template v-else>
+                <!-- SEASON -->
+                <BaseInputField
+                    class="form-element"
+                    innerLabel="Season"
+                    v-model="selectedSeason"
+                    placeholder="Enter Season Code"
+                />
+            </template>
+
+            <!-- CURRENCIES  -->
+            <BaseDropdownInputField
+                class="form-element"
+                type="checkbox"
+                innerLabel="Currencies"
+                placeholder="DKK, EUR"
+                :options="availableCurrencies"
+                v-model="selectedCurrencies"
+                :resize="false"
+                :showSelectAll="true"
+            >
+                <button class="primary full-width" v-close-popover>
+                    <span>Done</span>
+                </button>
+            </BaseDropdownInputField>
 
             <!-- LABELS -->
             <BaseDropdownInputField
@@ -65,6 +80,13 @@
                     <span>Done</span>
                 </button>
             </BaseDropdownInputField>
+
+            <!-- UPLOAD FILE -->
+            <UploadFileSection
+                v-if="mode == 'Upload'"
+                @submit="fetchProducts"
+                :selectedCompany.sync="selectedCompany"
+            />
 
             <!-- SCAN BARCODES -->
             <div v-if="mode == 'Scan'" class="flex-list center-h flex-v space-md">
@@ -175,6 +197,7 @@ export default {
                 null,
             selectedLabels: [],
             scanLog: [],
+            selectedCurrencies: ['DKK', 'EUR'],
         }
     },
     computed: {
@@ -191,6 +214,9 @@ export default {
         ...mapGetters('products', {
             products: 'products',
         }),
+        availableCurrencies() {
+            return ['DKK', 'NOK', 'SEK', 'GBP', 'EUR', 'CHF', 'CAD']
+        },
     },
     watch: {
         mode(newVal, oldVal) {
@@ -220,12 +246,14 @@ export default {
                     EANs: queryValues,
                     company: this.selectedCompany,
                     season: this.selectedSeason,
+                    currencies: this.selectedCurrencies,
                 })
             } else {
                 products = await this.fetchProductsById({
                     productIds: queryValues,
                     company: this.selectedCompany,
                     season: this.selectedSeason,
+                    currencies: this.selectedCurrencies,
                 })
             }
 
