@@ -8,6 +8,7 @@
                         :variant="variant"
                         :key="variant.id"
                         ref="listItem"
+                        @size-popover-open="onPopoverOpen(variant.id, $event)"
                     />
                 </template>
             </div>
@@ -24,6 +25,7 @@ export default {
     data() {
         return {
             currentTiming: null,
+            openSizePopovers: [],
         }
     },
     computed: {
@@ -34,6 +36,9 @@ export default {
         pdpOpen() {
             return !!this.pdpItem
         },
+        sizePopoverOpen() {
+            return this.openSizePopovers.length > 0
+        },
     },
     watch: {
         timing(newVal, oldVal) {
@@ -41,9 +46,17 @@ export default {
                 this.onNewTiming(newVal)
             }
         },
+        sizePopoverOpen(isOpen) {
+            if (!isOpen && this.timing && (!this.currentTiming || this.timing.id != this.currentTiming.id)) {
+                this.onNewTiming(this.timing)
+            }
+        },
     },
     methods: {
         async onNewTiming(newTiming) {
+            // Do nothing if we are in the middle of choosing a size while adding to basket
+            if (this.sizePopoverOpen) return
+
             const animationDuration = 200
             const el = this.$refs.previewList
 
@@ -70,6 +83,17 @@ export default {
             // Hide
             for (const listItem of this.$refs.listItem) {
                 listItem.hidePopover()
+            }
+        },
+        onPopoverOpen(variantId, isOpen) {
+            console.log('on popover open', variantId, isOpen)
+            if (isOpen) {
+                this.openSizePopovers.push(variantId)
+            } else {
+                const index = this.openSizePopovers.findIndex(x => x == variantId)
+                if (index >= 0) {
+                    this.openSizePopovers.splice(index, 1)
+                }
             }
         },
     },

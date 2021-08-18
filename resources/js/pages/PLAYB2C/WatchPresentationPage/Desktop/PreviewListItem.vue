@@ -55,6 +55,7 @@
                 :resetOnSubmit="true"
                 :popoverContainer="`#action-popover-${variant.id}`"
                 :sizePopoverOpen.sync="sizePopoverOpen"
+                @update:sizePopoverOpen="$emit('size-popover-open', $event)"
             />
         </div>
     </v-popover>
