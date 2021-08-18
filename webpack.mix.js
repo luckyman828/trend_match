@@ -1,5 +1,6 @@
 const mix = require('laravel-mix')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
+const tailwindcss = require('tailwindcss')
 
 /*
  |--------------------------------------------------------------------------
@@ -21,6 +22,7 @@ mix.js('resources/js/app.js', 'public/js')
     .copy('node_modules/@fortawesome/fontawesome-pro/webfonts', 'public/webfonts')
     .options({
         processCssUrls: false,
+        postCss: [tailwindcss('./tailwind.config.js')],
     })
     .webpackConfig({
         resolve: {
