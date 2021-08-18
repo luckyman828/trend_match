@@ -172,6 +172,7 @@ export default {
                         if (anonymized) {
                             const anonymizedClone = Object.assign({}, user)
                             anonymizedClone.name = 'Anonymous'
+                            anonymizedClone.email = 'Email hidden'
                             return anonymizedClone
                         }
                         return user

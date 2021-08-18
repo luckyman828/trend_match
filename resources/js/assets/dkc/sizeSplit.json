@@ -1548,5 +1548,367 @@
                 }
             ]
         }
+    },
+    "Solid": {
+        "alphanumeric": {
+            "standard": [
+                {
+                    "name": "XS",
+                    "weight": 0
+                },
+                {
+                    "name": "S",
+                    "weight": 10
+                },
+                {
+                    "name": "M",
+                    "weight": 22
+                },
+                {
+                    "name": "L",
+                    "weight": 32
+                },
+                {
+                    "name": "XL",
+                    "weight": 23
+                },
+                {
+                    "name": "XXL",
+                    "weight": 13
+                }
+            ]
+        },
+        "numeric": {
+            "bottomsIn": [
+                {
+                    "name": "25",
+                    "weight": 0
+                },
+                {
+                    "name": "26",
+                    "weight": 0
+                },
+                {
+                    "name": "27",
+                    "weight": 0
+                },
+                {
+                    "name": "28",
+                    "weight": 3
+                },
+                {
+                    "name": "29",
+                    "weight": 7
+                },
+                {
+                    "name": "30",
+                    "weight": 12
+                },
+                {
+                    "name": "31",
+                    "weight": 16
+                },
+                {
+                    "name": "32",
+                    "weight": 17
+                },
+                {
+                    "name": "33",
+                    "weight": 16
+                },
+                {
+                    "name": "34",
+                    "weight": 16
+                },
+                {
+                    "name": "36",
+                    "weight": 10
+                },
+                {
+                    "name": "38",
+                    "weight": 3
+                }
+            ]
+        }
+    },
+    "Blend": {
+        "alphanumeric": {
+            "standard": [
+                {
+                    "name": "XS",
+                    "weight": 0
+                },
+                {
+                    "name": "S",
+                    "weight": 8
+                },
+                {
+                    "name": "M",
+                    "weight": 21
+                },
+                {
+                    "name": "L",
+                    "weight": 26
+                },
+                {
+                    "name": "XL",
+                    "weight": 24
+                },
+                {
+                    "name": "XXL",
+                    "weight": 17
+                },
+                {
+                    "name": "XXXL",
+                    "weight": 4
+                }
+            ]
+        },
+        "numeric": {
+            "bottomsIn": [
+                {
+                    "name": "25",
+                    "weight": 0
+                },
+                {
+                    "name": "26",
+                    "weight": 0
+                },
+                {
+                    "name": "27",
+                    "weight": 0
+                },
+                {
+                    "name": "28",
+                    "weight": 3
+                },
+                {
+                    "name": "29",
+                    "weight": 7
+                },
+                {
+                    "name": "30",
+                    "weight": 11
+                },
+                {
+                    "name": "31",
+                    "weight": 12
+                },
+                {
+                    "name": "32",
+                    "weight": 14
+                },
+                {
+                    "name": "33",
+                    "weight": 14
+                },
+                {
+                    "name": "34",
+                    "weight": 14
+                },
+                {
+                    "name": "36",
+                    "weight": 12
+                },
+                {
+                    "name": "38",
+                    "weight": 10
+                },
+                {
+                    "name": "40",
+                    "weight": 3
+                }
+            ],
+            "footwear": [
+                {
+                    "name": "36",
+                    "weight": 0
+                },
+                {
+                    "name": "37",
+                    "weight": 0
+                },
+                {
+                    "name": "38",
+                    "weight": 0
+                },
+                {
+                    "name": "39",
+                    "weight": 0
+                },
+                {
+                    "name": "40",
+                    "weight": 6
+                },
+                {
+                    "name": "41",
+                    "weight": 11
+                },
+                {
+                    "name": "42",
+                    "weight": 20
+                },
+                {
+                    "name": "43",
+                    "weight": 28
+                },
+                {
+                    "name": "44",
+                    "weight": 20
+                },
+                {
+                    "name": "45",
+                    "weight": 15
+                },
+                {
+                    "name": "46",
+                    "weight": 12
+                }
+            ]
+        }
+    },
+    "Casual Friday": {
+        "alphanumeric": {
+            "standard": [
+                {
+                    "name": "XS",
+                    "weight": 0
+                },
+                {
+                    "name": "S",
+                    "weight": 12
+                },
+                {
+                    "name": "M",
+                    "weight": 24
+                },
+                {
+                    "name": "L",
+                    "weight": 24
+                },
+                {
+                    "name": "XL",
+                    "weight": 24
+                },
+                {
+                    "name": "XXL",
+                    "weight": 16
+                }
+            ]
+        },
+        "numeric": {
+            "bottomsIn": [
+                {
+                    "name": "25",
+                    "weight": 0
+                },
+                {
+                    "name": "26",
+                    "weight": 0
+                },
+                {
+                    "name": "27",
+                    "weight": 0
+                },
+                {
+                    "name": "28",
+                    "weight": 3
+                },
+                {
+                    "name": "29",
+                    "weight": 7
+                },
+                {
+                    "name": "30",
+                    "weight": 11
+                },
+                {
+                    "name": "31",
+                    "weight": 14
+                },
+                {
+                    "name": "32",
+                    "weight": 16
+                },
+                {
+                    "name": "33",
+                    "weight": 14
+                },
+                {
+                    "name": "34",
+                    "weight": 14
+                },
+                {
+                    "name": "36",
+                    "weight": 12
+                },
+                {
+                    "name": "38",
+                    "weight": 9
+                }
+            ]
+        }
+    },
+    "The Jogg Concept": {
+        "alphanumeric": {
+            "standard": [
+                {
+                    "name": "XS",
+                    "weight": 8
+                },
+                {
+                    "name": "S",
+                    "weight": 10
+                },
+                {
+                    "name": "M",
+                    "weight": 27
+                },
+                {
+                    "name": "L",
+                    "weight": 27
+                },
+                {
+                    "name": "XL",
+                    "weight": 20
+                },
+                {
+                    "name": "XXL",
+                    "weight": 8
+                }
+            ]
+        },
+        "numeric": {
+            "standard": [
+                {
+                    "name": "34",
+                    "weight": 4
+                },
+                {
+                    "name": "36",
+                    "weight": 12
+                },
+                {
+                    "name": "38",
+                    "weight": 23
+                },
+                {
+                    "name": "40",
+                    "weight": 23
+                },
+                {
+                    "name": "42",
+                    "weight": 21
+                },
+                {
+                    "name": "44",
+                    "weight": 12
+                },
+                {
+                    "name": "46",
+                    "weight": 5
+                }
+            ]
+        }
     }
 }
