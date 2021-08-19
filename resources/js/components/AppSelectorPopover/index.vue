@@ -2,7 +2,7 @@
     <div class="app-selector app-list flex-list flex-v" slot="popover">
         <AppListItem v-for="(app, index) in availableApps" :key="index" :app="app" @upgrade="appToBuy = app" />
         <div class="list-item">
-            <router-link class="button invisible primary full-width sm ghost-hover" :to="{ name: 'selectApp' }">
+            <router-link class="button no-bg primary full-width sm ghost-hover" :to="{ name: 'selectApp' }">
                 <span>Go to Home</span>
             </router-link>
         </div>

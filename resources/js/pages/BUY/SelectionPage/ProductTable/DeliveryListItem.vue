@@ -3,7 +3,7 @@
         trigger="manual"
         :open="editActive || editSplit"
         placement="top-end"
-        popoverClass="min invisible"
+        popoverClass="min no-bg"
         :autoHide="false"
     >
         <div

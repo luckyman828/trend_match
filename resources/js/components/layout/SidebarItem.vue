@@ -8,7 +8,7 @@
             v-tooltip.right="displayTooltips && label"
         >
             <i v-if="iconClass" class="icon" :class="iconClass"></i>
-            <div class="pill xxs" :class="isActive ? 'dark pill' : 'invisible'" v-if="label">
+            <div class="pill xxs" :class="isActive ? 'dark pill' : 'no-bg'" v-if="label">
                 <span class="label">{{ label }}</span>
             </div>
         </router-link>

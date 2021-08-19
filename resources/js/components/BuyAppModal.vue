@@ -19,9 +19,7 @@
                     Kollekt <span style="text-transform: uppercase;">{{ app.name }}</span>
                 </div>
                 <a href="tel:+4523381938" class="pill secondary"><span>+45 23 38 19 38</span></a>
-                <a href="mailto:sales@kollekt.dk" class="pill white invisible ghost-hover"
-                    ><span>sales@kollekt.dk</span></a
-                >
+                <a href="mailto:sales@kollekt.dk" class="pill white no-bg ghost-hover"><span>sales@kollekt.dk</span></a>
             </div>
         </div>
     </BaseModal>

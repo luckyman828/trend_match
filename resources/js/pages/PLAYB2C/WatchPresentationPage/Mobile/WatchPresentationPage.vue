@@ -73,7 +73,7 @@
 
                     <div class="bottom flex-list equal-width justify center-v">
                         <div class="left flex-list">
-                            <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+                            <button v-if="!isLive" class="no-bg white circle ghost-hover" @click="togglePlaying">
                                 <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                             </button>
                             <VolumeControl :disableSlider="true" />

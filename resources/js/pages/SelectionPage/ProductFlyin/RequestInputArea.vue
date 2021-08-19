@@ -54,7 +54,7 @@
                     ><small class="request-success">Request saved <i class="fas fa-clipboard-check green"></i></small
                 ></BaseTempAlert>
                 <template>
-                    <button type="button" class="invisible ghost-hover" @click="onCancel">
+                    <button type="button" class="no-bg ghost-hover" @click="onCancel">
                         <span>Cancel</span>
                     </button>
                     <button type="button" class="primary" :class="{ disabled: submitDisabled }" @click="onSubmit">

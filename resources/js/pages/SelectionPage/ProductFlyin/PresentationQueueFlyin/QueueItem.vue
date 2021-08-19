@@ -22,13 +22,13 @@
                     <div class="right">
                         <div class="top">
                             <button
-                                class="invisible drag-button ghost-hover true-square"
+                                class="no-bg drag-button ghost-hover true-square"
                                 v-tooltip="{ content: 'Drag to reposition product in queue', delay: { show: 300 } }"
                             >
                                 <i class="fas fa-grip-vertical"></i>
                             </button>
                             <button
-                                class="invisible ghost-hover true-square"
+                                class="no-bg ghost-hover true-square"
                                 v-if="!isCurrent"
                                 v-tooltip="{ content: 'Broadcast this product', delay: { show: 300 } }"
                                 @click.stop="onBroadcastProduct(product)"
@@ -37,7 +37,7 @@
                             </button>
                         </div>
                         <BaseButton
-                            buttonClass="invisible ghost-hover true-square"
+                            buttonClass="no-bg ghost-hover true-square"
                             :key="product.id"
                             :disabled="isCurrent"
                             v-tooltip="isCurrent && 'You cannot remove the currently broadcast product'"

@@ -62,7 +62,7 @@
             :readOnly="readOnly"
         />
 
-        <BaseButton v-if="!readOnly" buttonClass="invisible ghost-hover dark" @click="$emit('remove')"
+        <BaseButton v-if="!readOnly" buttonClass="no-bg ghost-hover dark" @click="$emit('remove')"
             ><i class="far fa-trash"></i
         ></BaseButton>
     </div>

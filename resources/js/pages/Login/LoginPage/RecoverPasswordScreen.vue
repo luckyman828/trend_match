@@ -19,7 +19,7 @@
             v-model="email"
         />
 
-        <router-link class="button invisible" :to="{ name: 'login' }">
+        <router-link class="button no-bg" :to="{ name: 'login' }">
             <span>Got your login already</span>
             <i class="far fa-question-circle"></i>
         </router-link>

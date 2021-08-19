@@ -107,7 +107,7 @@
                     <span>Open tickets only</span>
                 </BaseCheckboxInputField>
 
-                <button class="invisible primary" v-if="filtersActive" @click="resetFilters">
+                <button class="no-bg primary" v-if="filtersActive" @click="resetFilters">
                     <span>Clear filter</span>
                 </button>
             </template>

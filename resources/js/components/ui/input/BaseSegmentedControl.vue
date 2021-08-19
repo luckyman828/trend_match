@@ -9,7 +9,7 @@
             :class="[
                 { active: theCurrentOptionIndex == index },
                 sizeClass,
-                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'invisible ghost-hover',
+                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'no-bg ghost-hover',
             ]"
         >
             <slot :option="option" :isActive="theCurrentOptionIndex == index" />

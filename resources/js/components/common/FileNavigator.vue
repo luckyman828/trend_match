@@ -3,14 +3,14 @@
         <div class="location">
             <button
                 v-if="folder && folder.id != workspace.id"
-                class="invisible ghost-hover"
+                class="no-bg ghost-hover"
                 @click="setFolder(folder.parent_id)"
             >
                 <i class="fas fa-arrow-left"></i>
             </button>
             <span v-if="folder && folder.id != workspace.id">{{ folder.name }}</span>
             <span v-else>
-                <span class="square invisible"><i class="far fa-building"></i></span> {{ workspace.title }}</span
+                <span class="square no-bg"><i class="far fa-building"></i></span> {{ workspace.title }}</span
             >
         </div>
         <div class="folders-wrapper">

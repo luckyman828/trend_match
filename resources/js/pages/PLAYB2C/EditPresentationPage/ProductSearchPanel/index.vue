@@ -20,7 +20,7 @@
                 activeClass="white"
             />
             <ProductFilters v-slot="slotProps">
-                <button class="invisible pill primary ghost-hover" @click="slotProps.toggle()">
+                <button class="no-bg pill primary ghost-hover" @click="slotProps.toggle()">
                     <i class="fas fa-filter"></i>
                     <span>Filter</span>
                     <span class="pill xxs primary p-lg">{{ slotProps.activeFilterCount }}</span>

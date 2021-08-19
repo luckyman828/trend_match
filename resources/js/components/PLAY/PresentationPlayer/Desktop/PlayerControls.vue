@@ -2,12 +2,12 @@
     <div class="player-controls flex-list justify space-md">
         <div class="left flex-list">
             <!-- PLAY / PAUSE -->
-            <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+            <button v-if="!isLive" class="no-bg white circle ghost-hover" @click="togglePlaying">
                 <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
             </button>
             <span
                 v-else
-                class="circle invisible ghost-hover"
+                class="circle no-bg ghost-hover"
                 v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
             >
                 <i class="fas fa-circle red"></i>
@@ -17,7 +17,7 @@
             <VolumeControl />
 
             <div class="product-totals" @click="$emit('show-timing-list')">
-                <button class="pill invisible white ghost-hover">
+                <button class="pill no-bg white ghost-hover">
                     <i class="far fa-tshirt"></i>
                     <span> {{ currentTimingIndex + 1 }} of {{ timings.length }} styles </span>
                 </button>
@@ -35,7 +35,7 @@
 
         <div class="right flex-list">
             <v-popover trigger="click" ref="qualitySelector">
-                <button class="invisible white circle ghost-hover">
+                <button class="no-bg white circle ghost-hover">
                     <i class="far fa-cog"></i>
                 </button>
                 <BaseSelectButtons
@@ -51,7 +51,7 @@
 
             <!-- FULLSCREEN MODE -->
             <button
-                class="invisible white circle ghost-hover"
+                class="no-bg white circle ghost-hover"
                 v-tooltip="{
                     content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
                     delay: { show: 500 },

@@ -24,7 +24,7 @@
             <span v-else>{{ duration }}</span>
         </td>
         <td v-if="isSystemAdmin">
-            <button class="invisible ghost-hover true-square" @click="onDeleteEntry">
+            <button class="no-bg ghost-hover true-square" @click="onDeleteEntry">
                 <i class="far fa-trash"></i>
             </button>
         </td>

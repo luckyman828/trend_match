@@ -42,7 +42,7 @@
                     </div>
                     <BudgetCounter :selection="selection" />
                     <div class="right flex-list">
-                        <button class="invisible primary sm pill" v-if="filtersActive" @click="resetFilters">
+                        <button class="no-bg primary sm pill" v-if="filtersActive" @click="resetFilters">
                             <span>Clear filter</span>
                         </button>
                         <ProductFilters v-slot="slotProps" @clear="onClearFilters">

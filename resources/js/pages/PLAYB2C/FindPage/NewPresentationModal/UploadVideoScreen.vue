@@ -57,7 +57,7 @@
                                     ></div>
                                 </div>
                             </div>
-                            <button class="more-button circle invisible ghost-hover sm auto-left" @click="showContext">
+                            <button class="more-button circle no-bg ghost-hover sm auto-left" @click="showContext">
                                 <i class="far fa-ellipsis-h"></i>
                             </button>
                         </div>

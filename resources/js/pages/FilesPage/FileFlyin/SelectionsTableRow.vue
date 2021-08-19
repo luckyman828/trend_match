@@ -25,7 +25,7 @@
                 <i class="far fa-lock" v-if="!selection.is_open" v-tooltip="'Locked: Selection is read-only'"></i>
             </td>
             <td class="expand" :class="{ active: childrenExpanded }" @click.stop="toggleExpanded" :style="indent">
-                <span class="square invisible" v-if="selection.children.length > 0">
+                <span class="square no-bg" v-if="selection.children.length > 0">
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
@@ -177,17 +177,17 @@
             <td class="action">
                 <button
                     v-if="userHasEditAccess"
-                    class="invisible ghost-hover"
+                    class="no-bg ghost-hover"
                     @click="$emit('showSettingsContext', $event, selection)"
                 >
                     <i class="fas fa-cog"></i>
                 </button>
-                <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="emitShowContext">
+                <button v-if="userHasEditAccess" class="no-bg ghost-hover" @click="emitShowContext">
                     <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <BaseButton
                     v-else-if="selection.your_role != null"
-                    buttonClass="invisible ghost-hover primary sm"
+                    buttonClass="no-bg ghost-hover primary sm"
                     @click="onGoToSelection"
                 >
                     <span v-if="!selection.is_presenting">Go to Selection</span>

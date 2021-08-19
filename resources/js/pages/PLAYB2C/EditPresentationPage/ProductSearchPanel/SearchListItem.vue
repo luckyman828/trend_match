@@ -72,7 +72,7 @@
                 <!-- Not editing look -->
                 <template v-if="!currentLook">
                     <BaseButton
-                        buttonClass="circle invisible"
+                        buttonClass="circle no-bg"
                         targetAreaPadding="4px"
                         @click="$emit('create-look', variant)"
                         tabindex="-1"
@@ -81,7 +81,7 @@
                         <i class="far fa-layer-group yellow"></i>
                     </BaseButton>
                     <BaseButton
-                        buttonClass="invisible circle"
+                        buttonClass="no-bg circle"
                         targetAreaPadding="4px"
                         @click="onAddTiming"
                         tabindex="-1"

@@ -4205,7 +4205,7 @@
                                                           _c(
                                                               'button',
                                                               {
-                                                                  staticClass: 'invisible ghost-hover',
+                                                                  staticClass: 'no-bg ghost-hover',
                                                                   on: { click: _vm.onAddVariant },
                                                               },
                                                               [
@@ -5158,7 +5158,7 @@
                                                                                       'button',
                                                                                       {
                                                                                           staticClass:
-                                                                                              'invisible ghost-hover',
+                                                                                              'no-bg ghost-hover',
                                                                                           on: {
                                                                                               click: function($event) {
                                                                                                   return _vm.onRemoveDelivery(
@@ -5479,7 +5479,7 @@
                                                                                       'button',
                                                                                       {
                                                                                           staticClass:
-                                                                                              'invisible ghost-hover',
+                                                                                              'no-bg ghost-hover',
                                                                                           on: {
                                                                                               click: function($event) {
                                                                                                   return _vm.removeCurrency(
@@ -5625,7 +5625,7 @@
                                                                                       'button',
                                                                                       {
                                                                                           staticClass:
-                                                                                              'invisible ghost-hover',
+                                                                                              'no-bg ghost-hover',
                                                                                           on: {
                                                                                               click: function($event) {
                                                                                                   return _vm.removeAssortment(
@@ -5749,7 +5749,7 @@
                                                                                           'button',
                                                                                           {
                                                                                               staticClass:
-                                                                                                  'invisible ghost-hover',
+                                                                                                  'no-bg ghost-hover',
                                                                                               on: {
                                                                                                   click: function(
                                                                                                       $event
@@ -5887,7 +5887,7 @@
                                                                                                 'button',
                                                                                                 {
                                                                                                     staticClass:
-                                                                                                        'invisible ghost-hover',
+                                                                                                        'no-bg ghost-hover',
                                                                                                     on: {
                                                                                                         click: function(
                                                                                                             $event
@@ -5996,7 +5996,7 @@
                                                                                       'button',
                                                                                       {
                                                                                           staticClass:
-                                                                                              'invisible ghost-hover',
+                                                                                              'no-bg ghost-hover',
                                                                                           on: {
                                                                                               click: function($event) {
                                                                                                   return _vm.removeEAN(
@@ -6764,7 +6764,7 @@
                                                     ? _c(
                                                           'button',
                                                           {
-                                                              staticClass: 'invisible primary',
+                                                              staticClass: 'no-bg primary',
                                                               on: { click: _vm.onClearFilters },
                                                           },
                                                           [_c('span', [_vm._v('Clear filter')])]
@@ -7316,7 +7316,7 @@
                                 ? _c(
                                       'button',
                                       {
-                                          staticClass: 'invisible ghost-hover primary',
+                                          staticClass: 'no-bg ghost-hover primary',
                                           on: { click: _vm.onViewSingle },
                                       },
                                       [_c('span', [_vm._v('View / Edit')])]

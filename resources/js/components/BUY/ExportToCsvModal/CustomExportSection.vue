@@ -60,7 +60,7 @@
                             class="header-dropdown"
                         />
                         <BaseButton
-                            buttonClass="invisible ghost-hover"
+                            buttonClass="no-bg ghost-hover"
                             v-tooltip="'Edit column header displayed in CSV'"
                             @click="editIndex = index"
                             :disabled="!header.key"
@@ -68,7 +68,7 @@
                         >
                             <i class="far fa-pen"></i>
                         </BaseButton>
-                        <button class="invisible ghost-hover" @click="onRemoveHeader(index)">
+                        <button class="no-bg ghost-hover" @click="onRemoveHeader(index)">
                             <i class="far fa-trash"></i>
                         </button>
                     </div>

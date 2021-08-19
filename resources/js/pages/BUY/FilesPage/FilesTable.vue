@@ -17,7 +17,7 @@
             :contextItem.sync="contextMenuItem"
             :contextMouseEvent.sync="contextMouseEvent"
             :useVirtualScroller="false"
-            contextButtonClass="invisible ghost-hover sm circle"
+            contextButtonClass="no-bg ghost-hover sm circle"
             @show-contextmenu="showContextMenu"
         >
             <template v-slot:header>
@@ -51,7 +51,7 @@
                     <BaseButton
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new folders'"
-                        buttonClass="primary invisible"
+                        buttonClass="primary no-bg"
                         @click="onNewFile('Folder')"
                     >
                         <i class="far fa-folder-plus"></i><span>Add folder</span>
@@ -59,7 +59,7 @@
                     <BaseButton
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
-                        buttonClass="primary invisible"
+                        buttonClass="primary no-bg"
                         @click="onNewFile('File')"
                     >
                         <i class="far fa-file-plus"></i><span>Add file</span>
@@ -80,7 +80,7 @@
                     <div style="margin-bottom: 12px">
                         <button
                             v-if="destinationFolder.id != currentWorkspace.id"
-                            class="invisible ghost-hover true-square"
+                            class="no-bg ghost-hover true-square"
                             @click="setDestinationFolder(destinationFolder.parent_id)"
                         >
                             <i class="fas fa-arrow-left"></i>
@@ -116,7 +116,7 @@
                         <p v-if="destinationFolderContent.filter(x => x.type == 'Folder').length <= 0">No folders..</p>
                     </div>
                     <div class="controls" style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                        <button class="invisible dark ghost-hover" @click="showMoveModal = false">
+                        <button class="no-bg dark ghost-hover" @click="showMoveModal = false">
                             <span>Cancel</span>
                         </button>
                         <button

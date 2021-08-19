@@ -71,7 +71,7 @@
         </div>
 
         <div class="actions flex-list center-v full-h">
-            <div class="quantity pill invisible sm">
+            <div class="quantity pill no-bg sm">
                 <span>{{ product.quantity }}</span>
                 <i class="far fa-box"></i>
             </div>

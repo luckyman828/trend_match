@@ -59,7 +59,7 @@
                     >
                         <span>Apply</span>
                     </BaseButton>
-                    <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>
+                    <button class="no-bg ghost-hover" v-close-popover><span>Cancel</span></button>
                 </div>
             </template>
         </v-popover>

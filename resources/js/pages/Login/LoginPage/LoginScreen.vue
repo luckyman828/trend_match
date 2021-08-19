@@ -33,7 +33,7 @@
             </button>
         </LoginInputField>
 
-        <router-link class="button invisible" :to="{ name: 'recoverPassword' }">
+        <router-link class="button no-bg" :to="{ name: 'recoverPassword' }">
             <span>Forgot your password</span>
             <i class="far fa-question-circle"></i>
         </router-link>

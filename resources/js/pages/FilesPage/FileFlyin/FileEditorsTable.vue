@@ -56,7 +56,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible"
+                        buttonClass="primary no-bg"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add team members'"
                         @click="onAddUser($event)"

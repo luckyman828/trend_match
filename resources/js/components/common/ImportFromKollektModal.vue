@@ -15,7 +15,7 @@
                     <div class="file" v-for="(file, index) in selectedFiles" :key="file.id">
                         <i class="fas fa-file"></i>
                         <span>{{ file.name }}</span>
-                        <button class="invisible ghost-hover" @click="onRemoveSelectedFile(index)">
+                        <button class="no-bg ghost-hover" @click="onRemoveSelectedFile(index)">
                             <i class="far fa-trash"></i>
                         </button>
                     </div>

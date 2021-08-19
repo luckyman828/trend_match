@@ -6,12 +6,12 @@
                 <div class="left">
                     <div class="button-list flex-list">
                         <!-- PLAY / PAUSE -->
-                        <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+                        <button v-if="!isLive" class="no-bg white circle ghost-hover" @click="togglePlaying">
                             <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                         </button>
                         <span
                             v-else
-                            class="circle invisible ghost-hover"
+                            class="circle no-bg ghost-hover"
                             v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
                         >
                             <i class="fas fa-circle red"></i>
@@ -22,7 +22,7 @@
 
                         <!-- FULLSCREEN MODE -->
                         <button
-                            class="invisible white circle ghost-hover"
+                            class="no-bg white circle ghost-hover"
                             v-tooltip="{
                                 content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
                                 delay: { show: 500 },

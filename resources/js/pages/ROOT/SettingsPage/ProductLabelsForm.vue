@@ -12,7 +12,7 @@
                     v-for="(label, index) in workspace.available_labels"
                     :key="index"
                 >
-                    <div class="square invisible dark delete-button">
+                    <div class="square no-bg dark delete-button">
                         <span>{{ index + 1 }}</span>
                     </div>
                     <BaseEditInputWrapper
@@ -22,7 +22,7 @@
                         @submit="onUpdateWorkspaceDetails"
                     />
                     <div class="square handle"><i class="far fa-grip-vertical"></i></div>
-                    <button class="delete-button invisible ghost-hover" @click="onDeleteLabel(index)">
+                    <button class="delete-button no-bg ghost-hover" @click="onDeleteLabel(index)">
                         <i class="far fa-trash"></i>
                     </button>
                 </div>

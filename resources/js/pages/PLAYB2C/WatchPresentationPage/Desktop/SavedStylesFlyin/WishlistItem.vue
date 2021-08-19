@@ -41,7 +41,7 @@
         <!-- ACTIONS  -->
         <div class="action-list flex-list center-v">
             <AddToWishlistButton class="circle sm" :variants="[variant]" />
-            <AddToBasketButton buttonClass="circle sm invisible" :variant="variant" textStyle="none" />
+            <AddToBasketButton buttonClass="circle sm no-bg" :variant="variant" textStyle="none" />
         </div>
         <!-- END ACTIONS  -->
     </div>

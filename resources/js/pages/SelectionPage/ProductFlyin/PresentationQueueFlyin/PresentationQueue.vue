@@ -12,7 +12,7 @@
                 >
             </div>
             <div class="right">
-                <button class="primary invisible ghost-hover sm" @click="onShowSearchFlyin">
+                <button class="primary no-bg ghost-hover sm" @click="onShowSearchFlyin">
                     <i class="far fa-plus"></i>
                     <span>Add</span>
                 </button>

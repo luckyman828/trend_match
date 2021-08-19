@@ -21,7 +21,7 @@
                         <template v-if="videoFileToUpload">
                             <div class="file-to-upload flex-list">
                                 <span>{{ videoFileToUpload.name }}</span>
-                                <button class="invisible ghost-hover true-square" @click="videoFileToUpload = null">
+                                <button class="no-bg ghost-hover true-square" @click="videoFileToUpload = null">
                                     <i class="far fa-trash"></i>
                                 </button>
                             </div>

@@ -594,7 +594,7 @@ input[type='submit'] {
                 color: nth($color, 4);
             }
 
-            &.invisible,
+            &.no-bg,
             &.ghost {
                 color: nth($color, 2);
                 background: transparent;
@@ -668,7 +668,7 @@ input[type='submit'] {
         background: $bluegrey250;
         border: solid 2px $bluegrey250;
     }
-    &.invisible {
+    &.no-bg {
         font-weight: 500;
         background: none;
         border-color: transparent;
@@ -849,7 +849,7 @@ i {
             width: auto;
             // COLORS
             @each $color in $brand-colors {
-                button.#{nth($color,1)}:not(.ghost):not(.invisible) & {
+                button.#{nth($color,1)}:not(.ghost):not(.no-bg) & {
                     text-shadow: -1px -1px 0 nth($color, 2), 1px -1px 0 nth($color, 2), -1px 1px 0 nth($color, 2),
                         1px 1px 0 nth($color, 2);
                 }
@@ -920,7 +920,7 @@ i {
     &.active {
         display: block;
     }
-    &.invisible {
+    &.no-bg {
         background: transparent;
     }
 }
@@ -1174,7 +1174,7 @@ i {
             padding: 8px;
         }
     }
-    &.invisible {
+    &.no-bg {
         .tooltip-inner {
             border: none;
             box-shadow: none;

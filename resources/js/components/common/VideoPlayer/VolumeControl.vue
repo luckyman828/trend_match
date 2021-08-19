@@ -1,6 +1,6 @@
 <template>
     <v-popover popoverClass="min volume-control-wrapper" placement="top">
-        <button class="invisible white circle  ghost-hover" @click="togglePlayerMuted()">
+        <button class="no-bg white circle  ghost-hover" @click="togglePlayerMuted()">
             <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume'"></i>
         </button>
         <div class="volume-control" slot="popover" :class="{ muted: isMuted }">

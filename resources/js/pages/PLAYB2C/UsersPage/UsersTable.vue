@@ -36,7 +36,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible ghost-hover"
+                        buttonClass="primary no-bg ghost-hover"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="
                             authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'

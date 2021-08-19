@@ -3,7 +3,7 @@
         <div class="main">
             <div class="left">
                 <div class="button-list flex-list">
-                    <span class="circle invisible ghost-hover">
+                    <span class="circle no-bg ghost-hover">
                         <i class="fas fa-circle" :class="isLive ? 'red' : ''"></i>
                     </span>
                     <VolumeControl />
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="right">
-                <button class="invisible ghost-hover white" @click="onToggleZoom">
+                <button class="no-bg ghost-hover white" @click="onToggleZoom">
                     <span>Zoom: {{ zoom }}x</span>
                 </button>
             </div>

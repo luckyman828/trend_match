@@ -60,14 +60,14 @@
                 <template v-else>
                     <button
                         v-tooltip.top="{ content: 'Delete', delay: { show: 300 } }"
-                        class="button invisible ghost-hover"
+                        class="button no-bg ghost-hover"
                         @click="onDeleteComment"
                     >
                         <i class="far fa-trash-alt"></i>
                     </button>
                     <button
                         v-tooltip.top="{ content: 'Edit', delay: { show: 300 } }"
-                        class="button invisible ghost-hover"
+                        class="button no-bg ghost-hover"
                         @click="onEditComment"
                     >
                         <i class="far fa-pen"></i>
@@ -77,7 +77,7 @@
             <!-- End Comment Controls -->
         </div>
         <div class="save-controls" v-if="editActive">
-            <button class="invisible ghost-hover" style="margin-right: 8px" @click="editActive = false">
+            <button class="no-bg ghost-hover" style="margin-right: 8px" @click="editActive = false">
                 <span>Cancel</span>
             </button>
             <BaseButton

@@ -69,7 +69,7 @@
         <!-- ACTION  -->
         <div class="action-list flex-list center-v">
             <!-- <AddToWishlistButton class="circle sm" :variants="[variant]" /> -->
-            <button class="circle sm invisible bg-hover" @click="onRemoveFromBasket">
+            <button class="circle sm no-bg bg-hover" @click="onRemoveFromBasket">
                 <i class="far fa-trash"></i>
             </button>
         </div>

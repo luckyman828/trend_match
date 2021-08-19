@@ -3,7 +3,7 @@
         trigger="manual"
         :open="editActive || showSizes"
         placement="top-end"
-        popoverClass="min invisible"
+        popoverClass="min no-bg"
         :autoHide="false"
     >
         <div
@@ -58,7 +58,7 @@
                     :selectOnFocus="true"
                 />
                 <div class="pieces-wrapper" v-if="assortment.pcs > 0 || editActive">
-                    <div class="pill xs box-pieces" :class="editActive ? 'primary' : 'invisible'">
+                    <div class="pill xs box-pieces" :class="editActive ? 'primary' : 'no-bg'">
                         <span>{{ assortment.pcs }}</span>
                         <i class="far fa-box"></i>
                     </div>

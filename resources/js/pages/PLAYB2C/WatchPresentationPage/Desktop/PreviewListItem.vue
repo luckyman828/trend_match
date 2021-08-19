@@ -43,15 +43,11 @@
             ref="actionPopover"
             :id="`action-popover-${variant.id}`"
         >
-            <AddToWishlistButton
-                :variants="[variant]"
-                class="invisible true-square float-icon-hover"
-                theme="invisible"
-            />
+            <AddToWishlistButton :variants="[variant]" class="no-bg true-square float-icon-hover" theme="no-bg" />
             <AddToBasketButton
                 :variant="variant"
                 textStyle="none"
-                buttonClass="invisible true-square float-icon-hover"
+                buttonClass="no-bg true-square float-icon-hover"
                 :resetOnSubmit="true"
                 :popoverContainer="`#action-popover-${variant.id}`"
                 :sizePopoverOpen.sync="sizePopoverOpen"

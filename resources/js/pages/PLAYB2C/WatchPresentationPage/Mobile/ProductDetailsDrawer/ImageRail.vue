@@ -17,11 +17,7 @@
             </BaseImageSizer>
         </div>
         <div class="pagination flex-list center-h">
-            <BaseButton
-                buttonClass="invisible circle dark xs"
-                v-for="(picture, index) in variant.pictures"
-                :key="index"
-            >
+            <BaseButton buttonClass="no-bg circle dark xs" v-for="(picture, index) in variant.pictures" :key="index">
                 <i class="fa-circle" :class="pictureIndex == index ? 'fas' : 'far'"></i>
             </BaseButton>
         </div>

@@ -44,7 +44,7 @@
                 </button>
             </LoginInputField>
 
-            <router-link class="button invisible" :to="{ name: 'recoverPassword' }">
+            <router-link class="button no-bg" :to="{ name: 'recoverPassword' }">
                 <span>Forgot your password</span>
                 <i class="far fa-question-circle"></i>
             </router-link>
@@ -75,8 +75,8 @@
             ref="recaptcha"
             class="form-element"
             sitekey="6Lc-PEgaAAAAAFhgxCaYbmLFaX_vwpAX6yGlt9Hh"
-            type="invisible"
-            size="invisible"
+            type="no-bg"
+            size="no-bg"
             badge="bottomleft"
             :loadRecaptchaScript="true"
             @verify="onCaptchaVerified"

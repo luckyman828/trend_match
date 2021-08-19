@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="action-list flex-list" @click="signOut">
-                    <button class="invisible ghost-hover pill">
+                    <button class="no-bg ghost-hover pill">
                         <i class="far fa-sign-out"></i>
                         <span>Sign out</span>
                     </button>

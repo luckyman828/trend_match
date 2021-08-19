@@ -543,7 +543,7 @@
                     >
                         <span>Save</span>
                     </button>
-                    <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
+                    <button class="no-bg ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                 </div>
                 <!-- </div> -->
             </div>
@@ -634,11 +634,7 @@
                             >
                                 <span>Clone</span>
                             </button>
-                            <button
-                                class="invisible ghost-hover"
-                                style="margin-left: 8px;"
-                                @click="innerSlotProps.hide()"
-                            >
+                            <button class="no-bg ghost-hover" style="margin-left: 8px;" @click="innerSlotProps.hide()">
                                 <span>Cancel</span>
                             </button>
                         </div>

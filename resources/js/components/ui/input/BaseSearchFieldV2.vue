@@ -20,7 +20,7 @@
         />
         <div class="true-square dark xs hotkey ghost" v-if="hotkeyEnabled">S</div>
         <button
-            class="clear invisible circle sm"
+            class="clear no-bg circle sm"
             @click.stop="
                 clear()
                 setFocus()

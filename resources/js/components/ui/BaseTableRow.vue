@@ -21,7 +21,7 @@
         <slot />
         <td class="context-button" v-if="showContextButton">
             <button
-                :class="contextButtonClass ? contextButtonClass : 'invisible ghost-hover'"
+                :class="contextButtonClass ? contextButtonClass : 'no-bg ghost-hover'"
                 @click.stop="$emit('show-contextmenu', $event)"
             >
                 <i class="far fa-ellipsis-h medium"></i>

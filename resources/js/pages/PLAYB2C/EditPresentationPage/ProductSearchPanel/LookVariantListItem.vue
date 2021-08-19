@@ -20,7 +20,7 @@
                     <button class="circle sm remove-variant" @click="onRemoveVariant">
                         <i class="fas fa-trash"></i>
                     </button>
-                    <button class="circle invisible ghost-hover sm drag-handle" v-if="look.variantMaps.length > 1">
+                    <button class="circle no-bg ghost-hover sm drag-handle" v-if="look.variantMaps.length > 1">
                         <i class="fas fa-grip-vertical"></i>
                     </button>
                 </div>

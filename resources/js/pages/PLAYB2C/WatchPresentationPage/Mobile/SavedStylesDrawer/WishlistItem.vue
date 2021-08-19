@@ -39,7 +39,7 @@
                 </div>
                 <button
                     class="primary pill ghost-hover"
-                    :class="variantAddedToBasket ? '' : 'invisible'"
+                    :class="variantAddedToBasket ? '' : 'no-bg'"
                     @click="$emit('add-to-basket', variant)"
                 >
                     <i class="far fa-shopping-bag">

@@ -56,7 +56,7 @@
                             {{ look.yourPrice.recommended_retail_price }} {{ look.yourPrice.currency }}
                         </div>
                     </div>
-                    <div class="pill invisible xs dark">
+                    <div class="pill no-bg xs dark">
                         <i class="fas fa-tshirt"></i>
                         <span>{{ look.variantMaps.length }}</span>
                     </div>
@@ -86,7 +86,7 @@
                 </BaseButton>
 
                 <BaseButton
-                    buttonClass="invisible circle ghost-hover"
+                    buttonClass="no-bg circle ghost-hover"
                     targetAreaPadding="4px"
                     @click="onAddTiming"
                     :disabled="look.variants.length <= 0"

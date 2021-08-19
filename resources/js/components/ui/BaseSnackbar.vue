@@ -13,7 +13,7 @@
             </div>
             <div class="callback" v-if="snackbar.callback">
                 <BaseButton
-                    buttonClass="invisible primary ghost-hover"
+                    buttonClass="no-bg primary ghost-hover"
                     @click.stop="
                         snackbar.callback()
                         onDeleteSnackbar()
@@ -22,7 +22,7 @@
                     <span>{{ snackbar.callbackLabel }}</span>
                 </BaseButton>
             </div>
-            <button class="invisible ghost-hover" @click.stop="onDeleteSnackbar">
+            <button class="no-bg ghost-hover" @click.stop="onDeleteSnackbar">
                 <span>Dismiss</span>
             </button>
 
