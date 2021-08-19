@@ -167,7 +167,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .player-controls-wrapper {
     position: absolute;
     bottom: 0;

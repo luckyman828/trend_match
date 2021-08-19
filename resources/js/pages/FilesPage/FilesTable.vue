@@ -542,8 +542,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .sortable-drag {
     opacity: 1 !important;
     z-index: 999;

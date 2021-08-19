@@ -77,8 +77,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .size-button,
 .add-button {
     display: block;

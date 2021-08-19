@@ -83,8 +83,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .recover-password-form {
     height: 100%;
     .key-icon {

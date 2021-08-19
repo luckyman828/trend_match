@@ -75,7 +75,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .selection-list-item {
     width: 100%;
 }

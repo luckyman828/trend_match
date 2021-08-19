@@ -89,8 +89,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .presenter-queue {
     position: absolute;
     top: 74px;

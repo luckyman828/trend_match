@@ -184,7 +184,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .product-search-panel {
     padding: 8px 16px 8px;
     background: white;

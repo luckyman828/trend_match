@@ -82,8 +82,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .wishlist-item {
     background: white;
     border-radius: $borderRadiusMd;

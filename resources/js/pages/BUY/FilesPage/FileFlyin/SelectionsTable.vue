@@ -889,8 +889,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .selections-table {
     // Target child style
     ::v-deep {

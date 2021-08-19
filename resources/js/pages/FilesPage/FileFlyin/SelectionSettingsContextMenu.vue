@@ -810,7 +810,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .context-menu.context-settings {
     .item-wrapper {
         display: block;

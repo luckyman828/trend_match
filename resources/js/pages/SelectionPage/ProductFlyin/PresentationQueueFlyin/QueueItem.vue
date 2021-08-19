@@ -97,8 +97,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .queue-item {
     border: solid $divider 1px;
     border-radius: 4px;

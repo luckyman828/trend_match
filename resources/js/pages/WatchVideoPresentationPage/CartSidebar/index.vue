@@ -105,7 +105,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .cart-sidebar {
     position: absolute;
     width: 384px;

@@ -90,8 +90,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .look-variant-list-item {
     padding: 8px;
     border-radius: $borderRadiusMd;

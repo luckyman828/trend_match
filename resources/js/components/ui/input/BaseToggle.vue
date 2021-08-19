@@ -32,8 +32,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .toggle-wrapper {
     display: inline-flex;
     flex-direction: column;

@@ -181,7 +181,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .label-list {
     max-width: calc(100vw - 460px);
     overflow-x: auto;

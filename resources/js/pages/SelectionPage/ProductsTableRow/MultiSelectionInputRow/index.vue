@@ -52,8 +52,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .multi-selection-input-row {
     height: 108px;
     padding: 8px;

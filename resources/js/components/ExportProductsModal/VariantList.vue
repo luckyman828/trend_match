@@ -124,7 +124,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .variant-list {
     padding: 8px 12px;
 }

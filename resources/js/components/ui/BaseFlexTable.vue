@@ -184,7 +184,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .table-wrapper {
     padding-top: 4px;
 }

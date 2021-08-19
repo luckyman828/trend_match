@@ -1313,8 +1313,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .product-title-wrapper {
     flex-direction: column;
     justify-content: flex-start;

@@ -116,8 +116,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .product-details-flyin {
     line-height: 1.4;
     background: white;

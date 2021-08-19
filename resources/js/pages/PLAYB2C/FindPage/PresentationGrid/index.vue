@@ -156,8 +156,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .presentation-grid {
     display: flex;
     flex-wrap: wrap;

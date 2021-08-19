@@ -140,8 +140,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .action-list {
     padding: 8px;
 }

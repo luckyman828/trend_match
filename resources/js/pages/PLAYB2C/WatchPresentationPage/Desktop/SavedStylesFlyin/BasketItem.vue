@@ -126,8 +126,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .basket-item {
     background: white;
     border-radius: $borderRadiusMd;

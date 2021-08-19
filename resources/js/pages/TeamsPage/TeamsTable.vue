@@ -411,8 +411,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .teams-table {
     ::v-deep {
         td,

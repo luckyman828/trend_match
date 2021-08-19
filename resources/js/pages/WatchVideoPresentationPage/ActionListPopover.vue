@@ -19,7 +19,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .action-list {
     padding: 8px;
 }

@@ -228,7 +228,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .delivery-list-item {
     // width: 164px;
     // overflow: hidden;

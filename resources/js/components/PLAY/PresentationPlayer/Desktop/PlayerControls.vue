@@ -197,7 +197,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .player-controls {
     position: absolute;
     left: 0;

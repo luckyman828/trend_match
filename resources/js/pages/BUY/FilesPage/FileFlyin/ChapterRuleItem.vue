@@ -178,7 +178,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .rule-item {
     padding: 16px;
     border: $borderModule;

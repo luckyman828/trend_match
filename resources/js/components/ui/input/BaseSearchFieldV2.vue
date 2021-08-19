@@ -275,8 +275,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .search {
     position: relative;
     background: $themeGreyBg;

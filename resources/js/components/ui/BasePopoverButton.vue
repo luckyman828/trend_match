@@ -5,17 +5,13 @@
 <script>
 export default {
     name: 'tooltipButton',
-    props: [
-        'msg'
-    ]
+    props: ['msg'],
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
-    i:hover {
-        font-weight: 900;
-        color: $font;
-    }
+i:hover {
+    font-weight: 900;
+    color: $font;
+}
 </style>

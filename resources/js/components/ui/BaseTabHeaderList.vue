@@ -11,8 +11,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .tab-header-list {
     display: flex;
     height: 100%;

@@ -56,7 +56,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .segmented-control {
     padding: 2px;
     background: $grey;

@@ -48,8 +48,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .custom-property-list-item {
     .delete-button {
         margin-top: 26px;

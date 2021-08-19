@@ -145,7 +145,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .saved-styles-flyin {
     &::v-deep {
         .flyin {

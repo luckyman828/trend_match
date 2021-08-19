@@ -79,7 +79,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .app-list-item {
     padding: 8px;
     width: 280px;

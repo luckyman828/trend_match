@@ -83,8 +83,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .currency .button {
     min-width: 64px;
     font-weight: 400;

@@ -100,7 +100,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .log-list-item {
     width: 100%;
 }

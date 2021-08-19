@@ -45,7 +45,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .root-internal {
     scroll-behavior: smooth;
     min-height: 100vh;

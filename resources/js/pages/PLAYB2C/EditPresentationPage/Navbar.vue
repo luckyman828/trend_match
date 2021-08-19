@@ -207,8 +207,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .presentation-name {
     cursor: pointer;
     color: $themeWhiteFontSoft;

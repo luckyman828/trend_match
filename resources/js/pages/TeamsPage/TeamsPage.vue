@@ -1,9 +1,8 @@
 <template>
     <div class="teams">
-        <Breadcrumbs/>
+        <Breadcrumbs />
         <h1>Teams</h1>
-        <TeamsTable :teams="teams" :users="users" :authUser="authUser"
-        @onNewUser="setAddNewUserModalVisible(true)"/>
+        <TeamsTable :teams="teams" :users="users" :authUser="authUser" @onNewUser="setAddNewUserModalVisible(true)" />
     </div>
 </template>
 
@@ -18,8 +17,9 @@ export default {
         TeamsTable,
         Breadcrumbs,
     },
-    data: function () { return {
-    }},
+    data: function() {
+        return {}
+    },
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('auth', ['authUser']),
@@ -30,13 +30,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-    h1 {
-        margin-bottom: 16px;
-    }
-    .underline {
-        width: 100%;
-        border-bottom: solid 2px $light2;
-        margin-bottom: 20px;
-    }
+h1 {
+    margin-bottom: 16px;
+}
+.underline {
+    width: 100%;
+    border-bottom: solid 2px $light2;
+    margin-bottom: 20px;
+}
 </style>

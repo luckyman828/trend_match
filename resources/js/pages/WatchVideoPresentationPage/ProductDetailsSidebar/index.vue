@@ -44,7 +44,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .product-details-sidebar {
     pointer-events: all;
     display: inline-block;

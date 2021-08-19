@@ -387,7 +387,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .selections-table-row {
     tr {
         min-height: 56px;

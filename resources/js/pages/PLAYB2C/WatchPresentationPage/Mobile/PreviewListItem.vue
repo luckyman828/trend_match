@@ -28,8 +28,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .product-preview {
     width: 80px;
     background: white;

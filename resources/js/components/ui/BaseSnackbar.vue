@@ -148,8 +148,6 @@ var Timer = function(callback, delay, resetCallback) {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .snackbar {
     width: 400px;
     display: flex;

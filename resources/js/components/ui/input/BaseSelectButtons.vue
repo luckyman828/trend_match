@@ -399,8 +399,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .select-buttons {
     &:not(:last-child) {
         margin-bottom: 12px;

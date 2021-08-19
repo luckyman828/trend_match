@@ -28,7 +28,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .preview-list {
     margin-left: auto;
     padding: 8px;

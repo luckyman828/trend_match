@@ -108,8 +108,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .preview-list-item {
     width: 100%;
     background: white;

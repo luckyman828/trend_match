@@ -59,7 +59,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .size-list-item {
     opacity: 0.7;
     transition: width 0.1s ease-out, min-width 0.1s ease-out;

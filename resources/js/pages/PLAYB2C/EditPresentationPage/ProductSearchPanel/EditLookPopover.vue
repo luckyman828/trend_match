@@ -195,7 +195,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .edit-look-popover {
     border-radius: $borderRadiusMd;
     position: absolute;

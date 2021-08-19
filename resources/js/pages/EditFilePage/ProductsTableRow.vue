@@ -167,7 +167,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .products-table-row {
     .img-wrapper {
         // border: $borderModule;

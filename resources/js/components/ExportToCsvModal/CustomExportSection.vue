@@ -252,7 +252,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .header-item {
     padding: 8px;
     transition: 0.1s ease-out;

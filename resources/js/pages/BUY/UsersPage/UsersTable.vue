@@ -538,8 +538,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .help-text {
     margin-top: 8px;
     display: block;

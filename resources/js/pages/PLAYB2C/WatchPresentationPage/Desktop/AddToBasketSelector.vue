@@ -99,7 +99,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .add-to-basket-selector {
     padding: 8px;
     border-radius: 50px;

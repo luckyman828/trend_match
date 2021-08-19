@@ -135,8 +135,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .product-details-drawer {
     line-height: 1.4;
     .product-name {

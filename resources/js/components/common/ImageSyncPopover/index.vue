@@ -31,8 +31,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .image-sync-popover {
     padding-right: 0;
     width: 320px;

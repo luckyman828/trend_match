@@ -416,8 +416,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .products-table-wrapper {
     button {
         position: relative;

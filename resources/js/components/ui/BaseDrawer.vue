@@ -83,8 +83,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .drawer-wrapper {
     position: fixed;
     top: 0;

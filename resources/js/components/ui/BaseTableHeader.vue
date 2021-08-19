@@ -74,7 +74,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 th {
     font-size: 12px;
     color: $fontTableHeader;

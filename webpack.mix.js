@@ -23,6 +23,8 @@ mix.js('resources/js/app.js', 'public/js')
     .options({
         processCssUrls: false,
         postCss: [tailwindcss('./tailwind.config.js')],
+        // extractVueStyles: true,
+        globalVueStyles: 'resources/sass/_variables.scss', // Import scss variables in every component implicitly
     })
     .webpackConfig({
         resolve: {

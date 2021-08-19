@@ -73,8 +73,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .wishlist-item {
     padding: 6px 18px;
     border-top: $borderElSoft;

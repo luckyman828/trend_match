@@ -110,7 +110,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .current-timing-preview {
     position: absolute;
     left: 8px;

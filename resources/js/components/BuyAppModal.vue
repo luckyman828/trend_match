@@ -33,7 +33,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .buy-app-modal {
     padding-top: 24px;
     .logo-wrapper {

@@ -272,7 +272,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .request-wrapper {
     margin-bottom: 4px;
     position: relative;

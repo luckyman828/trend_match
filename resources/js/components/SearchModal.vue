@@ -30,7 +30,7 @@
                     @click="showResult(result.item.id)"
                 >
                     <td class="img">
-                        <img :src="productImg(result.item.color_variants[0])">
+                        <img :src="productImg(result.item.color_variants[0])" />
                     </td>
                     <td class="id">
                         <template v-if="result.datasource_id">
@@ -79,10 +79,8 @@ export default {
     computed: {
         ...mapGetters('entities/products', ['productsScoped', 'productsRaw']),
         products() {
-            if (this.$route.name == 'file')
-                return this.productsScoped
-            else if (this.$route.name == 'editFile')
-                return this.productsRaw
+            if (this.$route.name == 'file') return this.productsScoped
+            else if (this.$route.name == 'editFile') return this.productsRaw
         },
         resultsToShow() {
             const limit = 5
@@ -159,8 +157,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .search-modal {
     &.active {
         z-index: 10;

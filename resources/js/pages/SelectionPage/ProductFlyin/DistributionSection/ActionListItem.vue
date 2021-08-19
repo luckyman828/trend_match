@@ -48,7 +48,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .action-list-item {
     display: flex;
     align-items: center;

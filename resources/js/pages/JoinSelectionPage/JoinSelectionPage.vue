@@ -213,8 +213,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .join-form {
     height: 100%;
     .key-icon {

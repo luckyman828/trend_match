@@ -52,7 +52,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .base-input-shape {
     position: relative;
     border: solid 2px transparent;

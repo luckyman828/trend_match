@@ -117,7 +117,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .item {
     padding: 8px 16px;
     color: $dark05;

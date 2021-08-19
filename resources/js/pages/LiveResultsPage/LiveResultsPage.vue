@@ -302,7 +302,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .live-results-page {
     padding: 20px;
     padding-right: 40px;

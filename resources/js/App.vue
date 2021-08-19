@@ -324,7 +324,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .loading-wrapper,
 .error-wrapper {
     min-height: 100vh;

@@ -1,11 +1,7 @@
 <template>
     <tr class="map-keys-table-row">
         <td>
-            <BaseInputField 
-                disabled=true 
-                :value="mappedFile ? mappedFile.fileName : ''" 
-                readOnly=true
-            />
+            <BaseInputField disabled="true" :value="mappedFile ? mappedFile.fileName : ''" readOnly="true" />
         </td>
         <td>
             <i class="fas fa-equals"></i>
@@ -13,30 +9,26 @@
         <td>
             <BaseInputField
                 class="select-field-button"
-                :class="{'auto-match': mappedField.autoMatched}"
-                disabled=true 
-                :value="mappedField.fieldName" 
-                type="select" 
+                :class="{ 'auto-match': mappedField.autoMatched }"
+                disabled="true"
+                :value="mappedField.fieldName"
+                type="select"
                 @click="$emit('show-field-context', $event)"
             >
                 <i class="fas fa-caret-down"></i>
-                <i v-if="mappedField.autoMatched" 
+                <i
+                    v-if="mappedField.autoMatched"
                     class="fas fa-bolt primary automatch-icon"
                     v-tooltip="'Field was auto-matched'"
                 ></i>
             </BaseInputField>
         </td>
         <td>
-            <BaseInputField 
-                disabled=true 
-                readOnly=true
-                :errorTooltip="mappedField.error" 
-                :value="previewValue"
-            />
+            <BaseInputField disabled="true" readOnly="true" :errorTooltip="mappedField.error" :value="previewValue" />
         </td>
         <td v-if="$scopedSlots.right">
             <div class="right-slot">
-                <slot name="right"/>
+                <slot name="right" />
             </div>
         </td>
     </tr>
@@ -47,31 +39,25 @@ import workbookUtils from '../../../mixins/workbookUtils'
 
 export default {
     name: 'mapKeysTableRow',
-    mixins: [
-        workbookUtils
-    ],
-    props: [
-        'mappedFile',
-        'mappedField',
-    ],
+    mixins: [workbookUtils],
+    props: ['mappedFile', 'mappedField'],
     computed: {
         previewValue() {
             if (!this.mappedFile || !this.mappedField.fieldName) return 'Not mapped'
 
             return this.mappedFile.rows[0][this.mappedField.fieldName]
-        }
+        },
     },
     watch: {
         previewValue(newVal) {
             if (!this.mappedFile || !this.mappedField.fieldName) return
             const valid = this.validateMappedField(this.mappedField, this.mappedFile.rows, 10)
-        }
+        },
     },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .map-keys-table-row {
     .input-field {
         width: 240px;
@@ -87,5 +73,4 @@ export default {
 .right-slot {
     margin-right: -32px;
 }
-
 </style>

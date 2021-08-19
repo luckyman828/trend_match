@@ -167,8 +167,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .comment-wrapper {
     position: relative;
     max-width: calc(100% - 24px);

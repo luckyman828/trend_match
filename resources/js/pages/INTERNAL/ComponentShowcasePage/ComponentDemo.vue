@@ -82,7 +82,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .component-demo {
     margin-bottom: 28px;
     padding-bottom: 20px;

@@ -393,7 +393,6 @@ export default {
 </style>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .products-table-wrapper {
     ::v-deep {
         .base-table {

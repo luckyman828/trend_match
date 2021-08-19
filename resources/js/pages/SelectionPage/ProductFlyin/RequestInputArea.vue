@@ -259,7 +259,6 @@ export default {
 </script>
 
 <style <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .request-input-area {
     position: relative;
     .request-label {
@@ -312,7 +311,6 @@ export default {
 </style>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .available-label-list {
     padding: 8px 0;
     // background: white;

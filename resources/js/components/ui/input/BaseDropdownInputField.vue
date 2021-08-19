@@ -220,8 +220,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .dropdown-field {
     position: relative;
     .dropdown-icon {

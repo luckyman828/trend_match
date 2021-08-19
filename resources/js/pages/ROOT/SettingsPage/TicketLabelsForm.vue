@@ -64,7 +64,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .label-list-item {
     padding: 4px;
     border-radius: 4px;

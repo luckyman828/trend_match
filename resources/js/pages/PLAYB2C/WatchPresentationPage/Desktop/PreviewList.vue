@@ -103,7 +103,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .preview-list-wrapper {
     transition: transform $videoPauseTransition;
     transform-origin: top left;

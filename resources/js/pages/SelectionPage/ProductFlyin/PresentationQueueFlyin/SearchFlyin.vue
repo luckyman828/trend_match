@@ -104,8 +104,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 // ::v-deep {
 //     &.presenter-queue-search-flyin {
 //         &.visible {

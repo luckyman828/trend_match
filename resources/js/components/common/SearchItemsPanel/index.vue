@@ -66,8 +66,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .search-items-panel {
     width: 300px;
     background: white;

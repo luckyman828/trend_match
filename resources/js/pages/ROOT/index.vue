@@ -64,7 +64,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
+
 .root-home {
     background: #b08818;
     min-height: 100vh;

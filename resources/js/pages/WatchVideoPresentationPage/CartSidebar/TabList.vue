@@ -45,7 +45,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .tab-list {
     display: flex;
     width: 100%;

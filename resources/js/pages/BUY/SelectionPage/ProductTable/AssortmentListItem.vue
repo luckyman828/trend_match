@@ -200,7 +200,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .assortment-list-item {
     position: relative;
     min-height: 52px;

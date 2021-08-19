@@ -60,8 +60,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .button-card {
     cursor: pointer;
     // width: 248px;

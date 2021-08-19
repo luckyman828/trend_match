@@ -168,7 +168,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .kollekt-app-selector {
     width: 608px;
     h1 {

@@ -43,8 +43,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .loader {
     height: 100%;
     display: flex;

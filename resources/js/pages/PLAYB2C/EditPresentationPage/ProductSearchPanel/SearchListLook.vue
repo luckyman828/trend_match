@@ -163,8 +163,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .item-wrapper {
     margin-bottom: 4px;
 }

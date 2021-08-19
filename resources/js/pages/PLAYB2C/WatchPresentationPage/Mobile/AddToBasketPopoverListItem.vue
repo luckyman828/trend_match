@@ -72,8 +72,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .add-to-basket-popover-list-item {
     padding: 8px;
     border-radius: $borderRadiusMd;

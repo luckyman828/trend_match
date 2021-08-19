@@ -138,7 +138,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .upload-progress-wrapper {
     position: absolute;
     left: 0;

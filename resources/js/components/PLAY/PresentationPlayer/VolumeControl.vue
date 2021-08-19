@@ -49,8 +49,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .volume-control {
     padding: 12px 0;
     background: white;

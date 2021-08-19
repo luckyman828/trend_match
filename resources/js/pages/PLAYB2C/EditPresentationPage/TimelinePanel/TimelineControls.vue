@@ -74,7 +74,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .timeline-controls {
     background: #000000;
     background: $dark;

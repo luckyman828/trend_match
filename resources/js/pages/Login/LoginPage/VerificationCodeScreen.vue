@@ -102,8 +102,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .verification-code-form {
     height: 100%;
     .key-icon {

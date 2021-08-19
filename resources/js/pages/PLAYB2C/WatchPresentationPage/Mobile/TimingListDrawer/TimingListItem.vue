@@ -46,8 +46,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .timing-list-item {
     .card {
         width: 92px;

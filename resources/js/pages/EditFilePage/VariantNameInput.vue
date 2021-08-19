@@ -79,7 +79,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .display {
     justify-content: space-between;
     i {

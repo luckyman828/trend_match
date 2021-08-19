@@ -14,7 +14,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .preview-list-item {
     width: 44px;
     border-radius: 6px;

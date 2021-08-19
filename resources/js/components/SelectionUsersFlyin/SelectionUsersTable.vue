@@ -567,8 +567,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .user-row {
     &.self {
         .title {

@@ -369,7 +369,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .products-table-row {
     padding: 8px 16px 8px 8px;
     align-items: flex-start;
