@@ -86,7 +86,7 @@ export default {
                         },
                         {
                             name: 'Types',
-                            values: ['Ghost', 'no-bg'],
+                            values: ['ghost', 'no-bg'],
                         },
                         {
                             name: 'Pill fixed width',
