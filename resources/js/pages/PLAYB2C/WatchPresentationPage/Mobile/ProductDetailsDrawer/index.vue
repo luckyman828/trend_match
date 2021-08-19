@@ -1,6 +1,7 @@
 <template>
     <BaseDrawer position="bottom" :show="show" class="product-details-drawer" @close="$emit('close')">
         <template v-slot:header v-if="product">
+            <CurrentTimingPreview class="current-timing-preview" />
             <div class="header-inner flex-list justify">
                 <div class="flex-list flex-v sm">
                     <div class="brand">{{ product.brand }}</div>
@@ -69,10 +70,11 @@ import { mapGetters } from 'vuex'
 import ImageRail from './ImageRail'
 import VariantRail from './VariantRail'
 import AddToBasketSelector from '../AddToBasketSelector'
+import CurrentTimingPreview from './CurrentTimingPreview'
 
 export default {
     name: 'play.productDetailsDrawer',
-    components: { ImageRail, VariantRail, AddToBasketSelector },
+    components: { ImageRail, VariantRail, AddToBasketSelector, CurrentTimingPreview },
     props: ['show'],
     data: function() {
         return {
@@ -87,16 +89,21 @@ export default {
             return this.pdpItem && this.pdpItem.product
         },
     },
-    methods: {
-        setCurrentVariant(variant) {
-            this.currentVariant = variant
-        },
-    },
     watch: {
         show(isVisible) {
             if (isVisible) {
                 this.setCurrentVariant(this.pdpItem.variant ? this.pdpItem.variant : this.pdpItem.product.variants[0])
             }
+        },
+        pdpItem(newItem) {
+            if (newItem) {
+                this.setCurrentVariant(newItem.variant)
+            }
+        },
+    },
+    methods: {
+        setCurrentVariant(variant) {
+            this.currentVariant = variant
         },
     },
 }
@@ -104,7 +111,12 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-
+.current-timing-preview {
+    position: absolute;
+    left: 8px;
+    top: -8px;
+    transform: translateY(-100%);
+}
 .product-details-drawer {
     line-height: 1.4;
     .brand {
