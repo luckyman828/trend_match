@@ -86,7 +86,6 @@ export default {
             }
         },
         onPopoverOpen(variantId, isOpen) {
-            console.log('on popover open', variantId, isOpen)
             if (isOpen) {
                 this.openSizePopovers.push(variantId)
             } else {
