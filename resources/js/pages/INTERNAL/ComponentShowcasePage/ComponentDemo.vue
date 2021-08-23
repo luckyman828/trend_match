@@ -74,9 +74,18 @@ export default {
     props: ['name', 'demoProps'],
     data() {
         return {
-            darkMode: false,
             showProps: false,
         }
+    },
+    computed: {
+        darkMode: {
+            get() {
+                return this.$store.getters['persist/getDarkModeActive']
+            },
+            set(newVal) {
+                this.$store.commit('persist/SET_DARK_MODE_ACTIVE', newVal)
+            },
+        },
     },
 }
 </script>
