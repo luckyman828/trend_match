@@ -89,8 +89,6 @@ export default {
         ...mapActions('integrationDkc', ['fetchAvailableSeasonsByBrand', 'fetchProducts']),
         ...mapActions('products', ['insertProducts']),
         async onImportProducts() {
-            console.log('on import product', this.selectedCurrencies)
-
             this.fetchingProducts = true
             let quotes = []
             const msgFetcher = setInterval(async () => {

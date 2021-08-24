@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'deliveryListItemSizeInput',
     props: ['variant', 'deliveryDate', 'sizeObj', 'sizeWeights'],
@@ -41,7 +41,7 @@ export default {
                 return qtyDetail ? qtyDetail.quantity : 0
             },
             set(quantity) {
-                this.SET_QUANTITY({
+                this.updateQuantity({
                     alignment: this.variant.selectionAlignment.productAlignment,
                     variantId: this.variant.id,
                     size: this.sizeObj.size,
@@ -53,7 +53,7 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('products', ['SET_QUANTITY']),
+        ...mapActions('buyProducts', ['updateQuantity']),
     },
 }
 </script>

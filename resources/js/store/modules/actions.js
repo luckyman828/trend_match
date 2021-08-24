@@ -322,6 +322,11 @@ export default {
                 //     })
                 // }
 
+                Object.defineProperty(action, 'product', {
+                    get: function() {
+                        return rootGetters['products/getProducts'].find(product => product.id == action.product_id)
+                    },
+                })
                 Object.defineProperty(action, 'user', {
                     get: function() {
                         // Check if the user is anonymized

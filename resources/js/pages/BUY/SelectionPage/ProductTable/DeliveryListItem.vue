@@ -147,14 +147,14 @@ export default {
     },
     methods: {
         ...mapActions('actions', ['updateAlignments']),
-        ...mapMutations('products', ['SET_QUANTITY']),
+        ...mapActions('buyProducts', ['updateQuantity']),
         async onQtyInput(newQty) {
             if (!newQty || newQty < 0) newQty = 0
             const sizes = this.variant.ean_sizes
             const weights = this.sizeWeights.weights
             const sizeSplit = await getWeightedSplit(newQty, sizes, weights)
             sizeSplit.map(sizeObj => {
-                this.SET_QUANTITY({
+                this.updateQuantity({
                     alignment: this.variant.selectionAlignment.productAlignment,
                     variantId: this.variant.id,
                     size: sizeObj.name,
