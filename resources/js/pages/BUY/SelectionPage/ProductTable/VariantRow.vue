@@ -36,7 +36,7 @@
                         activeClass="white"
                         sizeClass="sm"
                         theme="light"
-                        v-model="variant.product.currentDeliveryDate"
+                        v-model="selectedDeliveryDate"
                         :options="
                             variant.product.delivery_dates.map(delivery => ({
                                 label: getPrettyDate(delivery, 'medium'),
