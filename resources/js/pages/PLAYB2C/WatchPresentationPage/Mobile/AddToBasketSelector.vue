@@ -7,8 +7,8 @@
     >
         <AddToWishlistButton v-if="!hideWishlist" class="lg circle" :variants="[item]" />
         <div class="flex-list justify equal-width flex-1">
-            <v-popover trigger="click" ref="sizePopover" class="size-button">
-                <button class="pill lg white full-width">
+            <v-popover trigger="click" ref="sizePopover" class="size-button" :disabled="item && !item.inStock">
+                <button class="pill lg white full-width" :disabled="item && !item.inStock">
                     <i class="far fa-ruler"></i>
                     <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
                     <span v-else>Choose size</span>

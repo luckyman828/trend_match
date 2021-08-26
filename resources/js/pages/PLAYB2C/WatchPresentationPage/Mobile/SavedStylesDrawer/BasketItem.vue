@@ -1,7 +1,12 @@
 <template>
     <div class="basket-item flex-list md">
         <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
         <div class="flex-list flex-v justify details">
             <!-- Top row -->
@@ -185,6 +190,14 @@ export default {
                 width: 100%;
             }
         }
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

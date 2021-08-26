@@ -25,7 +25,7 @@ export default {
 <style lang="scss" scoped>
 ::v-deep {
     &.timing-list-drawer {
-        z-index: 1;
+        z-index: 2 !important;
         .overlay {
             opacity: 0;
         }

@@ -4,6 +4,7 @@
             <BaseImageSizer class="img-wrapper" fit="cover" v-for="(picture, index) in variant.pictures" :key="index">
                 <BaseVariantImage
                     class="variant-image"
+                    :class="{ 'sold-out': !variant.inStock }"
                     :variant="variant"
                     :index="index"
                     size="lg"
@@ -14,6 +15,11 @@
                         },
                     }"
                 />
+                <div class="labels">
+                    <button class="pill red xs" v-if="!variant.inStock">
+                        <span>Sold out</span>
+                    </button>
+                </div>
             </BaseImageSizer>
         </div>
         <div class="pagination flex-list center-h">
@@ -77,5 +83,13 @@ export default {
             font-size: 12px;
         }
     }
+    .labels {
+        position: absolute;
+        bottom: 8px;
+        left: 4px;
+    }
+    // img.sold-out {
+    //     opacity: 0.5;
+    // }
 }
 </style>

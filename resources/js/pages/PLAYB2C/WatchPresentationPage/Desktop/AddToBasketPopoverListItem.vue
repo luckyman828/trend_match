@@ -1,7 +1,12 @@
 <template>
     <div class="add-to-basket-popover-list-item flex-list justify">
         <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <button class="pill red xxs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
 
         <div class="flex-list flex-v justify details fill">
@@ -28,8 +33,13 @@
 
             <!-- BOTTOM -->
             <div class="flex-list">
-                <v-popover trigger="click" ref="sizePopover" :container="sizePopoverContainer">
-                    <button class="dark ghost full-width pill sm">
+                <v-popover
+                    trigger="click"
+                    ref="sizePopover"
+                    :container="sizePopoverContainer"
+                    :disabled="!variant.inStock"
+                >
+                    <button class="dark ghost full-width pill sm" :disabled="!variant.inStock">
                         <i class="far fa-ruler"></i>
                         <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
                         <span v-else>Choose size</span>
@@ -83,6 +93,14 @@ export default {
     }
     .product-name {
         max-width: 120px;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

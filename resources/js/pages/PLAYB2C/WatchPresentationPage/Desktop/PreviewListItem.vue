@@ -14,7 +14,12 @@
             @mouseenter="showPopover = true"
         >
             <BaseImageSizer class="img-wrapper" fit="cover">
-                <BaseVariantImage :variant="variant" size="sm" />
+                <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+                <div class="labels">
+                    <button class="pill red xs" v-if="!variant.inStock">
+                        <span>Sold out</span>
+                    </button>
+                </div>
             </BaseImageSizer>
             <div class="price-wrapper">
                 <span class="price"
@@ -130,6 +135,14 @@ export default {
         top: 4px;
         right: 4px;
         position: absolute;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

@@ -1,7 +1,12 @@
 <template>
     <div class="main-image" :style="{ backgroundImage: `url(${variantImage(variant, imgIndex)})` }">
         <BaseImageSizer class="img-wrapper" fit="contain">
-            <BaseVariantImage :variant="variant" :index="imgIndex" />
+            <BaseVariantImage :variant="variant" :index="imgIndex" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
     </div>
 </template>
@@ -25,6 +30,11 @@ export default {
     .img-wrapper {
         width: 240px;
         backdrop-filter: blur(10px);
+    }
+    .labels {
+        position: absolute;
+        bottom: 8px;
+        left: 4px;
     }
 }
 </style>

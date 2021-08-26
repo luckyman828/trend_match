@@ -1,7 +1,12 @@
 <template>
     <div class="wishlist-item flex-list bg-theme-white theme-border">
         <BaseImageSizer fit="cover" class="image" @click.native="SET_PDP_ITEM({ variant, product: variant.product })">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
 
         <div class="flex-list flex-v justify details">
@@ -117,14 +122,19 @@ export default {
             bottom: 4px;
             right: 4px;
         }
-        // .color {
-        //     font-weight: ;
-        // }
     }
     .action-list {
         position: absolute;
         top: 8px;
         right: 8px;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

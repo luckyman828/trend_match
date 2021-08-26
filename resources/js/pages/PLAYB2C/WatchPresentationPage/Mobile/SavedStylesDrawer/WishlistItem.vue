@@ -1,7 +1,12 @@
 <template>
     <div class="wishlist-item flex-list md">
         <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
         <div class="flex-list flex-v justify details">
             <!-- Top row -->
@@ -40,9 +45,10 @@
                 <button
                     class="primary pill ghost-hover"
                     :class="variantAddedToBasket ? '' : 'no-bg'"
+                    :disabled="!variant.inStock"
                     @click="$emit('add-to-basket', variant)"
                 >
-                    <i class="far fa-shopping-bag">
+                    <i class="far fa-shopping-bag sold-out">
                         <i v-if="variantAddedToBasket" class="far fa-check pos-right pos-bottom"></i>
                     </i>
                     <span v-if="variantAddedToBasket">Added</span>
@@ -100,6 +106,25 @@ export default {
     .old-price {
         text-decoration: line-through;
         opacity: 0.5;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
+    }
+    i.sold-out {
+        &::after {
+            position: absolute;
+            content: '|';
+            font-weight: 900;
+            font-size: 26px;
+            left: 7px;
+            top: -7px;
+            transform: rotateZ(45deg);
+        }
     }
 }
 </style>

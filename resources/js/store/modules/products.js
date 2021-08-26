@@ -1384,6 +1384,12 @@ export default {
                     },
                 })
 
+                Object.defineProperty(product, 'inStock', {
+                    get: function() {
+                        return !!product.variants.find(variant => variant.inStock)
+                    },
+                })
+
                 // VARIANTS
                 Vue.set(product, 'variantsRaw', [...product.variants])
                 Object.defineProperty(product, 'variants', {
@@ -1480,6 +1486,12 @@ export default {
                             const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
                             const selectionInput = variant.getActiveSelectionInput
                             return (selectionInput[actionKey] = value)
+                        },
+                    })
+
+                    Object.defineProperty(variant, 'inStock', {
+                        get: function() {
+                            return !!variant.ean_sizes.find(sizeObj => sizeObj.inStock)
                         },
                     })
 

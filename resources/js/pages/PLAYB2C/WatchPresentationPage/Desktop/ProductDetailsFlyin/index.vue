@@ -36,10 +36,15 @@
                     </div>
                 </div>
 
-                <div class="form-element list-item">
+                <div class="form-element flex-list-item">
                     <label>Sizes</label>
                     <div class="size-list flex-list">
-                        <div class="true-square size" v-for="size in currentVariant.ean_sizes" :key="size.ean">
+                        <div
+                            class="true-square size"
+                            :class="{ 'sold-out': !size.inStock }"
+                            v-for="size in currentVariant.ean_sizes"
+                            :key="size.ean"
+                        >
                             {{ size.size }}
                         </div>
                     </div>
@@ -47,7 +52,7 @@
 
                 <div class="form-element flex-list md">
                     <i class="fal fa-info-circle md"></i>
-                    <div class="list-item">
+                    <div class="flex-list-item">
                         <label>Description</label>
                         <span class="value description"> {{ product.sale_description }}</span>
                     </div>
@@ -55,7 +60,7 @@
 
                 <div class="form-element flex-list md">
                     <i class="fal fa-flower md"></i>
-                    <div class="list-item">
+                    <div class="flex-list-item">
                         <label>Composition</label>
                         <span class="value"> {{ product.composition }}</span>
                     </div>
@@ -156,8 +161,21 @@ export default {
         border-color: $grey300;
         color: $fontBody;
         font-size: 900;
+        position: relative;
+        &.sold-out {
+            opacity: 0.5;
+            &::after {
+                position: absolute;
+                content: '|';
+                font-weight: 500;
+                font-size: 28px;
+                left: 14px;
+                top: 0px;
+                transform: rotateZ(45deg);
+            }
+        }
     }
-    .list-item {
+    .flex-list-item {
         min-width: 72px;
         > * {
             display: block;

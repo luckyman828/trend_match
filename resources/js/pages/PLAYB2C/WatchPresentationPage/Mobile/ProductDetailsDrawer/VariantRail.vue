@@ -12,7 +12,17 @@
                     <span>{{ variant.name }}</span>
                 </div>
                 <div class="img-wrapper">
-                    <BaseVariantImage class="variant-image" :variant="variant" size="sm" />
+                    <BaseVariantImage
+                        class="variant-image"
+                        :variant="variant"
+                        size="sm"
+                        :class="{ 'sold-out': !variant.inStock }"
+                    />
+                    <div class="labels">
+                        <button class="pill red xs" v-if="!variant.inStock">
+                            <span>Sold out</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -82,6 +92,14 @@ export default {
             width: 16px;
             display: block;
         }
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>
