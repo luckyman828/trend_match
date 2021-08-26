@@ -67,10 +67,12 @@
                     sizeClass="sm"
                     theme="light"
                     v-model="product.currentDeliveryDate"
+                    countKey="count"
                     :options="
-                        product.delivery_dates.map(delivery => ({
-                            label: getPrettyDate(delivery, 'medium'),
-                            value: delivery,
+                        product.deliveries.map(delivery => ({
+                            label: getPrettyDate(delivery.delivery_date, 'medium'),
+                            value: delivery.delivery_date,
+                            count: delivery.quantity,
                         }))
                     "
                 />

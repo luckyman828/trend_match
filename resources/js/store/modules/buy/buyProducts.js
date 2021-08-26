@@ -325,6 +325,47 @@ export default {
                 })
                 // END ASSORTMENTS
 
+                // PRODUCT DELIVERIES
+                Vue.set(
+                    product,
+                    'deliveries',
+                    product.delivery_dates.map(delivery_date => {
+                        // Instantiate a variant delivery object
+                        const deliveryObj = { delivery_date }
+                        Object.defineProperty(deliveryObj, 'quantityInputs', {
+                            get() {
+                                return product.quantityInputs.filter(input => input.delivery_date == delivery_date)
+                            },
+                        })
+                        Object.defineProperty(deliveryObj, 'quantity', {
+                            get() {
+                                return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                            },
+                        })
+                        Object.defineProperty(deliveryObj, 'sizeQuantities', {
+                            get() {
+                                return deliveryObj.quantityInputs.reduce((sizeQuantities, quantityInput) => {
+                                    quantityInput.sizes.map(size => {
+                                        const existingSize = sizeQuantities.find(x => x.size == size.size)
+                                        if (existingSize) {
+                                            existingSize.quantity += parseInt(size.quantity)
+                                        } else {
+                                            sizeQuantities.push({
+                                                size: size.size,
+                                                quantity: parseInt(size.quantity),
+                                            })
+                                        }
+                                    })
+                                    return sizeQuantities.sort((a, b) => compareSizes(a.size, b.size))
+                                }, [])
+                            },
+                        })
+
+                        return deliveryObj
+                    })
+                )
+                // END PRODUCT DELIVERIES
+
                 // VARIANTS
                 Object.defineProperty(product, 'variantsFiltered', {
                     get: function() {
