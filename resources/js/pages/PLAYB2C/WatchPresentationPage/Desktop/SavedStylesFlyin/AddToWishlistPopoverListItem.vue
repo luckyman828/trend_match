@@ -1,7 +1,12 @@
 <template>
     <div class="add-to-wishlist-popover-list-item flex-list justify">
         <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <button class="pill red xxs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
 
         <div class="flex-list justify details">
@@ -57,6 +62,14 @@ export default {
     .name-section {
         max-width: 160px;
         padding-right: 8px;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

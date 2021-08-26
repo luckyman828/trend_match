@@ -6,10 +6,17 @@
         type="radio"
         :submitOnChange="true"
         :options="variant.ean_sizes"
+        :disabledOptions="variant.ean_sizes.filter(sizeObj => sizeObj.quantity <= 0)"
         optionNameKey="size"
         v-model="selectedSize"
         @change="onChangeSize"
-    />
+    >
+        <template v-slot:after="slotProps">
+            <div class="pill red xs" v-if="slotProps.option.quantity <= 0" style="margin-left: 8px;">
+                <span>Sold out</span>
+            </div>
+        </template>
+    </BaseSelectButtons>
 </template>
 
 <script>
