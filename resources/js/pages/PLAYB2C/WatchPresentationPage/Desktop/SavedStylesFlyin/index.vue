@@ -138,9 +138,6 @@ export default {
             this.$refs.addToBasketPopover.show(mouseEvent)
         },
     },
-    created() {
-        console.log('hello')
-    },
 }
 </script>
 

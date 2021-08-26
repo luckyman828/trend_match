@@ -69,5 +69,55 @@ export default {
 
             return products
         },
+        async fetchProduct({}, product) {
+            const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}`
+            let fetchedProduct
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    console.log('fetched data for this product', product)
+                    fetchedProduct = response.data
+                })
+                .catch(err => {
+                    console.log('error fetching bonaparte product', err.message)
+                })
+            return fetchedProduct
+        },
+        async syncProducts({ dispatch }, products) {
+            for (const product of products) {
+                const newProductData = await dispatch('fetchProduct', product)
+                console.log('new product data', newProductData)
+                if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) continue
+
+                // Update prices
+                const newPrice = Object.values(newProductData.variants)[0].priceRaw
+                if (product.prices.length <= 0) {
+                    product.prices.push({
+                        recommended_retail_price: newPrice,
+                        currency: 'DKK',
+                    })
+                } else {
+                    product.prices[0].recommended_retail_price = newPrice
+                }
+
+                // Update stock
+                product.variants.map(variant => {
+                    variant.ean_sizes.map(sizeObj => {
+                        // Find the new size data
+                        let newSizeData
+                        Object.values(newProductData.variants).find(newVariantData => {
+                            newSizeData = newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
+                            return newSizeData
+                        })
+                        sizeObj.quantity = newSizeData.stockCount
+                        console.log('updated size object', sizeObj)
+                    })
+                })
+            }
+            // products.map(async product => {
+            //     const newProductData = await dispatch('fetchProduct', product)
+            //     console.log('new product data', newProductData)
+            // })
+        },
     },
 }

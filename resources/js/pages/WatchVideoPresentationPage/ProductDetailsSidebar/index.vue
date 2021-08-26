@@ -37,9 +37,6 @@ export default {
     methods: {
         ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
     },
-    created() {
-        console.log('hello')
-    },
 }
 </script>
 

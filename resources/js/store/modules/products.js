@@ -1486,6 +1486,11 @@ export default {
                     // EAN SIZES
                     variant.ean_sizes.map(x => {
                         Vue.set(x, 'quantity', 0)
+                        Object.defineProperty(x, 'inStock', {
+                            get() {
+                                return x.quantity > 0
+                            },
+                        })
                     })
                 })
             })

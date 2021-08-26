@@ -24,9 +24,6 @@ export default {
             this.$emit('hide')
         },
     },
-    created() {
-        console.log('hello')
-    },
 }
 </script>
 
