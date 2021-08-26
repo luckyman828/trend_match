@@ -19,16 +19,18 @@
                                 }`,
                             delay: { show: 500 },
                         }"
-                        v-for="(sizeObj, index) in variant.sizes"
-                        :key="index"
+                        v-for="sizeObj in currentVariantDeliverySizeQuantities"
+                        :key="sizeObj.size"
                     >
                         <div class="size-label ft-10">{{ sizeObj.size }}</div>
-                        <div class="size-label ft-12 ft-bd">{{ sizeObj.quantity }}</div>
+                        <div class="size-label ft-12 ft-bd">
+                            {{ sizeObj.quantity }}
+                        </div>
                     </div>
                 </div>
                 <div class="qty-wrapper">
                     <div class="square white qty" v-if="!hasAssortments">
-                        <span>{{ variant.quantity ? variant.quantity : 0 }}</span>
+                        <span>{{ currentVariantDelivery.quantity ? currentVariantDelivery.quantity : 0 }}</span>
                     </div>
                     <BaseInputShape
                         @click.native.stop
@@ -87,6 +89,11 @@ export default {
         hasAssortments() {
             return this.variant.assortments.length > 0
         },
+        currentVariantDelivery() {
+            return this.variant.deliveries.find(
+                delivery => delivery.delivery_date == this.variant.product.currentDeliveryDate
+            )
+        },
         sizeWeights() {
             if (this.enabledFeatures.dkc_integration) {
                 const sizes = this.variant.ean_sizes
@@ -119,12 +126,23 @@ export default {
             return { name: 'no weights found', weights: [] }
         },
         variantQuantity() {
-            return this.variant.quantity
+            return this.currentVariantDelivery.quantity
+        },
+        currentVariantDeliverySizeQuantities() {
+            return this.variant.sizes.map(size => {
+                const sizeObj = {
+                    size: size.size,
+                }
+                const currentDeliverySizeQuantity = this.currentVariantDelivery.sizeQuantities.find(
+                    sizeQty => sizeQty.size == sizeObj.size
+                )
+                sizeObj.quantity = currentDeliverySizeQuantity ? currentDeliverySizeQuantity.quantity : 0
+                return sizeObj
+            })
         },
     },
     watch: {
         variantQuantity(newVal) {
-            console.log('new quantiy')
             this.localQuantity = newVal
         },
     },
@@ -135,7 +153,6 @@ export default {
             document.activeElement.blur()
         },
         async onSubmitQty() {
-            console.log('on submit qty')
             const newQty = this.localQuantity
             // Find the weight split of the style and brand
             const sizes = this.variant.ean_sizes
@@ -183,7 +200,7 @@ export default {
         },
     },
     created() {
-        this.localQuantity = this.variant.quantity
+        this.localQuantity = this.currentVariantDelivery.quantity
     },
 }
 </script>

@@ -382,6 +382,13 @@ export default {
     },
     created() {
         this.product.variants.sort((a, b) => b.quantity - a.quantity)
+
+        // Preset the current product delivery date.
+        // Pick the delivery with the highest quantity
+        this.product.currentDeliveryDate = this.product.deliveries.reduce(
+            (top, curr) => (curr.quantity > top.quantity ? curr : top),
+            this.product.deliveries[0]
+        ).delivery_date
     },
 }
 </script>
