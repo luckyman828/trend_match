@@ -69,6 +69,83 @@ export default {
 
             return products
         },
+        async fetchProductsBySearch({ dispatch }, searchString) {
+            const apiUrl = `admins/search-bap-qa-search?from=0&take=20&q=${searchString}`
+            let searchResult
+            await axios.get(apiUrl).then(response => {
+                searchResult = response.data
+            })
+
+            const searchProducts = searchResult.products ? searchResult.products : []
+
+            // Init products from the search results
+            const products = []
+            // Transform the BAP products to Kollekt products
+            for (const productGroup of searchProducts) {
+                for (const product of productGroup) {
+                    const productId = product.id.split('-')[0]
+                    // Check if the product already exists
+                    const existingProduct = products.find(x => x.datasource_id == productId)
+
+                    // Instantiate a new product variant
+                    const newProductVariant = await dispatch(
+                        'products/instantiateNewProductVariant',
+                        {
+                            color: product.colorName,
+                            name: product.colorName,
+                            pictures: [{ name: 'image_link', url: product.image_link }],
+                            pictures: product.images.map(image => ({
+                                url: `${image.url}&w=232&h=348`,
+                                name: `type=${image.type}&perspectiveKey=${image.perspectiveKey}&viewKey="${image.viewKey}`,
+                            })),
+                            ean_sizes: !product.availableSizes
+                                ? []
+                                : Object.keys(product.availableSizes).map((sizeDetail, index) => ({
+                                      size: sizeDetail,
+                                      ref_id: null,
+                                      ean: null,
+                                      quantity: Object.values(product.availableSizes)[index] == true ? 1 : 0,
+                                  })),
+                        },
+                        {
+                            root: true,
+                        }
+                    )
+
+                    if (existingProduct) {
+                        existingProduct.variants.push(newProductVariant)
+                    } else {
+                        const newProduct = await dispatch(
+                            'products/instantiateNewProduct',
+                            {
+                                datasource_id: productId,
+                                sale_description: product.description,
+                                category: product.styleShopItemGroup,
+                                prices: [
+                                    {
+                                        currency: 'DKK',
+                                        recommended_retail_price: product.priceRaw,
+                                        wholesale_price: 0,
+                                    },
+                                ],
+                                brand: product.brand,
+                                title: product.name,
+                                variants: [newProductVariant],
+                            },
+                            {
+                                root: true,
+                            }
+                        )
+                        products.push(newProduct)
+                    }
+                }
+            }
+            // END Instantiate products
+
+            await dispatch('products/initProducts', products, { root: true })
+
+            return products
+        },
         async fetchProduct({}, product) {
             const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}`
             let fetchedProduct

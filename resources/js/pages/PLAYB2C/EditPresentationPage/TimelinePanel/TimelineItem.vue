@@ -57,7 +57,7 @@
         <div class="inner">
             <div class="img-wrapper">
                 <div class="img-sizer">
-                    <BaseVariantImage :variant="variant" size="sm" />
+                    <BaseVariantImage :variant="variant" size="sm" :key="variant.id" />
                 </div>
             </div>
             <div class="details">

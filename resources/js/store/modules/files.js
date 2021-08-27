@@ -588,7 +588,7 @@ export default {
                     reject(err)
                 })
 
-                Vue.set(file, 'productImageSyncStatus', 'done')
+                file.productImageSyncStatus.msg = 'done'
 
                 resolve()
             })

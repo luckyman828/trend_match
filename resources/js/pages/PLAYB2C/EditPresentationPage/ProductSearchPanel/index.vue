@@ -1,41 +1,49 @@
 <template>
     <div class="product-search-panel">
-        <div class="search-field">
+        <div class="search-field flex-list flex-v space-md">
             <BaseSearchFieldV2
                 :searchKey="['datasource_id', 'title', 'eans', 'name']"
                 placeholderText="Search for Style or Look"
                 :arraysToSearch="arraysToSearch"
                 v-model="filteredBySearch"
                 :hotkeyEnabled="true"
+                :throttle="1000"
+                ref="searchField"
+                @keyup.enter.native="onSearch"
             />
+            <button class="primary pill full-width" @click="onSearch">
+                <span>Fetch results from integration</span>
+            </button>
         </div>
         <div class="filters flex-list justify center-v">
             <BaseSegmentedControl
                 :options="[
-                    { label: 'All', value: 'All', count: filteredBySearch.items.length },
+                    { label: 'Search', value: 'Search', count: filteredBySearch.search.length },
+                    { label: 'Saved', value: 'Saved', count: filteredBySearch.saved.length },
                     { label: 'Looks', value: 'Looks', count: filteredBySearch.looks.length },
                 ]"
                 v-model="currentTab"
                 theme="light"
                 activeClass="white"
+                sizeClass="sm"
             />
-            <ProductFilters v-slot="slotProps">
+            <!-- <ProductFilters v-slot="slotProps">
                 <button class="no-bg pill primary ghost-hover" @click="slotProps.toggle()">
                     <i class="fas fa-filter"></i>
                     <span>Filter</span>
                     <span class="pill xxs primary p-lg">{{ slotProps.activeFilterCount }}</span>
                 </button>
-            </ProductFilters>
+            </ProductFilters> -->
         </div>
-        <BaseLoader v-if="productSyncStatus" :msg="productSyncStatus" />
+        <BaseLoader v-if="loading" msg="Loading" />
         <template v-else>
             <RecycleScroller
                 :key="currentTab"
                 v-if="currentTab != 'Looks'"
                 class="result-list item-list"
-                :items="filteredBySearch.items"
+                :items="currentTab == 'Search' ? filteredBySearch.search : filteredBySearch.saved"
                 :item-size="118"
-                key-field="id"
+                key-field="datasource_id"
                 v-slot="{ item }"
             >
                 <SearchListItem :product="item" @create-look="onStartNewLook" />
@@ -61,11 +69,11 @@
                     :contextMenuVisible="contextLook && contextLook.id == item.id"
                 />
             </RecycleScroller>
-            <div class="no-products" v-if="allProducts.length <= 0">
-                <button class="primary full-width md" @click="onFetchProducts">
-                    <i class="far fa-sync"></i>
-                    <span>Sync products</span>
-                </button>
+            <div
+                class="start-searching flex-list center-v center-h"
+                v-if="currentTab == 'Search' && searchProducts.length <= 0"
+            >
+                <span><i class="far fa-arrow-circle-up"></i> Search for styles to get started</span>
             </div>
         </template>
         <EditLookPopover v-if="currentLook" />
@@ -112,10 +120,11 @@ export default {
     components: { SearchListItem, SearchListLook, EditLookPopover, ProductFilters },
     data: function() {
         return {
-            currentTab: 'All',
-            filteredBySearch: { items: [], looks: [] },
+            currentTab: 'Search',
+            filteredBySearch: { saved: [], looks: [], search: [] },
             contextLook: null,
-            syncingProducts: false,
+            loading: false,
+            searchProducts: [],
         }
     },
     computed: {
@@ -132,20 +141,20 @@ export default {
             timings: 'getTimings',
         }),
         arraysToSearch() {
-            return { items: this.items, looks: this.looks }
+            return { search: this.searchProducts, looks: this.looks, saved: this.items }
         },
-        productSyncStatus() {
-            if (
-                !this.syncingProducts &&
-                (!this.presentation.productImageSyncStatus || this.presentation.productImageSyncStatus.msg != 'syncing')
-            )
-                return
-            if (this.presentation.productImageSyncStatus && this.presentation.productImageSyncStatus.msg == 'syncing')
-                return `Syncing images. ${this.presentation.productImageSyncStatus.chunkIndex + 1} of ${
-                    this.presentation.productImageSyncStatus.chunkCount
-                }<br>Please don't exit this page`
-            if (this.syncingProducts) return 'Syncing products'
-        },
+        // productSyncStatus() {
+        //     if (
+        //         !this.syncingProducts &&
+        //         (!this.presentation.productImageSyncStatus || this.presentation.productImageSyncStatus.msg != 'syncing')
+        //     )
+        //         return
+        //     if (this.presentation.productImageSyncStatus && this.presentation.productImageSyncStatus.msg == 'syncing')
+        //         return `Syncing images. ${this.presentation.productImageSyncStatus.chunkIndex + 1} of ${
+        //             this.presentation.productImageSyncStatus.chunkCount
+        //         }<br>Please don't exit this page`
+        //     if (this.syncingProducts) return 'Syncing products'
+        // },
     },
     methods: {
         ...mapActions('productGroups', ['instantiateBaseProductGroup', 'addVariantMap', 'deleteProductGroup']),
@@ -179,6 +188,21 @@ export default {
             await this.$store.dispatch('playPresentation/syncExternalProducts')
             this.syncingProducts = false
         },
+        async onSearch() {
+            const searchString = this.$refs.searchField && this.$refs.searchField.searchString
+            if (!searchString) return
+            // Set the current tab to display search results
+            this.currentTab = 'Search'
+            this.loading = true
+            const products = await this.$store.dispatch('bonaparte/fetchProductsBySearch', searchString)
+            this.searchProducts = products
+            this.loading = false
+        },
+    },
+    created() {
+        if (this.items.length > 0) {
+            this.currentTab = 'Saved'
+        }
     },
 }
 </script>

@@ -7,7 +7,7 @@
             @keydown.enter="onAddTiming"
         >
             <BaseImageSizer fit="cover" class="image">
-                <BaseVariantImage :variant="variant" size="sm" />
+                <BaseVariantImage :variant="variant" size="sm" :key="variant.id" />
             </BaseImageSizer>
 
             <div class="flex-list flex-v justify details">
@@ -159,12 +159,27 @@ export default {
         ...mapMutations('playPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
         ...mapActions('playPresentation', ['addTiming']),
         ...mapActions('productGroups', ['addVariantMap', 'removeVariantMap']),
-        onAddTiming() {
+        ...mapActions('products', ['insertProducts']),
+        async onAddTiming() {
+            // Check if the product exists on Kollekt
+            const existingProduct = this.$store.getters['products/getProducts'].find(
+                product => product.datasource_id == this.product.datasource_id
+            )
+
+            let product = existingProduct ? existingProduct : this.product
+
+            // Otherwise create it
+            if (!this.product.id && !existingProduct) {
+                product = await this.$store.dispatch('playPresentation/createKollektProductFromTiming', this.product)
+            }
+
+            const variant = product.variants[this.variantIndex]
+
             const newTiming = {
                 id: null,
                 start_at_ms: 0,
                 end_at_ms: this.videoDuration / 12,
-                variants: [{ product_id: this.product.id, variant_id: this.variant.id }],
+                variants: [{ product_id: product.id, variant_id: variant.id }],
             }
             this.addTiming({ newTiming })
         },
@@ -173,6 +188,21 @@ export default {
         },
         onRemoveFromLook() {
             this.removeVariantMap({ productGroup: this.currentLook, variant: this.variant })
+        },
+        async createKollektProduct() {
+            // Create product
+            const product = await this.insertProducts({
+                file: this.$store.getters['playPresentation/getPresentation'],
+                products: [this.product],
+                addToState: true,
+            })
+            // Sync images
+            this.$store.dispatch('files/syncExternalImages', {
+                file: this.$store.getters['playPresentation/getPresentation'],
+                products: [this.product],
+            })
+            // Fetch size ean for the product
+            const productData = this.$store.dispatch('bonaparte/fetchProduct', product)
         },
     },
 }

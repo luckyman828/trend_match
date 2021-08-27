@@ -44,6 +44,13 @@ export default {
         inputClasses: {
             default: 'small',
         },
+        /**
+         * Time to wait between emitting a new search result in ms
+         */
+        throttle: {
+            type: Number,
+            default: 100,
+        },
         theme: {},
         hotkeyEnabled: false,
     },
@@ -57,11 +64,11 @@ export default {
         // Watch for changes in the array to search
         arrayToSearch: function(newVal, oldVal) {
             // Emit the result when a change to the provided array occours
-            this.$emit('input', this.getResult())
+            this.$emit('input', this.getResult(), this.searchString)
         },
         arraysToSearch: function(newVal, oldVal) {
             // Emit the result when a change to the provided array occours
-            this.$emit('input', this.getResult())
+            this.$emit('input', this.getResult(), this.searchString)
         },
     },
     computed: {},
@@ -79,7 +86,7 @@ export default {
         },
         clear() {
             this.searchString = ''
-            this.$emit('input', this.getResult())
+            this.$emit('input', this.getResult(), this.searchString)
         },
         onEsc(e) {
             // If we have a search string, clear that and prevent bubbling
@@ -95,7 +102,7 @@ export default {
             clearTimeout(this.theTimeOut)
             this.theTimeOut = setTimeout(() => {
                 this.$emit('input', this.getResult(), this.searchString)
-            }, 100)
+            }, this.throttle)
         },
         onPaste(e) {
             e.preventDefault()
@@ -263,7 +270,7 @@ export default {
             document.addEventListener('keydown', this.hotkeyHandler)
         }
         if (this.arrayToSearch || this.arraysToSearch) {
-            this.$emit('input', this.getResult())
+            this.$emit('input', this.getResult(), this.searchString)
         }
     },
     destroyed() {

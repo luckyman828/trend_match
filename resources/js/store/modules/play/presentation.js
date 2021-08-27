@@ -314,6 +314,48 @@ export default {
             await dispatch('updatePresentation')
             commit('SET_TIMING_STATUS', 'success')
         },
+        async createKollektProductFromTiming({ dispatch, getters, rootGetters }, product) {
+            // TEMP BAP ONLY
+            // Fetch size ean for the product
+            const productData = await dispatch('bonaparte/fetchProduct', product, { root: true })
+            product.variants.map(variant => {
+                const variantData = Object.values(productData.variants).find(
+                    variantData => variantData.productColorName == variant.color
+                )
+                console.log('the variant data', variantData)
+                if (!variantData) return
+                variant.ean_sizes.map(sizeObj => {
+                    const sizeData = variantData.skUs.find(sku => sku.size == sizeObj.size)
+                    if (!sizeData) return
+                    sizeObj.ref_id = sizeData.ean
+                    sizeObj.ean = sizeData.ean
+                })
+            })
+            // END TEMP BAP ONLY
+
+            // Create product
+            await dispatch(
+                'products/insertProducts',
+                {
+                    file: getters.getPresentation,
+                    products: [product],
+                    addToState: true,
+                },
+                { root: true }
+            )
+
+            // Sync images
+            dispatch(
+                'files/syncExternalImages',
+                {
+                    file: getters.getPresentation,
+                    products: [product],
+                },
+                { root: true }
+            )
+
+            return product
+        },
         async updateTiming({ dispatch }, timing) {
             const newVariantMaps = []
             for (const variantMap of timing.productGroup.variantMaps) {

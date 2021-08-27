@@ -540,6 +540,7 @@ export default {
                         { root: true }
                     )
                 })
+            return products
         },
         async updateFileProducts({ commit, dispatch }, { fileId, products }) {
             const apiUrl = `/files/${fileId}/products`
@@ -1071,6 +1072,8 @@ export default {
         },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
+                if (product.isInit) return
+                Vue.set(product, 'isInit', true)
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
 
