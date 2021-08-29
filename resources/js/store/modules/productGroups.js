@@ -24,6 +24,39 @@ export default {
                 await dispatch('initProductGroups', productGroups)
                 commit('SET_PRODUCT_GROUPS', productGroups)
             })
+            productGroups = await dispatch('cleanUpProductGroups', { fileId, productGroups })
+            return productGroups
+        },
+        async cleanUpProductGroups({ dispatch, commit }, { fileId, productGroups }) {
+            let deleteCount = 0
+            for (let i = productGroups.length - 1; i >= 0; i--) {
+                const productGroup = productGroups[i]
+                for (let i = productGroup.variantMaps.length - 1; i >= 0; i--) {
+                    // Remove variantmaps with no linked variant
+                    const variantMap = productGroup.variantMaps[i]
+                    if (!variantMap.variant) {
+                        productGroup.variantMaps.splice(i, 1)
+                    }
+                }
+                if (productGroup.variantMaps.length <= 0) {
+                    deleteCount++
+                    await dispatch('deleteProductGroup', { fileId, productGroup })
+                    // productGroups.splice(i, 1)
+                } else {
+                    await dispatch('insertOrUpdateProductGroup', { fileId, productGroup })
+                }
+            }
+            if (deleteCount > 0) {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `Deleted ${deleteCount} empty product group${deleteCount > 1 ? 's' : ''}`,
+                        iconClass: 'fa-trash',
+                        type: 'danger',
+                    },
+                    { root: true }
+                )
+            }
             return productGroups
         },
         async insertOrUpdateProductGroup({ commit, dispatch }, { fileId, productGroup }) {
@@ -169,7 +202,10 @@ export default {
                 })
                 Object.defineProperty(variantMap, 'variant', {
                     get() {
-                        return variantMap.product.variants.find(variant => variant.id == variantMap.variant_id)
+                        return (
+                            variantMap.product &&
+                            variantMap.product.variants.find(variant => variant.id == variantMap.variant_id)
+                        )
                     },
                 })
             })

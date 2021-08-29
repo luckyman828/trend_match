@@ -204,6 +204,9 @@ export default {
             this.currentTab = 'Saved'
         }
     },
+    destroyed() {
+        this.$store.commit('productGroups/SET_CURRENT_GROUP', null)
+    },
 }
 </script>
 

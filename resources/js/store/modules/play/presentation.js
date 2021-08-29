@@ -436,7 +436,12 @@ export default {
                             return products.find(product => product.id == timing.variants[0].product_id)
                         }
                         if (timing.type == 'Look') {
-                            if (timing.productGroup && timing.productGroup.variantMaps.length <= 0) return
+                            if (
+                                !timing.productGroup ||
+                                (timing.productGroup &&
+                                    (timing.productGroup.variantMaps.length <= 0 || !timing.productGroup.variantMaps))
+                            )
+                                return
                             return timing.productGroup.variantMaps[0].product
                         }
                     },
