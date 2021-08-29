@@ -1412,12 +1412,10 @@ export default {
 
                 product.variants.forEach((variant, variantIndex) => {
                     Vue.set(variant, 'isInit', true)
-                    Vue.set(variant, 'product_id', product.id)
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
                     Vue.set(variant, 'index', variantIndex)
-                    Vue.set(variant, 'product_id', product.id)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
                     if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
@@ -1433,6 +1431,11 @@ export default {
                     Object.defineProperty(variant, 'product', {
                         get: function() {
                             return product
+                        },
+                    })
+                    Object.defineProperty(variant, 'product_id', {
+                        get: function() {
+                            return product.id
                         },
                     })
 

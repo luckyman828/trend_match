@@ -65,8 +65,6 @@ export default {
                 }
             })
 
-            console.log('here are the products', products)
-
             return products
         },
         async fetchProductsBySearch({ dispatch }, searchString) {

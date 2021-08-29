@@ -66,10 +66,10 @@ export default {
             })
         },
         async addVariantMap({ dispatch }, { productGroup, variant, productId, variantId }) {
-            const newVaraintMap = await dispatch('instantiateBaseVariantMap')
-            newVaraintMap.variant_id = variant ? variant.id : variantId
-            newVaraintMap.product_id = variant ? variant.product_id : productId
-            productGroup.variantMaps.push(newVaraintMap)
+            const newVariantMap = await dispatch('instantiateBaseVariantMap')
+            newVariantMap.variant_id = variant ? variant.id : variantId
+            newVariantMap.product_id = variant ? variant.product_id : productId
+            productGroup.variantMaps.push(newVariantMap)
         },
         async removeVariantMap({}, { productGroup, variant }) {
             const index = productGroup.variantMaps.findIndex(variantMap => variantMap.variant_id == variant.id)
@@ -160,6 +160,7 @@ export default {
         },
         initVariantMaps({ rootGetters }, variantMaps) {
             variantMaps.map(variantMap => {
+                variantMap.isInit = true
                 Object.defineProperty(variantMap, 'product', {
                     get() {
                         const products = rootGetters['products/products']

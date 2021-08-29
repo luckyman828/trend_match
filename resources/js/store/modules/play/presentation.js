@@ -322,7 +322,6 @@ export default {
                 const variantData = Object.values(productData.variants).find(
                     variantData => variantData.productColorName == variant.color
                 )
-                console.log('the variant data', variantData)
                 if (!variantData) return
                 variant.ean_sizes.map(sizeObj => {
                     const sizeData = variantData.skUs.find(sku => sku.size == sizeObj.size)
@@ -343,6 +342,8 @@ export default {
                 },
                 { root: true }
             )
+
+            console.log('created kollekt product', product)
 
             // Sync images
             dispatch(

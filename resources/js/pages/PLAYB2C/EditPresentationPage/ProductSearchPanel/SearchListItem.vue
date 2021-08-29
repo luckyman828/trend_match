@@ -74,7 +74,7 @@
                     <BaseButton
                         buttonClass="circle no-bg"
                         targetAreaPadding="4px"
-                        @click="$emit('create-look', variant)"
+                        @click="onCreateLook"
                         tabindex="-1"
                         v-tooltip="'Create a look'"
                     >
@@ -160,7 +160,7 @@ export default {
         ...mapActions('playPresentation', ['addTiming']),
         ...mapActions('productGroups', ['addVariantMap', 'removeVariantMap']),
         ...mapActions('products', ['insertProducts']),
-        async onAddTiming() {
+        async getSavedTimingProduct() {
             // Check if the product exists on Kollekt
             const existingProduct = this.$store.getters['products/getProducts'].find(
                 product => product.datasource_id == this.product.datasource_id
@@ -173,6 +173,10 @@ export default {
                 product = await this.$store.dispatch('playPresentation/createKollektProductFromTiming', this.product)
             }
 
+            return product
+        },
+        async onAddTiming() {
+            const product = await this.getSavedTimingProduct()
             const variant = product.variants[this.variantIndex]
 
             const newTiming = {
@@ -183,8 +187,17 @@ export default {
             }
             this.addTiming({ newTiming })
         },
-        onAddToLook() {
-            this.addVariantMap({ productGroup: this.currentLook, variant: this.variant })
+        async onAddToLook() {
+            const product = await this.getSavedTimingProduct()
+            const variant = product.variants[this.variantIndex]
+
+            this.addVariantMap({ productGroup: this.currentLook, variant })
+        },
+        async onCreateLook() {
+            const product = await this.getSavedTimingProduct()
+            const variant = product.variants[this.variantIndex]
+
+            this.$emit('create-look', variant)
         },
         onRemoveFromLook() {
             this.removeVariantMap({ productGroup: this.currentLook, variant: this.variant })
