@@ -120,6 +120,12 @@ export default {
                     if (existingProduct) {
                         existingProduct.variants.push(newProductVariant)
                     } else {
+                        // Calc prices
+                        const newPrice = product.beforePrice
+                            ? parseFloat(product.beforePrice.replaceAll(',', '.'))
+                            : product.priceRaw
+                        const newSalePrice = product.beforePrice ? product.priceRaw : 0
+
                         const newProduct = await dispatch(
                             'products/instantiateNewProduct',
                             {
@@ -129,8 +135,8 @@ export default {
                                 prices: [
                                     {
                                         currency: 'DKK',
-                                        recommended_retail_price: product.priceRaw,
-                                        wholesale_price: 0,
+                                        recommended_retail_price: newPrice,
+                                        wholesale_price: newSalePrice,
                                     },
                                 ],
                                 brand: product.brand,
@@ -170,14 +176,21 @@ export default {
                 if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) continue
 
                 // Update prices
-                const newPrice = Object.values(newProductData.variants)[0].priceRaw
+                const firstVariant = Object.values(newProductData.variants)[0]
+                const newPrice = firstVariant.beforePrice
+                    ? parseFloat(firstVariant.beforePrice.replaceAll(',', '.'))
+                    : firstVariant.priceRaw
+                const newSalePrice = firstVariant.beforePrice ? firstVariant.priceRaw : 0
+
                 if (product.prices.length <= 0) {
                     product.prices.push({
                         recommended_retail_price: newPrice,
+                        wholesale_price: newSalePrice,
                         currency: 'DKK',
                     })
                 } else {
                     product.prices[0].recommended_retail_price = newPrice
+                    product.prices[0].wholesale_price = newSalePrice
                 }
 
                 // Update stock
