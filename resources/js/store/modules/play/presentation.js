@@ -318,6 +318,10 @@ export default {
             // TEMP BAP ONLY
             // Fetch size ean for the product
             const productData = await dispatch('bonaparte/fetchProduct', product, { root: true })
+
+            product.composition = productData.productCompositionDKC
+            // product.wash
+
             product.variants.map(variant => {
                 const variantData = Object.values(productData.variants).find(
                     variantData => variantData.productColorName == variant.color

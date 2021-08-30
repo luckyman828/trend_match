@@ -913,6 +913,11 @@ export default {
         initProduct(isSameProduct) {
             // Make a copy of the product, so we can check for changes compared to the original
             const productClone = JSON.parse(JSON.stringify(this.currentProduct))
+            productClone.isInit = false
+            productClone.variants &&
+                productClone.variants.map(variant => {
+                    variant.isInit = false
+                })
             this.productToEdit = productClone
             this.initProducts([this.productToEdit])
             if (!isSameProduct) {

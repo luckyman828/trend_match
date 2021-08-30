@@ -598,7 +598,7 @@ export default {
                 delivery_dates: productData.delivery_dates || [],
                 buying_group: productData.buying_group || null,
                 is_editor_choice: productData.is_editor_choice || null,
-                compositions: productData.compositions || null,
+                composition: productData.composition || null,
                 labels: productData.labels || [],
                 prices: productData.prices || [],
                 variants: productData.variants || [],
