@@ -58,7 +58,12 @@
                     :selectOnFocus="true"
                 />
                 <div class="pieces-wrapper" v-if="deliveryAssortment.pcs > 0 || editActive">
-                    <div class="pill xs box-pieces" :class="editActive ? 'primary' : 'invisible'">
+                    <div
+                        @click.stop="onBoxClick(true)"
+                        @contextmenu.stop.prevent="onBoxClick(false)"
+                        class="pill xs box-pieces"
+                        :class="editActive ? 'primary' : 'invisible'"
+                    >
                         <span>{{ deliveryAssortment.pcs }}</span>
                         <i class="far fa-box"></i>
                     </div>
@@ -145,6 +150,13 @@ export default {
                 quantity: parseInt(newQty),
             })
         },
+        onBoxClick(isIncrement) {
+            if (isIncrement) {
+                this.onQtyInput(this.deliveryAssortment.quantity + this.assortment.box_size)
+            } else if (this.localQuantity > 0) {
+                this.onQtyInput(this.deliveryAssortment.quantity - this.assortment.box_size)
+            }
+        },
         onSubmitQty() {
             this.onQtyInput(this.localQuantity)
             // Make sure the new QTY is divisible by the size of it
@@ -187,7 +199,14 @@ export default {
         onBlurQty() {
             const delay = 300
             setTimeout(() => {
-                this.onSubmitQty()
+                if (
+                    !(
+                        document.activeElement == this.$refs.input.$el ||
+                        this.$refs.input.$el.contains(document.activeElement)
+                    )
+                ) {
+                    this.onSubmitQty()
+                }
             }, delay)
         },
         onClickOutside(e) {
