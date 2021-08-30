@@ -6,7 +6,7 @@
         type="radio"
         :submitOnChange="true"
         :options="variant.ean_sizes"
-        :disabledOptions="variant.ean_sizes.filter(sizeObj => sizeObj.quantity <= 0)"
+        :disabledOptions="variant.ean_sizes.filter(sizeObj => !sizeObj.quantity)"
         optionNameKey="size"
         v-model="selectedSize"
         @change="onChangeSize"

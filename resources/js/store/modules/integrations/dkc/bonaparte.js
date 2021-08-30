@@ -150,7 +150,6 @@ export default {
             await axios
                 .get(apiUrl)
                 .then(response => {
-                    console.log('fetched data for this product', product)
                     fetchedProduct = response.data
                 })
                 .catch(err => {
@@ -161,7 +160,6 @@ export default {
         async syncProducts({ dispatch }, products) {
             for (const product of products) {
                 const newProductData = await dispatch('fetchProduct', product)
-                console.log('new product data', newProductData)
                 if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) continue
 
                 // Update prices
@@ -185,7 +183,6 @@ export default {
                             return newSizeData
                         })
                         sizeObj.quantity = newSizeData.stockCount
-                        console.log('updated size object', sizeObj)
                     })
                 })
             }
