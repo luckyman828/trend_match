@@ -85,6 +85,13 @@ export default {
                     // Check if the product already exists
                     const existingProduct = products.find(x => x.datasource_id == productId)
 
+                    if (
+                        existingProduct &&
+                        existingProduct.variants.find(variant => variant.color == product.colorName)
+                    ) {
+                        continue
+                    }
+
                     // Instantiate a new product variant
                     const newProductVariant = await dispatch(
                         'products/instantiateNewProductVariant',
