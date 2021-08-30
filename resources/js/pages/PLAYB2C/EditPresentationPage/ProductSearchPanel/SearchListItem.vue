@@ -70,7 +70,8 @@
             <!-- ACTIONS  -->
             <div class="action-list flex-list center-v">
                 <!-- Not editing look -->
-                <template v-if="!currentLook">
+                <BaseLoader class="sync-loader" msg="Syncing" v-if="syncingExternalProduct" />
+                <template v-else-if="!currentLook">
                     <BaseButton
                         buttonClass="circle no-bg"
                         targetAreaPadding="4px"
@@ -139,6 +140,7 @@ export default {
     data() {
         return {
             variantIndex: 0,
+            syncingExternalProduct: false,
         }
     },
     computed: {
@@ -170,7 +172,9 @@ export default {
 
             // Otherwise create it
             if (!this.product.id && !existingProduct) {
+                this.syncingExternalProduct = true
                 product = await this.$store.dispatch('playPresentation/createKollektProductFromTiming', this.product)
+                this.syncingExternalProduct = false
             }
 
             return product
@@ -275,6 +279,9 @@ export default {
         position: absolute;
         top: 8px;
         right: 8px;
+    }
+    .sync-loader {
+        height: 40px;
     }
     .variant-selector {
         width: 100%;
