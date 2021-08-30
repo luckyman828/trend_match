@@ -7,7 +7,7 @@
             @keydown.enter="onAddTiming"
         >
             <BaseImageSizer fit="cover" class="image">
-                <BaseVariantImage :variant="variant" size="sm" :key="variant.id" />
+                <BaseVariantImage :variant="variant" size="sm" :key="variant.id" class="bg-shimmer" />
             </BaseImageSizer>
 
             <div class="flex-list flex-v justify details">
