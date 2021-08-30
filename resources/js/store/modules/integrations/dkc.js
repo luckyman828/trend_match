@@ -155,7 +155,7 @@ export default {
                 },
                 {
                     name: 'Atelier Réve',
-                    code: 'AR',
+                    code: 'IR',
                     company: 'DkCompanyVejle',
                 },
                 // DKV Mens dept. A/S
