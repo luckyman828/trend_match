@@ -64,6 +64,14 @@
                         <span class="value"> {{ product.composition }}</span>
                     </div>
                 </div>
+
+                <div class="form-element flex-list md">
+                    <i class="fal fa-tshirt md"></i>
+                    <div class="flex-list-item">
+                        <label>Style number</label>
+                        <span class="value"> {{ product.datasource_id }}</span>
+                    </div>
+                </div>
             </div>
             <AddToBasketSelector :item.sync="currentVariant" :show="true" />
         </template>

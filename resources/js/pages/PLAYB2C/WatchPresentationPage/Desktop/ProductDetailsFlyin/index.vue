@@ -50,19 +50,29 @@
                     </div>
                 </div>
 
-                <div class="form-element flex-list md">
-                    <i class="fal fa-info-circle md"></i>
-                    <div class="flex-list-item">
-                        <label>Description</label>
-                        <span class="value description"> {{ product.sale_description }}</span>
+                <div class="flex-list flex-v space-lg">
+                    <div class="form-element flex-list md">
+                        <i class="fal fa-info-circle md"></i>
+                        <div class="flex-list-item">
+                            <label>Description</label>
+                            <span class="value description"> {{ product.sale_description }}</span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-element flex-list md">
-                    <i class="fal fa-flower md"></i>
-                    <div class="flex-list-item">
-                        <label>Composition</label>
-                        <span class="value"> {{ product.composition }}</span>
+                    <div class="form-element flex-list md">
+                        <i class="fal fa-flower md"></i>
+                        <div class="flex-list-item">
+                            <label>Composition</label>
+                            <span class="value"> {{ product.composition }}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-element flex-list md">
+                        <i class="fal fa-tshirt md"></i>
+                        <div class="flex-list-item">
+                            <label>Style number</label>
+                            <span class="value"> {{ product.datasource_id }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
