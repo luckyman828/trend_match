@@ -323,12 +323,13 @@ export default {
                     variantData => variantData.productColorName == variant.color
                 )
                 if (!variantData) return
-                variant.ean_sizes.map(sizeObj => {
-                    const sizeData = variantData.skUs.find(sku => sku.size == sizeObj.size)
-                    if (!sizeData) return
-                    sizeObj.ref_id = sizeData.ean
-                    sizeObj.ean = sizeData.ean
-                })
+                // Overwrite the ean_sizes of our variant with the newly fetched data
+                variant.ean_sizes = variantData.skUs.map(sku => ({
+                    ean: sku.ean,
+                    ref_id: sku.ean,
+                    quantity: sku.stockCount,
+                    size: sku.size,
+                }))
             })
             // END TEMP BAP ONLY
 
@@ -342,8 +343,6 @@ export default {
                 },
                 { root: true }
             )
-
-            console.log('created kollekt product', product)
 
             // Sync images
             dispatch(
