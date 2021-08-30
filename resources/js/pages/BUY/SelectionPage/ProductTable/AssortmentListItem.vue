@@ -57,9 +57,9 @@
                     @blur="onBlurQty"
                     :selectOnFocus="true"
                 />
-                <div class="pieces-wrapper" v-if="assortment.pcs > 0 || editActive">
+                <div class="pieces-wrapper" v-if="deliveryAssortment.pcs > 0 || editActive">
                     <div class="pill xs box-pieces" :class="editActive ? 'primary' : 'invisible'">
-                        <span>{{ assortment.pcs }}</span>
+                        <span>{{ deliveryAssortment.pcs }}</span>
                         <i class="far fa-box"></i>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ export default {
             return this.assortment.deliveries.find(delivery => delivery.delivery_date == this.deliveryDate)
         },
         assortmentQuantity() {
-            return this.assortment.quantity
+            return this.deliveryAssortment.quantity
         },
     },
     watch: {

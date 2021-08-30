@@ -310,6 +310,13 @@ export default {
                                     }, [])
                                 },
                             })
+                            Object.defineProperty(deliveryObj, 'pcs', {
+                                get() {
+                                    return !assortment.box_size || assortment.box_size == 0
+                                        ? 0
+                                        : Math.round(deliveryObj.quantity / assortment.box_size)
+                                },
+                            })
 
                             return deliveryObj
                         })
