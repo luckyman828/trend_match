@@ -24,7 +24,7 @@
                 Add this attribute to any HTML element you would like to trigger showing this presentation on your
                 website.
             </div>
-            <div class="embed-section">
+            <!-- <div class="embed-section">
                 <div class="ft-14 ft-bd">Embed this presentation</div>
                 <BaseInputField
                     class="lg"
@@ -40,7 +40,7 @@
                         <span>Copy</span>
                     </button>
                 </BaseInputField>
-            </div>
+            </div> -->
             <div class="script-section">
                 <div class="ft-14 ft-bd">Embed script</div>
                 <div class="ft-12 ft-md color-grey">
@@ -49,7 +49,7 @@
                 <BaseInputField
                     class="lg"
                     innerLabel="Embed link"
-                    :value="`<script src=&quot;${origin}/js/play.js&quot;></script>`"
+                    :value="`<script src=&quot;${origin}/js/play-dkc.js&quot;></script>`"
                     theme="light"
                     type="copy"
                 >
