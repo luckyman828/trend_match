@@ -7,7 +7,6 @@
                 :arraysToSearch="arraysToSearch"
                 v-model="filteredBySearch"
                 :hotkeyEnabled="true"
-                :throttle="1000"
                 ref="searchField"
                 @keyup.enter.native="onSearch"
             />
@@ -18,7 +17,7 @@
         <div class="filters flex-list justify center-v">
             <BaseSegmentedControl
                 :options="[
-                    { label: 'Search', value: 'Search', count: filteredBySearch.search.length },
+                    { label: 'Search', value: 'Search', count: searchProducts.length },
                     { label: 'Saved', value: 'Saved', count: filteredBySearch.saved.length },
                     { label: 'Looks', value: 'Looks', count: filteredBySearch.looks.length },
                 ]"
@@ -41,7 +40,7 @@
                 :key="currentTab"
                 v-if="currentTab != 'Looks'"
                 class="result-list item-list"
-                :items="currentTab == 'Search' ? filteredBySearch.search : filteredBySearch.saved"
+                :items="currentTab == 'Search' ? searchProducts : filteredBySearch.saved"
                 :item-size="118"
                 key-field="datasource_id"
                 v-slot="{ item }"

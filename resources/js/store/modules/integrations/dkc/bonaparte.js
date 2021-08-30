@@ -68,7 +68,7 @@ export default {
             return products
         },
         async fetchProductsBySearch({ dispatch }, searchString) {
-            const apiUrl = `admins/search-bap-qa-search?from=0&take=20&q=${searchString}`
+            const apiUrl = `admins/search-bap-qa-search?sort=standard&from=0&take=40&q=${searchString}`
             let searchResult
             await axios.get(apiUrl).then(response => {
                 searchResult = response.data
