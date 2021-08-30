@@ -23,9 +23,14 @@
                 </div>
                 <div class="price flex-list center-v">
                     <div class="current-price ft-bd ft-10">
-                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
+                        {{
+                            variant.yourPrice.wholesale_price
+                                ? variant.yourPrice.wholesale_price
+                                : variant.yourPrice.recommended_retail_price
+                        }}
+                        {{ variant.yourPrice.currency }}
                     </div>
-                    <div class="old-price ft-strike ft-10 ft-bd">
+                    <div class="old-price ft-strike ft-10 ft-bd" v-if="variant.yourPrice.wholesale_price">
                         {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
                     </div>
                 </div>

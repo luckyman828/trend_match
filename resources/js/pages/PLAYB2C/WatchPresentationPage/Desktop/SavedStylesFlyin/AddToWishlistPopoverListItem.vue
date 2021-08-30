@@ -9,7 +9,7 @@
             </div>
         </BaseImageSizer>
 
-        <div class="flex-list justify details">
+        <div class="flex-list justify details flex-1">
             <!-- LEFT  -->
             <div class="name-section flex-list flex-v space-sm">
                 <div class="flex-list flex-v lh-min space-xs">
@@ -19,9 +19,14 @@
                 </div>
                 <div class="price flex-list center-v">
                     <div class="current-price ft-bd ft-10">
-                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
+                        {{
+                            variant.yourPrice.wholesale_price
+                                ? variant.yourPrice.wholesale_price
+                                : variant.yourPrice.recommended_retail_price
+                        }}
+                        {{ variant.yourPrice.currency }}
                     </div>
-                    <div class="old-price ft-strike ft-10 ft-bd">
+                    <div class="old-price ft-strike ft-10 ft-bd" v-if="variant.yourPrice.wholesale_price">
                         {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
                     </div>
                 </div>
