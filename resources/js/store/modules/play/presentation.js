@@ -320,6 +320,11 @@ export default {
             const productData = await dispatch('bonaparte/fetchProduct', product, { root: true })
 
             product.composition = productData.productCompositionDKC
+            product.sale_description = `${productData.styleFit1 ? `${productData.styleFit1}\n` : ''}${
+                productData.styleFit2 ? `${productData.styleFit2}\n` : ''
+            }${productData.styleFit3 ? `${productData.styleFit3}\n` : ''}${
+                productData.styleFit4 ? `${productData.styleFit4}\n` : ''
+            }${productData.styleFit5 ? `${productData.styleFit5}\n` : ''}`
             // product.wash
 
             product.variants.map(variant => {
