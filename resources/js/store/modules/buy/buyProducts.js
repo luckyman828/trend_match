@@ -74,16 +74,21 @@ export default {
         },
         async updateQuantity({ dispatch }, { alignment, variantId, deliveryDate, size, assortment, quantity }) {
             if (!alignment) return
-            const existingQuantityDetail = alignment.quantity_details.find(detail => {
+            const existingQuantityDetailIndex = alignment.quantity_details.findIndex(detail => {
                 if (variantId && detail.variant_id != variantId) return false
                 if (deliveryDate && detail.delivery_date != deliveryDate) return false
                 if (size && detail.variant_size != size) return false
                 if (assortment && detail.assortment != assortment) return false
                 return true
             })
+            const existingQuantityDetail = alignment.quantity_details[existingQuantityDetailIndex]
             if (existingQuantityDetail) {
-                existingQuantityDetail.quantity = quantity
-            } else {
+                if (quantity <= 0) {
+                    alignment.quantity_details.splice(existingQuantityDetailIndex, 1)
+                } else {
+                    existingQuantityDetail.quantity = quantity
+                }
+            } else if (quantity > 0) {
                 const newQuantityInput = {
                     variant_id: variantId,
                     delivery_date: deliveryDate,

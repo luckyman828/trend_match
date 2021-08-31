@@ -183,6 +183,8 @@ export default {
             const alignment = this.variant.selectionAlignment.productAlignment
             alignment.action = 'In'
             this.variant.selectionAlignment.feedback = 'In'
+
+            console.log('update alignments', alignment)
             this.updateAlignments([alignment])
             this.localQuantity = this.deliveryAssortment.quantity
         },
