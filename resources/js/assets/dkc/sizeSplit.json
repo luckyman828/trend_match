@@ -2101,6 +2101,32 @@
             ]
         },
         "numeric": {
+            "standard": [
+                {
+                    "name": "34",
+                    "weight": 3
+                },
+                {
+                    "name": "36",
+                    "weight": 19
+                },
+                {
+                    "name": "38",
+                    "weight": 23
+                },
+                {
+                    "name": "40",
+                    "weight": 23
+                },
+                {
+                    "name": "42",
+                    "weight": 18
+                },
+                {
+                    "name": "44",
+                    "weight": 14
+                }
+            ],
             "bottomsIn": [
                 {
                     "name": "25",
