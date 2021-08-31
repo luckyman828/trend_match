@@ -57,7 +57,7 @@
                     @blur="onBlurQty"
                     :selectOnFocus="true"
                 />
-                <div class="pieces-wrapper" v-if="deliveryAssortment.pcs > 0 || editActive">
+                <div class="pieces-wrapper" v-if="actionWriteAccess && (deliveryAssortment.pcs > 0 || editActive)">
                     <div
                         @click.stop="onBoxClick(true)"
                         @contextmenu.stop.prevent="onBoxClick(false)"

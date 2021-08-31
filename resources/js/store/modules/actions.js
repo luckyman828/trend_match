@@ -31,7 +31,7 @@ export default {
                         commit(
                             'alerts/SHOW_SNACKBAR',
                             {
-                                msg: `Updated ${actions.length} actions`,
+                                msg: `Updated ${alignments.length} actions`,
                                 iconClass: 'fa-check',
                                 type: 'success',
                             },
