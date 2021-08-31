@@ -98,6 +98,7 @@ export default {
     },
     mounted() {
         this.onNewTiming(this.timing)
+        console.log('dont')
     },
 }
 </script>
@@ -113,11 +114,13 @@ export default {
     .recently-started & {
         transform: translateY(60px);
         &.pdp-open {
-            transform: translateY(60px) translateX(384px) scale(0.5);
+            // transform: translateY(60px) translateX(384px) scale(0.5);
+            // transform: translateY(60px) translateX(384px);
         }
     }
     &.pdp-open {
-        transform: translateX(384px) scale(0.5);
+        // transform: translateX(384px) scale(0.5);
+        transform: translateX(384px);
     }
 }
 .preview-list {
