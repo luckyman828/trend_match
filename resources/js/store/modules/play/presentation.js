@@ -125,7 +125,6 @@ export default {
                     Vue.set(presentation, 'id', presentationId)
                     commit('SET_PRESENTATION', presentation)
 
-                    console.log('presentation', response.data.workspace.play_shop)
                     commit('workspaces/SET_PLAY_SHOP', response.data.workspace.play_shop, { root: true })
 
                     video = response.data.video
