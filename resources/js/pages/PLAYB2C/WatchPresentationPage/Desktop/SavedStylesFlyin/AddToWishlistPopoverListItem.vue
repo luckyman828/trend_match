@@ -1,6 +1,10 @@
 <template>
     <div class="add-to-wishlist-popover-list-item flex-list justify">
-        <BaseImageSizer fit="cover" class="image">
+        <BaseImageSizer
+            fit="cover"
+            class="image clickable"
+            @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { variant, product: variant.product })"
+        >
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
                 <button class="pill red xxs" v-if="!variant.inStock">
