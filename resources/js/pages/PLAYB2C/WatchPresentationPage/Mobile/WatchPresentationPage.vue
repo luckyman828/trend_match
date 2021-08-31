@@ -10,7 +10,7 @@
             <template v-if="playerStarted">
                 <div class="bottom-aligned flex-list flex-v md">
                     <div class="over-timeline flex-list flex-v md">
-                        <PreviewList v-if="currentTiming" />
+                        <PreviewList />
                         <div class="top flex-list justify flex-end-v">
                             <div class="left">
                                 <!-- <button class="bg-blur sm pill comment-button">
