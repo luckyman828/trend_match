@@ -42,7 +42,6 @@ export default {
     },
     watch: {
         timing(newVal, oldVal) {
-            console.log('timing changed', newVal, oldVal)
             if (!oldVal || !newVal || newVal.id != oldVal.id) {
                 this.onNewTiming(newVal)
             }
