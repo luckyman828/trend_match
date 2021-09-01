@@ -219,7 +219,7 @@ export default {
                 products: [this.product],
             })
             // Fetch size ean for the product
-            const productData = this.$store.dispatch('bonaparte/fetchProduct', product)
+            const productData = this.$store.dispatch('bonaparte/fetchProduct', { product })
         },
     },
 }

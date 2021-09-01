@@ -6,7 +6,6 @@ export default {
     actions: {
         async fetchWebshopProductsFromFeed({ dispatch }) {
             let products = []
-            console.log('fetchy fethcy')
 
             const apiUrl = `admins/bonaparte-products?force_refresh=false`
             await axios.get(apiUrl).then(async response => {
@@ -157,7 +156,8 @@ export default {
 
             return products
         },
-        async fetchProduct({}, product) {
+        async fetchProduct({}, { product, locale }) {
+            console.log('fetch product', locale)
             const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}`
             let fetchedProduct
             await axios
@@ -170,9 +170,9 @@ export default {
                 })
             return fetchedProduct
         },
-        async syncProducts({ dispatch }, products) {
+        async syncProducts({ dispatch }, { products, locale }) {
             for (const product of products) {
-                const newProductData = await dispatch('fetchProduct', product)
+                const newProductData = await dispatch('fetchProduct', { product, locale })
                 if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) continue
 
                 // Update prices

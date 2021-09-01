@@ -316,7 +316,7 @@ export default {
         async createKollektProductFromTiming({ dispatch, getters, rootGetters }, product) {
             // TEMP BAP ONLY
             // Fetch size ean for the product
-            const productData = await dispatch('bonaparte/fetchProduct', product, { root: true })
+            const productData = await dispatch('bonaparte/fetchProduct', { product }, { root: true })
 
             product.composition = productData.productCompositionDKC
             product.sale_description = `${productData.styleFit1 ? `${productData.styleFit1}\n` : ''}${

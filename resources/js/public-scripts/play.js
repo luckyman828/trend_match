@@ -177,8 +177,12 @@ export function embed({
         const presentationId = button.getAttribute('data-kollekt-play-id')
         const appUrl = process.env.MIX_APP_URL
 
+        const presentationLocale = button.getAttribute('data-kollekt-play-locale')
+
         const iFrameBaseUrl = `${appUrl}/#/play/watch/`
-        iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}`
+        iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}${
+            presentationLocale ? `&locale=${presentationLocale}` : ''
+        }`
         wrapperEl.style.display = 'block'
 
         // Trigger get basket on creation

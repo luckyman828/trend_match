@@ -85,9 +85,12 @@ export default {
             // Set the desired quality to the highest available on the video
             this.SET_DESIRED_QUALITY('HD1080P')
 
+            // Get locale
+            const presenationLocale = this.$route.query.locale
+
             // Sync products
             // TEMP BAP ONLY SOLUTION
-            await this.$store.dispatch('bonaparte/syncProducts', this.products)
+            await this.$store.dispatch('bonaparte/syncProducts', { products: this.products, locale: presenationLocale })
             // END TEMP BAP ONLY SOLUTION
 
             this.loadingData = false
