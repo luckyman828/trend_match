@@ -1,108 +1,108 @@
 name: Development
 'on':
-  push:
-    branches:
-      - develop
+    push:
+        branches:
+            - develop
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_KEY }}
-        aws-region: ${{ secrets.CI_AWS_REGION }}
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
+                  aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_KEY }}
+                  aws-region: ${{ secrets.CI_AWS_REGION }}
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Load configuration from aws
-      run: |
-        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/DEPLOYMENT_ENV DEPLOYMENT_ENV
-        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/APP_ENV .env
+            - name: Load configuration from aws
+              run: |
+                  aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/DEPLOYMENT_ENV DEPLOYMENT_ENV
+                  aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/APP_ENV .env
 
-    - name: Load env from dotenv
-      uses: c-py/action-dotenv-to-setenv@v2
-      with:
-        env-file: DEPLOYMENT_ENV
+            - name: Load env from dotenv
+              uses: c-py/action-dotenv-to-setenv@v2
+              with:
+                  env-file: DEPLOYMENT_ENV
 
-    - name: Install php library
-      uses: MilesChou/composer-action/7.4/install@master
-      with:
-        args: install --no-dev
+            - name: Install php library
+              uses: MilesChou/composer-action/7.4/install@master
+              with:
+                  args: install --no-dev
 
-    - name: Build vuejs
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.x
-      
-    - name: Install nodejs packages
-      run: |
-        npm install
-        npm run production
-        rm -rf node_modules
+            - name: Build vuejs
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12.x
 
-    - name: Build and push the Docker
-      env:
-        IMAGE_TAG: dev-${{ github.sha }}
-      run: |
-        docker build . --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
-        docker push $IMAGE_NAME:$IMAGE_TAG
+            - name: Install nodejs packages
+              run: |
+                  npm install
+                  npm run production
+                  rm -rf node_modules
 
-    - name: Logout of Amazon ECR
-      if: always()
-      run: docker logout ${{ steps.login-ecr.outputs.registry }}
+            - name: Build and push the Docker
+              env:
+                  IMAGE_TAG: dev-${{ github.sha }}
+              run: |
+                  docker build . --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
+                  docker push $IMAGE_NAME:$IMAGE_TAG
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
+            - name: Logout of Amazon ECR
+              if: always()
+              run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_KEY }}
-        aws-region: ${{ secrets.CI_AWS_REGION }}
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
 
-    - name: Load configuration from aws
-      run: |
-        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/DEPLOYMENT_ENV DEPLOYMENT_ENV
-        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/KUBE_CONFIG KUBE_CONFIG
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
+                  aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_KEY }}
+                  aws-region: ${{ secrets.CI_AWS_REGION }}
 
-    - name: Load env from dotenv
-      uses: c-py/action-dotenv-to-setenv@v2
-      with:
-        env-file: DEPLOYMENT_ENV
+            - name: Load configuration from aws
+              run: |
+                  aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/DEPLOYMENT_ENV DEPLOYMENT_ENV
+                  aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/KUBE_CONFIG KUBE_CONFIG
 
-    - name: Load kubeconfig file
-      run: |
-        kube_content=`cat KUBE_CONFIG`
-        echo "KUBE_CONFIG="$kube_content"" >> $GITHUB_ENV
+            - name: Load env from dotenv
+              uses: c-py/action-dotenv-to-setenv@v2
+              with:
+                  env-file: DEPLOYMENT_ENV
 
-    - uses: Azure/k8s-set-context@v1
-      with:
-        kubeconfig: ${{ env.KUBE_CONFIG }}
+            - name: Load kubeconfig file
+              run: |
+                  kube_content=`cat KUBE_CONFIG`
+                  echo "KUBE_CONFIG="$kube_content"" >> $GITHUB_ENV
 
-    - uses: cschleiden/replace-tokens@v1
-      with:
-        tokenPrefix: '${'
-        tokenSuffix: '}'
-        files: '["deploy/k8s/*.yaml"]'
-      env:
-        IMAGE_TAG: 'dev-${{ github.sha }}'
+            - uses: Azure/k8s-set-context@v1
+              with:
+                  kubeconfig: ${{ env.KUBE_CONFIG }}
 
-    - uses: Azure/k8s-deploy@v1
-      with:
-        namespace: '${{ env.NAMESPACE }}'
-        manifests: |
-          deploy/k8s/2-deployment.yaml
-          deploy/k8s/3-service.yaml
-          deploy/k8s/4-gateway.yaml
-        images: |
-          ${{ env.IMAGE_NAME }}:dev-${{ github.sha }}
+            - uses: cschleiden/replace-tokens@v1
+              with:
+                  tokenPrefix: '${'
+                  tokenSuffix: '}'
+                  files: '["deploy/k8s/*.yaml"]'
+              env:
+                  IMAGE_TAG: 'dev-${{ github.sha }}'
+
+            - uses: Azure/k8s-deploy@v1
+              with:
+                  namespace: '${{ env.NAMESPACE }}'
+                  manifests: |
+                      deploy/k8s/2-deployment.yaml
+                      deploy/k8s/3-service.yaml
+                      deploy/k8s/4-gateway.yaml
+                  images: |
+                      ${{ env.IMAGE_NAME }}:dev-${{ github.sha }}
