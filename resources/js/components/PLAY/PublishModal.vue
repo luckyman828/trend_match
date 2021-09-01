@@ -8,10 +8,24 @@
                     <span>Copy link</span>
                 </button>
             </BaseInputField> -->
+            <BaseDropdownInputField
+                type="radio"
+                innerLabel="Presentation locale"
+                v-model="selectedLocale"
+                :options="allLocales"
+                :unsetOption="'No locale'"
+                :unsetValue="null"
+                placeholder="Select Locale"
+            />
+
             <BaseInputField
                 class="lg"
                 innerLabel="Open presenation attribute"
-                :value="`data-kollekt-play-id=&quot;${presentation.id}&quot;`"
+                :value="
+                    `data-kollekt-play-id=&quot;${presentation.id}&quot;${
+                        selectedLocale ? ` data-kollekt-play-locale=&quot;${selectedLocale}&quot;` : ''
+                    }`
+                "
                 theme="light"
                 type="copy"
             >
@@ -69,7 +83,10 @@ export default {
     name: 'play.pulishModal',
     props: ['show'],
     data() {
-        return {}
+        return {
+            selectedLocale: null,
+            allLocales: ['da-dk', 'de-ch', 'de-de', 'en-en', 'en-eu', 'nl-be', 'nl-nl', 'sv-se'],
+        }
     },
     computed: {
         ...mapGetters('playPresentation', {
