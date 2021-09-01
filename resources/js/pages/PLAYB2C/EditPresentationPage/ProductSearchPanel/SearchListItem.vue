@@ -20,15 +20,8 @@
                             <span class="truncate">{{ product.name }}</span>
                         </div>
                         <div class="price flex-list center-v">
-                            <div class="current-price ft-bd ft-10" v-if="product.yourPrice.wholesale_price">
-                                {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
-                            </div>
-                            <div
-                                class="old-price ft-10 ft-bd"
-                                :class="{ 'ft-strike': !!product.yourPrice.wholesale_price }"
-                            >
-                                {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
-                            </div>
+                            <CurrentPrice :product="product" />
+                            <OldPrice :product="product" />
                         </div>
                     </div>
                 </div>
@@ -129,11 +122,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
 import variantImage from '../../../../mixins/variantImage'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'SearchListItem',
     components: {
         Draggable,
+        CurrentPrice,
+        OldPrice,
     },
     props: ['product', 'focusIndex'],
     mixins: [variantImage],

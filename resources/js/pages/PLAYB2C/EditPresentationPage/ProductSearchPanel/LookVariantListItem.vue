@@ -8,12 +8,8 @@
                 <div class="name-wrapper">
                     <div class="name ft-bd ft-12 truncate">{{ variant.name }}</div>
                     <div class="price flex-list center-v truncate">
-                        <div class="current-price ft-bd ft-10">
-                            {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
-                        </div>
-                        <div class="old-price ft-strike ft-10 ft-bd truncate">
-                            {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
-                        </div>
+                        <CurrentPrice :product="product" />
+                        <OldPrice :product="product" />
                     </div>
                 </div>
                 <div class="action-list" style="flex-shrink: 0">
@@ -56,11 +52,17 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import variantImage from '../../../../mixins/variantImage'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'LookVariantListItem',
-    props: ['variantMap', 'look'],
+    components: {
+        CurrentPrice,
+        OldPrice,
+    },
     mixins: [variantImage],
+    props: ['variantMap', 'look'],
     computed: {
         ...mapGetters('playPresentation', {
             timings: 'getTimings',

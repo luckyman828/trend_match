@@ -32,11 +32,19 @@
                         <span>{{ look.variantMaps.length }}</span>
                     </div>
                 </div>
-                <div class="total-price ft-10 ft-bd">
-                    {{ totalPrice | rounded(2) }}
-                    <span class="currency" v-if="look.variantMaps.length > 0">{{
-                        look.variantMaps[0].product.yourPrice.currency
-                    }}</span>
+                <div class="flex-list">
+                    <div class="current-price ft-11 color-red ft-bd" v-if="totalCurrentPrice != totalPrice">
+                        {{ totalCurrentPrice | rounded(2) }}
+                        <span class="currency" v-if="look.variantMaps.length > 0">{{
+                            look.variantMaps[0].product.yourPrice.currency
+                        }}</span>
+                    </div>
+                    <div class="total-price ft-10 ft-bd" :class="{ 'ft-strike': totalCurrentPrice != totalPrice }">
+                        {{ totalPrice | rounded(2) }}
+                        <span class="currency" v-if="look.variantMaps.length > 0">{{
+                            look.variantMaps[0].product.yourPrice.currency
+                        }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,9 +143,10 @@ export default {
             presentation: 'getPresentation',
         }),
         totalPrice() {
-            return this.look.variantMaps.reduce((total, curr) => {
-                return (total += curr.product.yourPrice.recommended_retail_price)
-            }, 0)
+            return this.look.yourPrice.totalPrice
+        },
+        totalCurrentPrice() {
+            return this.look.yourPrice.currentPrice
         },
         linkedTiming() {
             return this.timings.find(timing => timing.product_group_id == this.look.id)

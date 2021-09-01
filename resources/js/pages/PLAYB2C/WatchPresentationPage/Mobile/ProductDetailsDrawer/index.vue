@@ -8,17 +8,8 @@
                     <h3 class="product-name">{{ product.name }}</h3>
                 </div>
                 <div class="price">
-                    <div class="current-price">
-                        {{
-                            product.yourPrice.wholesale_price
-                                ? product.yourPrice.wholesale_price
-                                : product.yourPrice.recommended_retail_price
-                        }}
-                        {{ product.yourPrice.currency }}
-                    </div>
-                    <div class="old-price" v-if="product.yourPrice.wholesale_price">
-                        {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :product="product" />
+                    <OldPrice :product="product" />
                 </div>
             </div>
         </template>
@@ -84,10 +75,12 @@ import ImageRail from './ImageRail'
 import VariantRail from './VariantRail'
 import AddToBasketSelector from '../AddToBasketSelector'
 import CurrentTimingPreview from './CurrentTimingPreview'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'play.productDetailsDrawer',
-    components: { ImageRail, VariantRail, AddToBasketSelector, CurrentTimingPreview },
+    components: { ImageRail, VariantRail, AddToBasketSelector, CurrentTimingPreview, CurrentPrice, OldPrice },
     props: ['show'],
     data: function() {
         return {

@@ -187,6 +187,36 @@ export default {
                               )
                     },
                 })
+                Object.defineProperty(group.yourPrice, 'totalPrice', {
+                    get() {
+                        return roundDecimals(
+                            group.variantMaps.reduce((total, curr) => {
+                                const price = curr.product.prices.find(
+                                    price => price.currency == group.yourPrice.currency
+                                )
+                                if (!price) return total
+                                return (total += price.recommended_retail_price)
+                            }, 0),
+                            2
+                        )
+                    },
+                })
+                Object.defineProperty(group.yourPrice, 'currentPrice', {
+                    get() {
+                        return roundDecimals(
+                            group.variantMaps.reduce((total, curr) => {
+                                const price = curr.product.prices.find(
+                                    price => price.currency == group.yourPrice.currency
+                                )
+                                if (!price) return total
+                                return (total += price.wholesale_price
+                                    ? price.wholesale_price
+                                    : price.recommended_retail_price)
+                            }, 0),
+                            2
+                        )
+                    },
+                })
 
                 group.initDone = true
             })
