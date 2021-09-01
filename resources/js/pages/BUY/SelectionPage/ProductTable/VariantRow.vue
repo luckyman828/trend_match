@@ -37,7 +37,12 @@
                         sizeClass="sm"
                         theme="light"
                         v-model="selectedDeliveryDate"
-                        :options="assortmentDeliveries"
+                        :options="
+                            variant.product.delivery_dates.map(delivery => ({
+                                label: getPrettyDate(delivery, 'medium'),
+                                value: delivery,
+                            }))
+                        "
                     />
                 </div>
                 <div class="flex-list flex-v space-xxs">

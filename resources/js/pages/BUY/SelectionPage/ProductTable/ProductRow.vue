@@ -33,7 +33,7 @@
                 ></div>
             </BaseImageSizer>
         </div>
-        <div class="flex-list flex-v fill space-md details-section">
+        <div class="flex-list flex-v fill space-sm details-section">
             <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
 
             <!-- Details -->
@@ -60,6 +60,24 @@
                 </div>
             </div>
             <!-- End Details -->
+
+            <div class="delivery-selector">
+                <BaseSegmentedControl
+                    activeClass="white"
+                    sizeClass="sm"
+                    theme="light"
+                    v-model="product.currentDeliveryDate"
+                    countKey="count"
+                    :options="
+                        product.deliveries.map(delivery => ({
+                            label: getPrettyDate(delivery.delivery_date, 'medium'),
+                            value: delivery.delivery_date,
+                            count: delivery.quantity,
+                        }))
+                    "
+                />
+            </div>
+
             <div class="variant-list flex-list space-md" v-dragscroll>
                 <VariantListItem
                     :variant="variant"
@@ -364,6 +382,13 @@ export default {
     },
     created() {
         this.product.variants.sort((a, b) => b.quantity - a.quantity)
+
+        // Preset the current product delivery date.
+        // Pick the delivery with the highest quantity
+        this.product.currentDeliveryDate = this.product.deliveries.reduce(
+            (top, curr) => (curr.quantity > top.quantity ? curr : top),
+            this.product.deliveries[0]
+        ).delivery_date
     },
 }
 </script>

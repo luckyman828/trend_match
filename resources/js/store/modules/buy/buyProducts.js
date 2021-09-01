@@ -72,8 +72,36 @@ export default {
                 })
             return products
         },
+        async updateQuantity({ dispatch }, { alignment, variantId, deliveryDate, size, assortment, quantity }) {
+            if (!alignment) return
+            const existingQuantityDetailIndex = alignment.quantity_details.findIndex(detail => {
+                if (variantId && detail.variant_id != variantId) return false
+                if (deliveryDate && detail.delivery_date != deliveryDate) return false
+                if (size && detail.variant_size != size) return false
+                if (assortment && detail.assortment != assortment) return false
+                return true
+            })
+            const existingQuantityDetail = alignment.quantity_details[existingQuantityDetailIndex]
+            if (existingQuantityDetail) {
+                if (quantity <= 0) {
+                    alignment.quantity_details.splice(existingQuantityDetailIndex, 1)
+                } else {
+                    existingQuantityDetail.quantity = quantity
+                }
+            } else if (quantity > 0) {
+                const newQuantityInput = {
+                    variant_id: variantId,
+                    delivery_date: deliveryDate,
+                    variant_size: size,
+                    assortment,
+                    quantity,
+                }
+                await dispatch('initQuantityInputs', { quantityInputs: [newQuantityInput], product: alignment.product })
+                alignment.quantity_details.push(newQuantityInput)
+            }
+        },
         async initProducts({ getters, dispatch, rootGetters }, { products, selectionId }) {
-            products.map(product => {
+            products.map(async product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
 
@@ -90,6 +118,8 @@ export default {
 
                 // Custom Props
                 if (!product.extra_data) Vue.set(product, 'extra_data', {})
+
+                Vue.set(product, 'currentDeliveryDate', product.delivery_dates[0])
 
                 // ---- START PRICES ----
                 // Currency
@@ -160,28 +190,7 @@ export default {
                     },
                 })
 
-                // Work quantity inputs
-                product.quantityInputs.map(quantityInput => {
-                    Object.defineProperty(quantityInput, 'sizes', {
-                        get() {
-                            if (quantityInput.variant_size)
-                                return [{ size: quantityInput.variant_size, quantity: quantityInput.quantity }]
-                            if (quantityInput.assortment) {
-                                const assortment = product.assortments.find(
-                                    assortment =>
-                                        assortment.name == quantityInput.assortment &&
-                                        assortment.variant_ids.includes(quantityInput.variant_id)
-                                )
-                                if (assortment)
-                                    return assortment.sizes.map(assortmentSize => ({
-                                        size: assortmentSize.size,
-                                        quantity: assortmentSize.quantity * assortment.pcs,
-                                    }))
-                            }
-                            return []
-                        },
-                    })
-                })
+                await dispatch('initQuantityInputs', { quantityInputs: product.quantityInputs, product })
 
                 product.alignments.map(alignment => {
                     // Add default variant action to alignments
@@ -306,6 +315,13 @@ export default {
                                     }, [])
                                 },
                             })
+                            Object.defineProperty(deliveryObj, 'pcs', {
+                                get() {
+                                    return !assortment.box_size || assortment.box_size == 0
+                                        ? 0
+                                        : Math.round(deliveryObj.quantity / assortment.box_size)
+                                },
+                            })
 
                             return deliveryObj
                         })
@@ -320,6 +336,47 @@ export default {
                         })
                 })
                 // END ASSORTMENTS
+
+                // PRODUCT DELIVERIES
+                Vue.set(
+                    product,
+                    'deliveries',
+                    product.delivery_dates.map(delivery_date => {
+                        // Instantiate a variant delivery object
+                        const deliveryObj = { delivery_date }
+                        Object.defineProperty(deliveryObj, 'quantityInputs', {
+                            get() {
+                                return product.quantityInputs.filter(input => input.delivery_date == delivery_date)
+                            },
+                        })
+                        Object.defineProperty(deliveryObj, 'quantity', {
+                            get() {
+                                return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                            },
+                        })
+                        Object.defineProperty(deliveryObj, 'sizeQuantities', {
+                            get() {
+                                return deliveryObj.quantityInputs.reduce((sizeQuantities, quantityInput) => {
+                                    quantityInput.sizes.map(size => {
+                                        const existingSize = sizeQuantities.find(x => x.size == size.size)
+                                        if (existingSize) {
+                                            existingSize.quantity += parseInt(size.quantity)
+                                        } else {
+                                            sizeQuantities.push({
+                                                size: size.size,
+                                                quantity: parseInt(size.quantity),
+                                            })
+                                        }
+                                    })
+                                    return sizeQuantities.sort((a, b) => compareSizes(a.size, b.size))
+                                }, [])
+                            },
+                        })
+
+                        return deliveryObj
+                    })
+                )
+                // END PRODUCT DELIVERIES
 
                 // VARIANTS
                 Object.defineProperty(product, 'variantsFiltered', {
@@ -476,6 +533,30 @@ export default {
                 Object.defineProperty(product, 'product_id', {
                     get() {
                         return product.id
+                    },
+                })
+            })
+        },
+        async initQuantityInputs({}, { quantityInputs, product }) {
+            // Work quantity inputs
+            quantityInputs.map(quantityInput => {
+                Object.defineProperty(quantityInput, 'sizes', {
+                    get() {
+                        if (quantityInput.variant_size)
+                            return [{ size: quantityInput.variant_size, quantity: quantityInput.quantity }]
+                        if (quantityInput.assortment) {
+                            const assortment = product.assortments.find(
+                                assortment =>
+                                    assortment.name == quantityInput.assortment &&
+                                    assortment.variant_ids.includes(quantityInput.variant_id)
+                            )
+                            if (assortment)
+                                return assortment.sizes.map(assortmentSize => ({
+                                    size: assortmentSize.size,
+                                    quantity: assortmentSize.quantity * assortment.pcs,
+                                }))
+                        }
+                        return []
                     },
                 })
             })

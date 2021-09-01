@@ -148,6 +148,16 @@ export default {
                     code: 'JC',
                     company: 'DkCompanyVejle',
                 },
+                {
+                    name: 'FQ1924',
+                    code: 'FQ',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Atelier Réve',
+                    code: 'IR',
+                    company: 'DkCompanyVejle',
+                },
                 // DKV Mens dept. A/S
                 {
                     name: 'Solid',
@@ -217,8 +227,6 @@ export default {
             let pagesProcessed = 0
             let products = []
 
-            console.log('fetch products', currencies)
-
             await Promise.all(
                 await seasons.map(async season => {
                     await Promise.all(
@@ -229,7 +237,6 @@ export default {
                             }&company=${brand.company}&brand=${brand.code}${
                                 currencies ? `&currency=${currencies.join('|')}` : ''
                             }`
-                            console.log('fetch products', currencies, pageApiUrl)
 
                             await axios.get(pageApiUrl).then(response => {
                                 pageCount += response.data.count
@@ -249,7 +256,6 @@ export default {
                                         const seasonProducts = Array.isArray(response.data)
                                             ? response.data
                                             : [response.data]
-                                        console.log('season products', seasonProducts)
                                         products.push(...seasonProducts)
                                         pagesProcessed++
                                         if (progressCallback)

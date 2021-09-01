@@ -81,7 +81,7 @@ async function instantiateSelectProducts(products) {
         newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
         // PRICES
-        if (product.variants && product.variants.length > 0) {
+        if (product.variants && product.variants.length > 0 && product.variants[0].prices) {
             product.variants[0].prices.map(price => {
                 if (!!newProduct.prices.find(x => x.currency == price.currency)) return
                 const wholesale_price = price.value_whl ? parseFloat(price.value_whl.replace(/,/g, '')) : null
@@ -217,7 +217,7 @@ async function instantiateBuyProducts(products) {
         newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
         // PRICES
-        if (product.variants && product.variants.length > 0) {
+        if (product.variants && product.variants.length > 0 && product.variants[0].prices) {
             product.variants[0].prices.map(price => {
                 if (!!newProduct.prices.find(x => x.currency == price.currency)) return
                 const wholesale_price = price.value_whl ? parseFloat(price.value_whl.replace(/,/g, '')) : null

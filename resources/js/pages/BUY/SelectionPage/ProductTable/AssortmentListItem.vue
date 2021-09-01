@@ -57,9 +57,14 @@
                     @blur="onBlurQty"
                     :selectOnFocus="true"
                 />
-                <div class="pieces-wrapper" v-if="assortment.pcs > 0 || editActive">
-                    <div class="pill xs box-pieces" :class="editActive ? 'primary' : 'invisible'">
-                        <span>{{ assortment.pcs }}</span>
+                <div class="pieces-wrapper" v-if="actionWriteAccess && (deliveryAssortment.pcs > 0 || editActive)">
+                    <div
+                        @click.stop="onBoxClick(true)"
+                        @contextmenu.stop.prevent="onBoxClick(false)"
+                        class="pill xs box-pieces"
+                        :class="editActive ? 'primary' : 'invisible'"
+                    >
+                        <span>{{ deliveryAssortment.pcs }}</span>
                         <i class="far fa-box"></i>
                     </div>
                 </div>
@@ -119,25 +124,38 @@ export default {
         deliveryAssortment() {
             return this.assortment.deliveries.find(delivery => delivery.delivery_date == this.deliveryDate)
         },
+        assortmentQuantity() {
+            return this.deliveryAssortment.quantity
+        },
     },
     watch: {
         deliveryDate() {
             this.localQuantity = this.deliveryAssortment.quantity
         },
+        assortmentQuantity(newVal) {
+            this.localQuantity = newVal
+        },
     },
     methods: {
         ...mapActions('actions', ['updateAlignments']),
-        ...mapMutations('products', ['SET_QUANTITY']),
+        ...mapActions('buyProducts', ['updateQuantity']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onQtyInput(newQty) {
             if (!newQty || newQty < 0) newQty = 0
-            this.SET_QUANTITY({
+            this.updateQuantity({
                 alignment: this.variant.selectionAlignment.productAlignment,
                 variantId: this.variant.id,
                 assortment: this.assortment.name,
                 deliveryDate: this.deliveryDate,
                 quantity: parseInt(newQty),
             })
+        },
+        onBoxClick(isIncrement) {
+            if (isIncrement) {
+                this.onQtyInput(this.deliveryAssortment.quantity + this.assortment.box_size)
+            } else if (this.localQuantity > 0) {
+                this.onQtyInput(this.deliveryAssortment.quantity - this.assortment.box_size)
+            }
         },
         onSubmitQty() {
             this.onQtyInput(this.localQuantity)
@@ -165,6 +183,8 @@ export default {
             const alignment = this.variant.selectionAlignment.productAlignment
             alignment.action = 'In'
             this.variant.selectionAlignment.feedback = 'In'
+
+            console.log('update alignments', alignment)
             this.updateAlignments([alignment])
             this.localQuantity = this.deliveryAssortment.quantity
         },
@@ -181,7 +201,14 @@ export default {
         onBlurQty() {
             const delay = 300
             setTimeout(() => {
-                this.onSubmitQty()
+                if (
+                    !(
+                        document.activeElement == this.$refs.input.$el ||
+                        this.$refs.input.$el.contains(document.activeElement)
+                    )
+                ) {
+                    this.onSubmitQty()
+                }
             }, delay)
         },
         onClickOutside(e) {
