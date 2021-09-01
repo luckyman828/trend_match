@@ -19,7 +19,7 @@
             <div class="product-totals" @click="$emit('show-timing-list')">
                 <button class="pill no-bg white ghost-hover">
                     <i class="far fa-tshirt"></i>
-                    <span> {{ currentTimingIndex + 1 }} of {{ timings.length }} styles </span>
+                    <span> {{ currentTimingIndex + 1 }} of {{ timings.length }} </span>
                 </button>
             </div>
 
