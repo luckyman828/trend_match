@@ -6,6 +6,11 @@ function init() {
         )
         return
     }
+    const ga = window.ga
+    if (!ga) {
+        console.error('Unable to initialize Kollekt PLAY Google Analytics integration. No GA object found on site.')
+        return
+    }
 
     // ADD EVENT LISTNERS
 
@@ -14,6 +19,7 @@ function init() {
         const id = e.detail.presentationId
         const locale = e.detail.presentationLocale
         console.log('open presentation', id, locale)
+        // ga('send', 'event', 'Videos', 'play', 'Fall Campaign');
     })
 
     // CLOSE PRESENTATION
