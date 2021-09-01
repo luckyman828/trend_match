@@ -13,7 +13,7 @@ export function embed({
     window.kollekt_play_init = true
 
     // Kollekt PLAY
-    const version = `0.0.0 - (16)`
+    const version = `0.0.0 - (17)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',
@@ -143,6 +143,7 @@ export function embed({
     // Create Player
     const playerEl = document.createElement('div')
     playerEl.classList.add('kollekt-player')
+    playerEl.id = 'the-kollekt-player'
     wrapperEl.appendChild(playerEl)
 
     // Crete overlay
@@ -185,6 +186,9 @@ export function embed({
         }`
         wrapperEl.style.display = 'block'
 
+        // Emit event
+        emitEvent('openPresentation', { presentationId, presentationLocale })
+
         // Trigger get basket on creation
         // Add delay to ensure loading is done
 
@@ -216,8 +220,10 @@ export function embed({
             // Reload the iframe by removing and recreating the iframe
             wrapperEl.style.display = 'none'
             iframeEl.remove()
-            console.log('on close', iframeEl)
             iframeEl = createIframe()
+
+            // Emit event
+            emitEvent('closePresentation')
 
             // Reset the contentWindow
             contentWindow = iframeEl.contentWindow
@@ -227,7 +233,6 @@ export function embed({
     }
 
     function createIframe() {
-        console.log('CREATE I FRAME', document.getElementById(`embed-${version}`))
         const newIframe = document.createElement('iframe')
         newIframe.setAttribute('allow', 'fullscreen')
         newIframe.id = `embed-${version}`
@@ -246,7 +251,6 @@ export function embed({
 
     // Interact with webshop
     window.addEventListener('message', async event => {
-        console.log('message received', event)
         const testOrigins =
             process.env.NODE_ENV == 'production' ? [] : ['https://kollekt_feature.test', 'https://kollekt_release.test']
         const acceptedOrigins = [
@@ -269,26 +273,41 @@ export function embed({
         // ADD TO BASKET
         if (msgData.action == 'addToBasket' && addToBasketCallback) {
             addToBasketCallback(msgData.items)
+
+            // Emit event
+            emitEvent('addToBasket', { items: msgData.items })
         }
 
         // REMOVE FROM BASKET
         if (msgData.action == 'removeFromBasket' && removeFromBasketCallback) {
             removeFromBasketCallback(msgData.items)
+
+            // Emit event
+            emitEvent('removeFromBasket', { items: msgData.items })
         }
 
         // UPDATE QUANTITY
         if (msgData.action == 'updateItemQuantity' && updateItemQuantityCallback) {
             updateItemQuantityCallback(msgData.item)
+
+            // Emit event
+            emitEvent('updateItemQuantity', { item: msgData.item })
         }
 
         // CHANGE SIZE
         if (msgData.action == 'changeItemSize' && changeItemSizeCallback) {
             // updateDetail: { item, newSizeDetail, oldSizeDetail }
             changeItemSizeCallback(msgData.updateDetail)
+
+            // Emit event
+            emitEvent('changeItemSize', { updateDetail: msgData.updateDetail })
         }
 
         // GO TO CHECKOUT
         if (msgData.action == 'goToCheckout') {
+            // Emit event
+            emitEvent('goToCheckout')
+
             window.location = msgData.url
         }
 
@@ -306,6 +325,11 @@ export function embed({
         const appUrl = process.env.MIX_APP_URL
         const targetOrigin = `${appUrl}`
         contentWindow.postMessage(msg, targetOrigin)
+    }
+
+    function emitEvent(eventName, eventData) {
+        const event = new CustomEvent(eventName, { detail: eventData })
+        playerEl.dispatchEvent(event)
     }
 
     return contentWindow
