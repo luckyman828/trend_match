@@ -163,7 +163,9 @@ export default {
         },
         async fetchProduct({}, { product, locale }) {
             console.log('fetch product', locale)
-            const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}`
+            const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}${
+                locale ? `&locale=${locale}` : ''
+            }`
             let fetchedProduct
             await axios
                 .get(apiUrl)
@@ -175,13 +177,33 @@ export default {
                 })
             return fetchedProduct
         },
-        async syncProducts({ dispatch }, { products, locale }) {
+        async syncProducts({ dispatch, rootGetters }, { products, locale }) {
             for (const product of products) {
                 const newProductData = await dispatch('fetchProduct', { product, locale })
                 if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) continue
+                const firstVariant = Object.values(newProductData.variants)[0]
+
+                // Update base product
+                // product.name =
+                product.brand = newProductData.styleBrand
+                product.name = firstVariant.productHeader
+
+                // Update variants
+                product.variants.map(variant => {
+                    const newVariantData = Object.values(newProductData.variants).find(newVariantData => {
+                        return variant.ean_sizes.find(sizeObj =>
+                            newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
+                        )
+                    })
+                    if (!newVariantData) return
+
+                    variant.name = newVariantData.productColorName
+                })
+
+                const dkcLocaleMap = rootGetters['integrationDkc/getLocales']
+                const currency = locale ? dkcLocaleMap.find(localeMap => localeMap.locale == locale).currency : 'DKK'
 
                 // Update prices
-                const firstVariant = Object.values(newProductData.variants)[0]
                 const newPrice = firstVariant.beforePrice
                     ? parseFloat(firstVariant.beforePrice.replaceAll(',', '.'))
                     : firstVariant.priceRaw

@@ -209,6 +209,16 @@ export default {
                 },
             ]
         },
+        getLocales: () => [
+            { country: 'Denmark', locale: 'DA_DK', currency: 'DKK' },
+            { country: 'Switzerland', locale: 'DE_CH', currency: 'CHF' },
+            { country: 'Germany', locale: 'DE_DE', currency: 'EUR' },
+            { country: 'International', locale: 'EN_EN', currency: 'EUR' },
+            { country: 'Europe', locale: 'EN_EU', currency: 'EUR' },
+            { country: 'Belgium', locale: 'NL_BE', currency: 'EUR' },
+            { country: 'Netherlands', locale: 'NL_NL', currency: 'EUR' },
+            { country: 'Sweden', locale: 'SV_SE', currency: 'SEK' },
+        ],
     },
 
     actions: {

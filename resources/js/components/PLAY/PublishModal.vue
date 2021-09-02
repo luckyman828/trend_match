@@ -13,6 +13,9 @@
                 innerLabel="Presentation locale"
                 v-model="selectedLocale"
                 :options="allLocales"
+                valueKey="locale"
+                nameKey="locale"
+                descriptionKey="country"
                 :unsetOption="'No locale'"
                 :unsetValue="null"
                 placeholder="Select Locale"
@@ -85,12 +88,14 @@ export default {
     data() {
         return {
             selectedLocale: null,
-            allLocales: ['da-dk', 'de-ch', 'de-de', 'en-en', 'en-eu', 'nl-be', 'nl-nl', 'sv-se'],
         }
     },
     computed: {
         ...mapGetters('playPresentation', {
             presentation: 'getPresentation',
+        }),
+        ...mapGetters('integrationDkc', {
+            allLocales: 'getLocales',
         }),
         origin() {
             return window.origin
