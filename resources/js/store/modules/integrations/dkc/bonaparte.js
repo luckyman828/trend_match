@@ -187,6 +187,12 @@ export default {
                 // product.name =
                 product.brand = newProductData.styleBrand
                 product.name = firstVariant.productHeader
+                product.composition = newProductData.productCompositionDKC
+                product.sale_description = `${newProductData.styleFitting1 ? `${newProductData.styleFitting1}\n` : ''}${
+                    newProductData.styleFitting2 ? `${newProductData.styleFitting2}\n` : ''
+                }${newProductData.styleFitting3 ? `${newProductData.styleFitting3}\n` : ''}${
+                    newProductData.styleFitting4 ? `${newProductData.styleFitting4}\n` : ''
+                }${newProductData.styleFitting5 ? `${newProductData.styleFitting5}\n` : ''}`
 
                 // Update variants
                 product.variants.map(variant => {
@@ -198,46 +204,41 @@ export default {
                     if (!newVariantData) return
 
                     variant.name = newVariantData.productColorName
-                })
 
-                const dkcLocaleMap = rootGetters['integrationDkc/getLocales']
-                const currency = locale ? dkcLocaleMap.find(localeMap => localeMap.locale == locale).currency : 'DKK'
+                    // Update prices
+                    const dkcLocaleMap = rootGetters['integrationDkc/getLocales']
+                    const currency = locale
+                        ? dkcLocaleMap.find(localeMap => localeMap.locale == locale).currency
+                        : 'DKK'
 
-                // Update prices
-                const newPrice = firstVariant.beforePrice
-                    ? parseFloat(firstVariant.beforePrice.replaceAll(',', '.'))
-                    : firstVariant.priceRaw
-                const newSalePrice = firstVariant.beforePrice ? firstVariant.priceRaw : 0
+                    const newPrice = newVariantData.beforePrice
+                        ? parseFloat(newVariantData.beforePrice.replaceAll(',', '.').replaceAll(/[^(0-9|.)]/g, ''))
+                        : newVariantData.priceRaw
+                    const newSalePrice = newVariantData.beforePrice ? newVariantData.priceRaw : 0
 
-                if (product.prices.length <= 0) {
-                    product.prices.push({
-                        recommended_retail_price: newPrice,
-                        wholesale_price: newSalePrice,
-                        currency: 'DKK',
-                    })
-                } else {
-                    product.prices[0].recommended_retail_price = newPrice
-                    product.prices[0].wholesale_price = newSalePrice
-                }
+                    if (variant.prices.length <= 0) {
+                        variant.prices.push({
+                            recommended_retail_price: newPrice,
+                            wholesale_price: newSalePrice,
+                            currency,
+                        })
+                    } else {
+                        variant.prices[0].recommended_retail_price = newPrice
+                        variant.prices[0].wholesale_price = newSalePrice
+                        variant.prices[0].currency = currency
+                    }
 
-                // Update stock
-                product.variants.map(variant => {
+                    // END Update prices
+
+                    // Update stock
                     variant.ean_sizes.map(sizeObj => {
                         // Find the new size data
-                        let newSizeData
-                        Object.values(newProductData.variants).find(newVariantData => {
-                            newSizeData = newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
-                            return newSizeData
-                        })
+                        const newSizeData = newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
                         if (!newSizeData) return
                         sizeObj.quantity = newSizeData.stockCount
                     })
                 })
             }
-            // products.map(async product => {
-            //     const newProductData = await dispatch('fetchProduct', product)
-            //     console.log('new product data', newProductData)
-            // })
         },
     },
 }

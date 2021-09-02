@@ -87,7 +87,7 @@ export default {
 
             // Get locale
             // const presenationLocale = this.$route.query.locale
-            const presenationLocale = 'DA_DK'
+            const presenationLocale = 'DE_DE'
 
             // Sync products
             // TEMP BAP ONLY SOLUTION

@@ -1,11 +1,11 @@
 <template>
-    <div class="current-price ft-bd" :class="product.yourPrice.wholesale_price && 'color-red'">
+    <div class="current-price ft-bd" :class="variant.yourPrice.wholesale_price && 'color-red'">
         {{
-            product.yourPrice.wholesale_price
-                ? product.yourPrice.wholesale_price
-                : product.yourPrice.recommended_retail_price
+            variant.yourPrice.wholesale_price
+                ? variant.yourPrice.wholesale_price
+                : variant.yourPrice.recommended_retail_price
         }}
-        {{ product.yourPrice.currency }}
+        {{ variant.yourPrice.currency }}
     </div>
 </template>
 
@@ -13,7 +13,7 @@
 export default {
     name: 'CurrentPrice',
     props: {
-        product: {
+        variant: {
             type: Object,
         },
     },

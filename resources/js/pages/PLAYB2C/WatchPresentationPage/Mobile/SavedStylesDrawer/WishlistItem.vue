@@ -17,8 +17,8 @@
                     </div>
                     <div class="product-name">{{ variant.name }}</div>
                     <div class="price flex-list md">
-                        <CurrentPrice :product="variant.product" />
-                        <OldPrice :product="variant.product" />
+                        <CurrentPrice :variant="variant" />
+                        <OldPrice :variant="variant" />
                     </div>
                 </div>
                 <div class="action-list flex-list">

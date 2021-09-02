@@ -8,8 +8,8 @@
                 <div class="name-wrapper">
                     <div class="name ft-bd ft-12 truncate">{{ variant.name }}</div>
                     <div class="price flex-list center-v truncate">
-                        <CurrentPrice :product="product" />
-                        <OldPrice :product="product" />
+                        <CurrentPrice :variant="variant" />
+                        <OldPrice :variant="variant" />
                     </div>
                 </div>
                 <div class="action-list" style="flex-shrink: 0">

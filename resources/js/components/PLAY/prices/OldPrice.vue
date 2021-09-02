@@ -1,6 +1,6 @@
 <template>
-    <div class="old-price ft-10 ft-bd ft-strike" v-if="product.yourPrice.wholesale_price">
-        {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
+    <div class="old-price ft-10 ft-bd ft-strike" v-if="variant.yourPrice.wholesale_price">
+        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
     </div>
 </template>
 
@@ -8,7 +8,7 @@
 export default {
     name: 'OldPrice',
     props: {
-        product: {
+        variant: {
             type: Object,
         },
     },

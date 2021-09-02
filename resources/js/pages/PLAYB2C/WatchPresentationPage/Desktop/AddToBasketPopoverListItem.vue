@@ -26,8 +26,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <CurrentPrice :product="variant.product" />
-                    <OldPrice :product="variant.product" />
+                    <CurrentPrice :variant="variant" />
+                    <OldPrice :variant="variant" />
                 </div>
             </div>
 

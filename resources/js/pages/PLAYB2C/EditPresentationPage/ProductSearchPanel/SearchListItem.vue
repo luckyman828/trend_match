@@ -20,8 +20,8 @@
                             <span class="truncate">{{ product.name }}</span>
                         </div>
                         <div class="price flex-list center-v">
-                            <CurrentPrice :product="product" />
-                            <OldPrice :product="product" />
+                            <CurrentPrice :variant="variant" />
+                            <OldPrice :variant="variant" />
                         </div>
                     </div>
                 </div>

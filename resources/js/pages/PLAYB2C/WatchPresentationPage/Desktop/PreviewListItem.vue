@@ -22,7 +22,7 @@
                 </div>
             </BaseImageSizer>
             <div class="price-wrapper flex-list">
-                <CurrentPrice :product="variant.product" />
+                <CurrentPrice :variant="variant" />
             </div>
             <div class="icon-list flex-list space-sm">
                 <div class="circle xs red" v-if="isInWishlist">

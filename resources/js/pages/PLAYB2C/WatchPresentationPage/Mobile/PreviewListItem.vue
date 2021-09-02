@@ -9,7 +9,7 @@
             </div>
         </BaseImageSizer>
         <div class="price-wrapper flex-list">
-            <CurrentPrice :product="variant.product" />
+            <CurrentPrice :variant="variant" />
         </div>
     </div>
 </template>

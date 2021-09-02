@@ -23,8 +23,8 @@
                 />
 
                 <div class="price flex-list center-v form-element">
-                    <CurrentPrice :product="product" class="ft-14" style="font-size: 14px;" />
-                    <OldPrice :product="product" class="ft-14" style="font-size: 14px;" />
+                    <CurrentPrice :variant="currentVariant" class="ft-14" style="font-size: 14px;" />
+                    <OldPrice :variant="currentVariant" class="ft-14" style="font-size: 14px;" />
                 </div>
 
                 <div class="form-element flex-list-item">

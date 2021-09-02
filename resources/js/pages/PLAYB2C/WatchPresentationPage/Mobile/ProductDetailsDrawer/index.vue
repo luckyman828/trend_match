@@ -8,8 +8,8 @@
                     <h3 class="product-name">{{ product.name }}</h3>
                 </div>
                 <div class="price">
-                    <CurrentPrice class="ft-14" :product="product" />
-                    <OldPrice class="ft-12" :product="product" />
+                    <CurrentPrice class="ft-14" :variant="currentVariant" />
+                    <OldPrice class="ft-12" :variant="currentVariant" />
                 </div>
             </div>
         </template>
