@@ -65,18 +65,18 @@ export default {
             this.extend = false
         },
         onScrollBody(e) {
-            const threshold = 20
-            const scrollY = e.target.scrollTop
-            if (scrollY > this.extendAmount) {
-                this.extendAmount = scrollY
-            }
-            if (scrollY > threshold) {
-                this.extend = true
-            } else {
-                this.$nextTick(() => {
-                    this.extend = false
-                })
-            }
+            // const threshold = 20
+            // const scrollY = e.target.scrollTop
+            // if (scrollY > this.extendAmount) {
+            //     this.extendAmount = scrollY
+            // }
+            // if (scrollY > threshold) {
+            //     this.extend = true
+            // } else {
+            //     this.$nextTick(() => {
+            //         this.extend = false
+            //     })
+            // }
         },
     },
 }
@@ -119,7 +119,7 @@ export default {
             bottom: 0;
             border-radius: 16px 16px 0 0;
             transform: translateY(100%);
-            max-height: 85vh;
+            max-height: 90vh;
             .body {
                 overflow: auto;
             }
