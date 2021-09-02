@@ -67,21 +67,23 @@ export default {
             return products
         },
         async fetchProductsBySearch({ dispatch, rootGetters }, searchString) {
-            let baseUrl
-            const enabledFeaturues = rootGetters['workspaces/getEnabledFeatures']
-            if (enabledFeaturues.play_shop_bap_qa) {
-                baseUrl = 'admins/search-bap-qa-search'
+            let endpoint = null
+            const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
+            if (enabledFeatures.play_shop_bap_qa) {
+                endpoint = 'BapQA'
             }
-            if (enabledFeaturues.play_shop_bonaparte) {
+            if (enabledFeatures.play_shop_bonaparte) {
+                endpoint = 'Bonaparteshop'
             }
-            if (enabledFeaturues.play_shop_companys) {
+            if (enabledFeatures.play_shop_companys) {
+                endpoint = 'Companys'
             }
-            if (!baseUrl) {
+            if (!endpoint) {
                 console.error('No PLAY product integration')
                 return
             }
 
-            const apiUrl = `${baseUrl}?sort=standard&from=0&take=40&q=${searchString}`
+            const apiUrl = `admins/search-bap-qa-search?sort=standard&from=0&take=40&q=${searchString}?endpoint="${endpoint}"`
             let searchResult
             await axios
                 .get(apiUrl)
@@ -176,21 +178,24 @@ export default {
             return products
         },
         async fetchProduct({ rootGetters }, { product, locale }) {
-            let baseUrl
-            const enabledFeaturues = rootGetters['workspaces/getEnabledFeatures']
-            if (enabledFeaturues.play_shop_bap_qa) {
-                baseUrl = 'admins/search-bap-qa-getstyle'
+            let endpoint = null
+            const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
+            if (enabledFeatures.play_shop_bap_qa) {
+                endpoint = 'Bonaparteshop'
             }
-            if (enabledFeaturues.play_shop_bonaparte) {
+            if (enabledFeatures.play_shop_bonaparte) {
+                endpoint = 'Bonaparteshop'
             }
-            if (enabledFeaturues.play_shop_companys) {
+            if (enabledFeatures.play_shop_companys) {
+                endpoint = 'Companys'
             }
-            if (!baseUrl) {
+            if (!endpoint) {
                 console.error('No PLAY product integration')
                 return
             }
-
-            const apiUrl = `${baseUrl}?style=${product.datasource_id}${locale ? `&locale=${locale}` : ''}`
+            const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}&endpoint="${endpoint}"${
+                locale ? `&locale=${locale}` : ''
+            }`
             let fetchedProduct
             await axios
                 .get(apiUrl)
