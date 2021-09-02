@@ -66,8 +66,22 @@ export default {
 
             return products
         },
-        async fetchProductsBySearch({ dispatch }, searchString) {
-            const apiUrl = `admins/search-bap-qa-search?sort=standard&from=0&take=40&q=${searchString}`
+        async fetchProductsBySearch({ dispatch, rootGetters }, searchString) {
+            let baseUrl
+            const enabledFeaturues = rootGetters['workspaces/getEnabledFeatures']
+            if (enabledFeaturues.play_shop_bap_qa) {
+                baseUrl = 'admins/search-bap-qa-search'
+            }
+            if (enabledFeaturues.play_shop_bonaparte) {
+            }
+            if (enabledFeaturues.play_shop_companys) {
+            }
+            if (!baseUrl) {
+                console.error('No PLAY product integration')
+                return
+            }
+
+            const apiUrl = `${baseUrl}?sort=standard&from=0&take=40&q=${searchString}`
             let searchResult
             await axios
                 .get(apiUrl)
@@ -161,11 +175,22 @@ export default {
 
             return products
         },
-        async fetchProduct({}, { product, locale }) {
-            console.log('fetch product', locale)
-            const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}${
-                locale ? `&locale=${locale}` : ''
-            }`
+        async fetchProduct({ rootGetters }, { product, locale }) {
+            let baseUrl
+            const enabledFeaturues = rootGetters['workspaces/getEnabledFeatures']
+            if (enabledFeaturues.play_shop_bap_qa) {
+                baseUrl = 'admins/search-bap-qa-getstyle'
+            }
+            if (enabledFeaturues.play_shop_bonaparte) {
+            }
+            if (enabledFeaturues.play_shop_companys) {
+            }
+            if (!baseUrl) {
+                console.error('No PLAY product integration')
+                return
+            }
+
+            const apiUrl = `${baseUrl}?style=${product.datasource_id}${locale ? `&locale=${locale}` : ''}`
             let fetchedProduct
             await axios
                 .get(apiUrl)

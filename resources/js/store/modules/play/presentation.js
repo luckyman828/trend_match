@@ -314,7 +314,7 @@ export default {
             commit('SET_TIMING_STATUS', 'success')
         },
         async createKollektProductFromTiming({ dispatch, getters, rootGetters }, product) {
-            // TEMP BAP ONLY
+            // TEMP DKC ONLY
             // Fetch size ean for the product
             const productData = await dispatch('bonaparte/fetchProduct', { product }, { root: true })
 
