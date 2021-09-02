@@ -5,12 +5,7 @@
             class="image clickable"
             @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { variant, product: variant.product })"
         >
-            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
-            <div class="labels">
-                <button class="pill red xxs" v-if="!variant.inStock">
-                    <span>Sold out</span>
-                </button>
-            </div>
+            <VariantImage class="resize-target" :variant="variant" labelSize="xxs" />
         </BaseImageSizer>
 
         <div class="flex-list justify details flex-1">
@@ -40,10 +35,11 @@ import ChooseSizePopover from '../../ChooseSizePopover'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
 import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import VariantImage from '../../../../../components/PLAY/VariantImage'
 
 export default {
     name: 'AddToWishlistPopoverListItem',
-    components: { ChooseSizePopover, AddToWishlistButton, CurrentPrice, OldPrice },
+    components: { ChooseSizePopover, AddToWishlistButton, CurrentPrice, OldPrice, VariantImage },
     props: ['variant'],
     data() {
         return {}

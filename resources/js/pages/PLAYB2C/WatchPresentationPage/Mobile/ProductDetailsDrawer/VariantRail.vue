@@ -12,17 +12,7 @@
                     <span>{{ variant.name }}</span>
                 </div>
                 <div class="img-wrapper">
-                    <BaseVariantImage
-                        class="variant-image"
-                        :variant="variant"
-                        size="sm"
-                        :class="{ 'sold-out': !variant.inStock }"
-                    />
-                    <div class="labels">
-                        <button class="pill red xs" v-if="!variant.inStock">
-                            <span>Sold out</span>
-                        </button>
-                    </div>
+                    <VariantImage :variant="variant" labelSize="xxs" />
                 </div>
             </div>
         </div>
@@ -30,8 +20,12 @@
 </template>
 
 <script>
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
+import VariantImage from '../../../../../components/PLAY/VariantImage'
+
 export default {
     name: 'variantRail',
+    components: { SavingPercentagePill, VariantImage },
     props: ['product', 'currentVariant'],
 }
 </script>

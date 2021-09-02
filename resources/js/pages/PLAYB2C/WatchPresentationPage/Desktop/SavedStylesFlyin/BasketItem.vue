@@ -3,6 +3,7 @@
         <BaseImageSizer fit="cover" class="image" @click.native="SET_PDP_ITEM({ variant, product: variant.product })">
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
+                <SavingPercentagePill :variant="variant" />
                 <button class="pill red xs" v-if="!variant.inStock">
                     <span>Sold out</span>
                 </button>
@@ -85,10 +86,11 @@ import ChooseSizePopover from '../../ChooseSizePopover'
 import variantImage from '../../../../../mixins/variantImage'
 import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
 import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'basketItem',
-    components: { AddToWishlistButton, ChooseSizePopover, CurrentPrice, OldPrice },
+    components: { AddToWishlistButton, ChooseSizePopover, CurrentPrice, OldPrice, SavingPercentagePill },
     mixins: [variantImage],
     props: ['item'],
     computed: {

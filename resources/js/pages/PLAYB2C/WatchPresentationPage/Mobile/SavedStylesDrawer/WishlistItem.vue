@@ -3,6 +3,7 @@
         <BaseImageSizer fit="cover" class="image">
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
+                <SavingPercentagePill :variant="variant" />
                 <button class="pill red xs" v-if="!variant.inStock">
                     <span>Sold out</span>
                 </button>
@@ -55,10 +56,11 @@ import { mapGetters } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
 import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'wishlistItem',
-    components: { AddToWishlistButton, CurrentPrice, OldPrice },
+    components: { AddToWishlistButton, CurrentPrice, OldPrice, SavingPercentagePill },
     props: ['variant'],
     computed: {
         ...mapGetters('basket', {

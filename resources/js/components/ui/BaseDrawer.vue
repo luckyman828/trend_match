@@ -108,9 +108,9 @@ export default {
         .header {
             padding: 12px 16px;
             // min-height: 80px;
-            &.show-shadow {
-                box-shadow: $shadowModule;
-            }
+            // &.show-shadow {
+            //     box-shadow: $shadowModule;
+            // }
         }
         &.extend {
             transition: transform 0.1s ease-out;

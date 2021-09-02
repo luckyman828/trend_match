@@ -2,20 +2,17 @@
     <div class="main-image" :style="{ backgroundImage: `url(${variantImage(variant, imgIndex)})` }">
         <BaseImageSizer class="img-wrapper" fit="contain">
             <BaseVariantImage :variant="variant" :index="imgIndex" :class="{ 'sold-out': !variant.inStock }" />
-            <div class="labels">
-                <button class="pill red xs" v-if="!variant.inStock">
-                    <span>Sold out</span>
-                </button>
-            </div>
         </BaseImageSizer>
     </div>
 </template>
 
 <script>
 import variantImage from '../../../../../mixins/variantImage'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'mainImage',
+    components: { SavingPercentagePill },
     mixins: [variantImage],
     props: ['variant', 'imgIndex'],
 }

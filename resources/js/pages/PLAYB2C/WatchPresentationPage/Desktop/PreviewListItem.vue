@@ -16,6 +16,7 @@
             <BaseImageSizer class="img-wrapper" fit="cover">
                 <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
                 <div class="labels">
+                    <SavingPercentagePill :variant="variant" />
                     <button class="pill red xs" v-if="!variant.inStock">
                         <span>Sold out</span>
                     </button>
@@ -61,10 +62,11 @@ import AddToWishlistButton from '../AddToWishlistButton.vue'
 import AddToBasketButton from '../AddToBasketButton'
 import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
 import OldPrice from '../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'PreviewListItem',
-    components: { AddToWishlistButton, AddToBasketButton, CurrentPrice, OldPrice },
+    components: { AddToWishlistButton, AddToBasketButton, CurrentPrice, OldPrice, SavingPercentagePill },
     props: ['variant'],
     data() {
         return {

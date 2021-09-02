@@ -19,7 +19,8 @@
                         :class="{ 'sold-out': !variant.inStock }"
                     />
                     <div class="labels">
-                        <button class="pill red xs" v-if="!variant.inStock">
+                        <SavingPercentagePill :variant="variant" />
+                        <button class="pill red xs" v-if="!variant.inStock" style="margin-top: 4px;">
                             <span>Sold out</span>
                         </button>
                     </div>
@@ -30,8 +31,11 @@
 </template>
 
 <script>
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
+
 export default {
     name: 'variantRail',
+    components: { SavingPercentagePill },
     props: ['product', 'currentVariant'],
 }
 </script>

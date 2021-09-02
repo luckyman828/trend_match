@@ -15,11 +15,6 @@
                         },
                     }"
                 />
-                <div class="labels">
-                    <button class="pill red xs" v-if="!variant.inStock">
-                        <span>Sold out</span>
-                    </button>
-                </div>
             </BaseImageSizer>
         </div>
         <div class="pagination flex-list center-h">
@@ -31,8 +26,11 @@
 </template>
 
 <script>
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
+
 export default {
     name: 'imageRail',
+    components: { SavingPercentagePill },
     props: ['variant'],
     data() {
         return {
@@ -83,13 +81,5 @@ export default {
             font-size: 12px;
         }
     }
-    .labels {
-        position: absolute;
-        bottom: 8px;
-        left: 4px;
-    }
-    // img.sold-out {
-    //     opacity: 0.5;
-    // }
 }
 </style>

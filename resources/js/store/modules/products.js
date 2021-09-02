@@ -1448,12 +1448,13 @@ export default {
                                     return product.yourPrice
                                 }
                                 // If no prices are available, return a default empty price object
-                                return {
+                                const newPrice = {
                                     currency: 'Not set',
                                     mark_up: null,
                                     wholesale_price: null,
                                     recommended_retail_price: null,
                                 }
+                                return newPrice
                             }
                             // Else check if we have a preferred currency set, and try to match that
                             if (product.preferred_currency) {

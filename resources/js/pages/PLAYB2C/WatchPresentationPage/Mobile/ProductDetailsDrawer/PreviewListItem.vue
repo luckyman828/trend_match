@@ -2,18 +2,16 @@
     <div class="preview-list-item" :class="{ current: isCurrent }">
         <BaseImageSizer fit="cover" class="image">
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
-            <div class="labels">
-                <button class="pill red xxs" v-if="!variant.inStock">
-                    <span>Out</span>
-                </button>
-            </div>
         </BaseImageSizer>
     </div>
 </template>
 
 <script>
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
+
 export default {
     name: 'previewListItem',
+    components: { SavingPercentagePill },
     props: ['variant', 'isCurrent'],
 }
 </script>
@@ -30,12 +28,4 @@ export default {
 .image {
     width: 100%;
 }
-.labels {
-    position: absolute;
-    bottom: 4px;
-    left: 4px;
-}
-// img.sold-out {
-//     opacity: 0.5;
-// }
 </style>

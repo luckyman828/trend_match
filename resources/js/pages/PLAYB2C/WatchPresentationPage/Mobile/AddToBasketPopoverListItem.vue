@@ -3,6 +3,7 @@
         <BaseImageSizer fit="cover" class="image">
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
+                <SavingPercentagePill :variant="variant" size="xxs" />
                 <button class="pill red xxs" v-if="!variant.inStock">
                     <span>Sold out</span>
                 </button>
@@ -66,10 +67,11 @@ import ChooseSizePopover from '../ChooseSizePopover'
 import AddToBasketButton from '../AddToBasketButton'
 import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
 import OldPrice from '../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'AddToBasketPopoverListItem',
-    components: { ChooseSizePopover, AddToBasketButton, CurrentPrice, OldPrice },
+    components: { ChooseSizePopover, AddToBasketButton, CurrentPrice, OldPrice, SavingPercentagePill },
     props: ['variant', 'sizePopoverContainer'],
     data() {
         return {

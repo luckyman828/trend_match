@@ -5,12 +5,7 @@
             class="image clickable"
             @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { variant, product: variant.product })"
         >
-            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
-            <div class="labels">
-                <button class="pill red xxs" v-if="!variant.inStock">
-                    <span>Sold out</span>
-                </button>
-            </div>
+            <VariantImage class="resize-target" :variant="variant" labelSize="xxs" />
         </BaseImageSizer>
 
         <div class="flex-list flex-v justify details fill">
@@ -70,10 +65,12 @@ import ChooseSizePopover from '../ChooseSizePopover'
 import AddToBasketButton from '../AddToBasketButton'
 import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
 import OldPrice from '../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../components/PLAY/prices/SavingPercentagePill'
+import VariantImage from '../../../../components/PLAY/VariantImage'
 
 export default {
     name: 'AddToBasketPopoverListItem',
-    components: { ChooseSizePopover, AddToBasketButton, CurrentPrice, OldPrice },
+    components: { ChooseSizePopover, AddToBasketButton, CurrentPrice, OldPrice, SavingPercentagePill, VariantImage },
     props: ['variant', 'sizePopoverContainer'],
     data() {
         return {
@@ -95,14 +92,6 @@ export default {
     }
     .product-name {
         max-width: 120px;
-    }
-    .labels {
-        position: absolute;
-        bottom: 4px;
-        left: 4px;
-    }
-    img.sold-out {
-        opacity: 0.5;
     }
 }
 </style>
