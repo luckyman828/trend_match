@@ -1420,6 +1420,7 @@ export default {
                     if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
                     if (!variant.delivery_dates) Vue.set(variant, 'delivery_dates', [])
+                    if (!variant.prices) Vue.set(variant, 'prices', [])
                     // Custom Props
                     if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
 
@@ -1441,7 +1442,28 @@ export default {
 
                     Object.defineProperty(variant, 'yourPrice', {
                         get: function() {
-                            return product.yourPrice
+                            // Check if the product has any prices
+                            if (variant.prices.length <= 0) {
+                                if (!!product.yourPrice) {
+                                    return product.yourPrice
+                                }
+                                // If no prices are available, return a default empty price object
+                                return {
+                                    currency: 'Not set',
+                                    mark_up: null,
+                                    wholesale_price: null,
+                                    recommended_retail_price: null,
+                                }
+                            }
+                            // Else check if we have a preferred currency set, and try to match that
+                            if (product.preferred_currency) {
+                                const preferredPrice = variant.prices.find(
+                                    x => x.currency == product.preferred_currency
+                                )
+                                if (preferredPrice) return preferredPrice
+                            }
+                            // If nothing else worked, return the first available price
+                            return variant.prices[0]
                         },
                     })
                     Object.defineProperty(variant, 'getActiveSelectionInput', {
