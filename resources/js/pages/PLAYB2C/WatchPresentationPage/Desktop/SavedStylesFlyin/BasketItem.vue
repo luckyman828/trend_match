@@ -22,17 +22,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-12">
-                        {{
-                            variant.yourPrice.wholesale_price
-                                ? variant.yourPrice.wholesale_price
-                                : variant.yourPrice.recommended_retail_price
-                        }}
-                        {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-strike ft-12 ft-bd" v-if="variant.yourPrice.wholesale_price">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :product="variant.product" />
+                    <OldPrice :product="variant.product" />
                 </div>
             </div>
 
@@ -92,10 +83,12 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import ChooseSizePopover from '../../ChooseSizePopover'
 import variantImage from '../../../../../mixins/variantImage'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'basketItem',
-    components: { AddToWishlistButton, ChooseSizePopover },
+    components: { AddToWishlistButton, ChooseSizePopover, CurrentPrice, OldPrice },
     mixins: [variantImage],
     props: ['item'],
     computed: {

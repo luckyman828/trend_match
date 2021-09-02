@@ -23,8 +23,8 @@
                 />
 
                 <div class="price flex-list center-v form-element">
-                    <CurrentPrice :product="product" />
-                    <OldPrice :product="product" />
+                    <CurrentPrice :product="product" class="ft-14" style="font-size: 14px;" />
+                    <OldPrice :product="product" class="ft-14" style="font-size: 14px;" />
                 </div>
 
                 <div class="form-element flex-list-item">
@@ -141,16 +141,6 @@ export default {
     }
     .header-inner {
         padding: 8px 8px 0 16px;
-    }
-    .price {
-        font-size: 14px;
-        font-weight: 500;
-        text-align: right;
-        .old-price {
-            text-decoration: line-through;
-            font-size: 12px;
-            opacity: 0.5;
-        }
     }
     .body-inner {
         padding: 0 0 100px;

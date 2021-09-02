@@ -8,8 +8,8 @@
                     <h3 class="product-name">{{ product.name }}</h3>
                 </div>
                 <div class="price">
-                    <CurrentPrice :product="product" />
-                    <OldPrice :product="product" />
+                    <CurrentPrice class="ft-14" :product="product" />
+                    <OldPrice class="ft-12" :product="product" />
                 </div>
             </div>
         </template>
@@ -130,14 +130,7 @@ export default {
         color: $fontSoft;
     }
     .price {
-        font-size: 14px;
-        font-weight: 500;
         text-align: right;
-        .old-price {
-            text-decoration: line-through;
-            font-size: 12px;
-            opacity: 0.5;
-        }
     }
     .body-inner {
         padding: 0 16px 100px;

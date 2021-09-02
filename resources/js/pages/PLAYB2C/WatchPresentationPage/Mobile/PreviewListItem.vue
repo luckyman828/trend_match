@@ -8,23 +8,20 @@
                 </button>
             </div>
         </BaseImageSizer>
-        <div class="price-wrapper">
-            <span class="price"
-                >{{
-                    variant.product.yourPrice.wholesale_price
-                        ? variant.product.yourPrice.wholesale_price
-                        : variant.product.yourPrice.recommended_retail_price
-                }}
-                {{ variant.product.yourPrice.currency }}</span
-            >
+        <div class="price-wrapper flex-list">
+            <CurrentPrice :product="variant.product" />
         </div>
     </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
+
 export default {
     name: 'PreviewListItem',
+    components: { CurrentPrice, OldPrice },
     props: ['variant'],
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),

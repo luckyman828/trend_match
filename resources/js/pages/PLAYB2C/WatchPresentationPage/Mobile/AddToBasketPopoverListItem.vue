@@ -22,17 +22,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-10">
-                        {{
-                            variant.yourPrice.wholesale_price
-                                ? variant.yourPrice.wholesale_price
-                                : variant.yourPrice.recommended_retail_price
-                        }}
-                        {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-10 ft-bd ft-strike" v-if="variant.yourPrice.wholesale_price">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :product="variant.product" />
+                    <OldPrice :product="variant.product" />
                 </div>
             </div>
 
@@ -73,10 +64,12 @@
 <script>
 import ChooseSizePopover from '../ChooseSizePopover'
 import AddToBasketButton from '../AddToBasketButton'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'AddToBasketPopoverListItem',
-    components: { ChooseSizePopover, AddToBasketButton },
+    components: { ChooseSizePopover, AddToBasketButton, CurrentPrice, OldPrice },
     props: ['variant', 'sizePopoverContainer'],
     data() {
         return {

@@ -21,15 +21,8 @@
                     </button>
                 </div>
             </BaseImageSizer>
-            <div class="price-wrapper">
-                <span class="price"
-                    >{{
-                        variant.product.yourPrice.wholesale_price
-                            ? variant.product.yourPrice.wholesale_price
-                            : variant.product.yourPrice.recommended_retail_price
-                    }}
-                    {{ variant.product.yourPrice.currency }}</span
-                >
+            <div class="price-wrapper flex-list">
+                <CurrentPrice :product="variant.product" />
             </div>
             <div class="icon-list flex-list space-sm">
                 <div class="circle xs red" v-if="isInWishlist">
@@ -66,10 +59,12 @@
 import { mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../AddToWishlistButton.vue'
 import AddToBasketButton from '../AddToBasketButton'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'PreviewListItem',
-    components: { AddToWishlistButton, AddToBasketButton },
+    components: { AddToWishlistButton, AddToBasketButton, CurrentPrice, OldPrice },
     props: ['variant'],
     data() {
         return {

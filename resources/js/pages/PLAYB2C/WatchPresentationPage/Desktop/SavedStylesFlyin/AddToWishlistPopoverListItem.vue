@@ -22,17 +22,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-10">
-                        {{
-                            variant.yourPrice.wholesale_price
-                                ? variant.yourPrice.wholesale_price
-                                : variant.yourPrice.recommended_retail_price
-                        }}
-                        {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-strike ft-10 ft-bd" v-if="variant.yourPrice.wholesale_price">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :product="variant.product" />
+                    <OldPrice :product="variant.product" />
                 </div>
             </div>
 
@@ -47,10 +38,12 @@
 <script>
 import ChooseSizePopover from '../../ChooseSizePopover'
 import AddToWishlistButton from '../../AddToWishlistButton'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'AddToWishlistPopoverListItem',
-    components: { ChooseSizePopover, AddToWishlistButton },
+    components: { ChooseSizePopover, AddToWishlistButton, CurrentPrice, OldPrice },
     props: ['variant'],
     data() {
         return {}

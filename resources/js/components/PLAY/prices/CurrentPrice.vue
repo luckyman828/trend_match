@@ -1,6 +1,11 @@
 <template>
-    <div class="current-price ft-bd" v-if="product.yourPrice.wholesale_price">
-        {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
+    <div class="current-price ft-bd" :class="product.yourPrice.wholesale_price && 'color-red'">
+        {{
+            product.yourPrice.wholesale_price
+                ? product.yourPrice.wholesale_price
+                : product.yourPrice.recommended_retail_price
+        }}
+        {{ product.yourPrice.currency }}
     </div>
 </template>
 
@@ -17,7 +22,6 @@ export default {
 
 <style lang="scss" scoped>
 .current-price {
-    color: $red;
     font-size: 11px;
 }
 </style>

@@ -17,17 +17,8 @@
                     </div>
                     <div class="product-name">{{ variant.name }}</div>
                     <div class="price flex-list md">
-                        <div class="current-price">
-                            {{
-                                variant.yourPrice.wholesale_price
-                                    ? variant.yourPrice.wholesale_price
-                                    : variant.yourPrice.recommended_retail_price
-                            }}
-                            {{ variant.yourPrice.currency }}
-                        </div>
-                        <div class="old-price" v-if="variant.yourPrice.wholesale_price">
-                            {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                        </div>
+                        <CurrentPrice :product="variant.product" />
+                        <OldPrice :product="variant.product" />
                     </div>
                 </div>
                 <div class="action-list flex-list">
@@ -83,10 +74,12 @@
 import { mapActions, mapGetters } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import ChooseSizePopover from '../../ChooseSizePopover'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'basketItem',
-    components: { AddToWishlistButton, ChooseSizePopover },
+    components: { AddToWishlistButton, ChooseSizePopover, CurrentPrice, OldPrice },
     props: ['item'],
     computed: {
         ...mapGetters('basket', {
