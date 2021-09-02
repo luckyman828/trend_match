@@ -207,6 +207,7 @@ export default {
                             newSizeData = newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
                             return newSizeData
                         })
+                        if (!newSizeData) return
                         sizeObj.quantity = newSizeData.stockCount
                     })
                 })
