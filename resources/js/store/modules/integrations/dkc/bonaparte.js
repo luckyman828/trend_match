@@ -69,9 +69,14 @@ export default {
         async fetchProductsBySearch({ dispatch }, searchString) {
             const apiUrl = `admins/search-bap-qa-search?sort=standard&from=0&take=40&q=${searchString}`
             let searchResult
-            await axios.get(apiUrl).then(response => {
-                searchResult = response.data
-            })
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    searchResult = response.data
+                })
+                .catch(err => {
+                    console.log('error when fetching products by search', err.message)
+                })
 
             const searchProducts = searchResult.products ? searchResult.products : []
 
