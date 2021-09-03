@@ -265,6 +265,11 @@ export function embed({
         if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
         const msgData = event.data
 
+        // CLOSE PRESENTATION
+        if (msgData.action == 'closePresentation') {
+            onClose()
+        }
+
         // GET BASKET
         if (msgData.action == 'getBasket' && getBasketCallback) {
             getBasketCallback()

@@ -74,7 +74,7 @@
         </Portal>
 
         <BaseFloatyBar v-if="view == 'basket'" :show="show" pos="bottom" classes="rounded">
-            <BaseButton
+            <!-- <BaseButton
                 class="checkout-button full-width"
                 buttonClass="dark full-width pill lg checkout-button"
                 :disabled="basket.length <= 0 || !isEmbedded || !(playShop && playShop.checkout_url)"
@@ -88,7 +88,17 @@
                         - {{ basketTotal }} {{ basketCurrency }}</template
                     ></span
                 >
+            </BaseButton> -->
+
+            <!-- TEMP -->
+            <BaseButton
+                class="checkout-button full-width"
+                buttonClass="dark full-width pill lg checkout-button"
+                @click="onGoToCheckout"
+            >
+                <span>Afslut og shop videre</span>
             </BaseButton>
+            <!-- END TEMP -->
         </BaseFloatyBar>
     </BaseDrawer>
 </template>
@@ -149,7 +159,8 @@ export default {
     },
     methods: {
         onGoToCheckout() {
-            this.$store.dispatch('basket/goToCheckout')
+            this.$store.dispatch('playEmbed/postMessage', { action: 'closePresentation' })
+            // this.$store.dispatch('basket/goToCheckout')
         },
         onEditWishlistVariants(mouseEvent, variant) {
             this.popoverProduct = variant.product
