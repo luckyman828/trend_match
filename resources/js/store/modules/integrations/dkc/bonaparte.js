@@ -140,10 +140,20 @@ export default {
                                     currency,
                                 },
                             ],
-                            pictures: product.images.map(image => ({
-                                url: `${image.url}&w=232&h=348`,
-                                name: `type=${image.type}&perspectiveKey=${image.perspectiveKey}&viewKey="${image.viewKey}`,
-                            })),
+                            pictures: product.images
+                                .sort((a, b) => {
+                                    if (a.type == 'Pack' && b.type != 'Pack') {
+                                        return -1
+                                    }
+                                    if (a.perspectiveKey != b.perspectiveKey) {
+                                        return parseInt(a.perspectiveKey) - parseInt(b.perspectiveKey)
+                                    }
+                                    return parseInt(a.viewKey) - parseInt(b.viewKey)
+                                })
+                                .map(image => ({
+                                    url: `${image.url}&w=232&h=348`,
+                                    name: `type=${image.type}&perspectiveKey=${image.perspectiveKey}&viewKey="${image.viewKey}`,
+                                })),
                             ean_sizes: !product.availableSizes
                                 ? []
                                 : Object.keys(product.availableSizes).map((sizeDetail, index) => ({
