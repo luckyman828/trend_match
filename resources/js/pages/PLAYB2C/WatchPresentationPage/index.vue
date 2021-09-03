@@ -86,8 +86,7 @@ export default {
             this.SET_DESIRED_QUALITY('HD1080P')
 
             // Get locale
-            // const presenationLocale = this.$route.query.locale
-            const presenationLocale = 'DE_DE'
+            const presenationLocale = this.$route.query.locale
 
             // Sync products
             // TEMP BAP ONLY SOLUTION
