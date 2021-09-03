@@ -69,7 +69,7 @@ export default {
         async fetchProductsBySearch({ dispatch, rootGetters }, searchString) {
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
             let baseUrl = null
-            const locale = ''
+            const locale = 'DA_DK'
             const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
             if (enabledFeatures.play_shop_bap_qa) {
                 baseUrl = `https://search-bap-qa.bap-test.com/api/${theLocale}/v1.0/product/search`
@@ -116,13 +116,30 @@ export default {
                         continue
                     }
 
+                    // Update prices
+                    const dkcLocaleMap = rootGetters['integrationDkc/getLocales']
+                    const currency = locale
+                        ? dkcLocaleMap.find(localeMap => localeMap.locale == locale).currency
+                        : 'DKK'
+
+                    const price = product.beforePrice
+                        ? parseFloat(product.beforePrice.replaceAll(',', '.').replaceAll(/[^(0-9|.)]/g, ''))
+                        : product.priceRaw
+                    const currentPrice = product.beforePrice ? product.priceRaw : 0
+
                     // Instantiate a new product variant
                     const newProductVariant = await dispatch(
                         'products/instantiateNewProductVariant',
                         {
                             color: product.colorName,
                             name: product.colorName,
-                            pictures: [{ name: 'image_link', url: product.image_link }],
+                            prices: [
+                                {
+                                    recommended_retail_price: price,
+                                    wholesale_price: currentPrice,
+                                    currency,
+                                },
+                            ],
                             pictures: product.images.map(image => ({
                                 url: `${image.url}&w=232&h=348`,
                                 name: `type=${image.type}&perspectiveKey=${image.perspectiveKey}&viewKey="${image.viewKey}`,
@@ -144,25 +161,12 @@ export default {
                     if (existingProduct) {
                         existingProduct.variants.push(newProductVariant)
                     } else {
-                        // Calc prices
-                        const newPrice = product.beforePrice
-                            ? parseFloat(product.beforePrice.replaceAll(',', '.'))
-                            : product.priceRaw
-                        const newSalePrice = product.beforePrice ? product.priceRaw : 0
-
                         const newProduct = await dispatch(
                             'products/instantiateNewProduct',
                             {
                                 datasource_id: productId,
                                 sale_description: product.description,
                                 category: product.styleShopItemGroup,
-                                prices: [
-                                    {
-                                        currency: 'DKK',
-                                        recommended_retail_price: newPrice,
-                                        wholesale_price: newSalePrice,
-                                    },
-                                ],
                                 brand: product.brand,
                                 title: product.name,
                                 variants: [newProductVariant],

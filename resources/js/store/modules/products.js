@@ -621,6 +621,7 @@ export default {
                 labels: variantData.labels || [],
                 pictures: variantData.pictures || [],
                 style_option_id: variantData.style_option_id || null,
+                prices: variantData.prices || [],
             }
         },
         setCurrentProduct({ commit }, product) {
