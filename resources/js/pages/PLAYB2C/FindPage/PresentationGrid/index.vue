@@ -21,7 +21,7 @@
             <div class="msg" style="text-align: center;">
                 Whoops, it's so empty here!<br /><strong>Let's create some presentations to get started</strong>
             </div>
-            <button class="pill w-xl primary lg" @click="onShowNewPresentationModal">
+            <button class="pill w-xl primary lg" @click="onShowNewPresentationModal()">
                 <span>Create new presentation</span>
             </button>
         </div>
