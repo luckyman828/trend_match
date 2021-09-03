@@ -67,26 +67,30 @@ export default {
             return products
         },
         async fetchProductsBySearch({ dispatch, rootGetters }, searchString) {
-            let endpoint = null
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
+            let baseUrl = null
+            const locale = ''
+            const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
             if (enabledFeatures.play_shop_bap_qa) {
-                endpoint = 'BapQA'
+                baseUrl = `https://search-bap-qa.bap-test.com/api/${theLocale}/v1.0/product/search`
             }
             if (enabledFeatures.play_shop_bonaparte) {
-                endpoint = 'Bonaparteshop'
+                baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v1.0/product/search`
             }
             if (enabledFeatures.play_shop_companys) {
-                endpoint = 'Companys'
+                baseUrl = `https://search.companys.com/api/${theLocale}/v1.0/product/search`
             }
-            if (!endpoint) {
+            if (!baseUrl) {
                 console.error('No PLAY product integration')
                 return
             }
 
-            const apiUrl = `admins/search-bap-qa-search?sort=standard&from=0&take=40&q=${searchString}?endpoint="${endpoint}"`
+            const apiUrl = `http-proxy/proxy`
             let searchResult
             await axios
-                .get(apiUrl)
+                .post(apiUrl, {
+                    proxy_url: `${baseUrl}?sort=standard&facet=styleBrand&facet=productColorGroupRGBMain&facet=productQualityDKC&facet=styleProgram&q=${searchString}&take=20&from=0`,
+                })
                 .then(response => {
                     searchResult = response.data
                 })
@@ -178,27 +182,29 @@ export default {
             return products
         },
         async fetchProduct({ rootGetters }, { product, locale }) {
-            let endpoint = null
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
+            let baseUrl = null
+            const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
             if (enabledFeatures.play_shop_bap_qa) {
-                endpoint = 'Bonaparteshop'
+                baseUrl = `https://search-bap-qa.bap-test.com/api/${theLocale}/v2.0/Product/GetStyle`
+                // ?style=30306309&includeVariantNo=194023`
             }
             if (enabledFeatures.play_shop_bonaparte) {
-                endpoint = 'Bonaparteshop'
+                baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v2.0/Product/GetStyle`
             }
             if (enabledFeatures.play_shop_companys) {
-                endpoint = 'Companys'
+                baseUrl = `https://search.companys.com/api/${theLocale}/v2.0/Product/GetStyle`
             }
-            if (!endpoint) {
+            if (!baseUrl) {
                 console.error('No PLAY product integration')
                 return
             }
-            const apiUrl = `admins/search-bap-qa-getstyle?style=${product.datasource_id}&endpoint="${endpoint}"${
-                locale ? `&locale=${locale}` : ''
-            }`
+            const apiUrl = `http-proxy/proxy`
             let fetchedProduct
             await axios
-                .get(apiUrl)
+                .post(apiUrl, {
+                    proxy_url: `${baseUrl}?style=${product.datasource_id}`,
+                })
                 .then(response => {
                     fetchedProduct = response.data
                 })
@@ -265,7 +271,7 @@ export default {
                         // Find the new size data
                         const newSizeData = newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
                         if (!newSizeData) return
-                        sizeObj.quantity = newSizeData.stockCount
+                        sizeObj.quantity = newSizeData.inStock
                     })
                 })
             }
