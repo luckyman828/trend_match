@@ -24,8 +24,9 @@ export default {
     border: $borderEl;
     border-radius: $borderRadiusSm;
     overflow: hidden;
+    cursor: zoom-in;
     .img-wrapper {
-        width: 240px;
+        width: 272px;
         backdrop-filter: blur(10px);
     }
     .labels {

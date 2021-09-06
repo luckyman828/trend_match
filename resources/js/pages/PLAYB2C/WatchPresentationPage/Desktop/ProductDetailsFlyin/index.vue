@@ -13,7 +13,7 @@
         </template>
         <template v-slot:default v-if="product">
             <div class="body-inner form-wrapper">
-                <MainImageSection :variant="currentVariant" class="form-element" @click.native="onShowLightbox" />
+                <MainImageSection :variant="currentVariant" class="form-element" />
 
                 <VariantRail
                     class="form-element"
@@ -101,11 +101,6 @@ export default {
     methods: {
         setCurrentVariant(variant) {
             this.currentVariant = variant
-        },
-        onShowLightbox() {
-            this.$store.commit('lightbox/SET_LIGHTBOX_VISIBLE', true)
-            const images = this.currentVariant.pictures.map(picture => picture.url)
-            this.$store.commit('lightbox/SET_LIGHTBOX_IMAGES', images)
         },
     },
     watch: {

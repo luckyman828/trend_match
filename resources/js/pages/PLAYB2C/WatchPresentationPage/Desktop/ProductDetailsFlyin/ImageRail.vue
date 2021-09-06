@@ -6,7 +6,9 @@
                 fit="cover"
                 v-for="(picture, index) in variant.pictures"
                 :key="index"
-                @click="$emit('update:imgIndex', index)"
+                @mouseenter.native="$emit('update:imgIndex', index)"
+                @mouseleave.native="$emit('update:imgIndex', 0)"
+                @click.native="$emit('show-lightbox', index)"
             >
                 <BaseVariantImage class="variant-image" :variant="variant" :index="index" size="lg" />
             </BaseImageSizer>
@@ -36,10 +38,12 @@ export default {
         padding-right: 8px;
         .img-wrapper {
             position: relative;
-            width: 48px;
-            min-width: 48px;
+            width: 64px;
+            min-width: 64px;
             border: $borderEl;
             border-radius: $borderRadiusSm;
+            overflow: hidden;
+            cursor: zoom-in;
         }
         &::after {
             content: '';
