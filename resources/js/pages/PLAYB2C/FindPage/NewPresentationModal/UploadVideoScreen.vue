@@ -63,8 +63,14 @@
                         </div>
                     </div>
                     <div class="flex-list flex-v center-h">
-                        <div class="ft-16 ft-bd">Success!</div>
-                        <div class="ft-12 ft-md color-grey">Your video is being uploaded</div>
+                        <template v-if="!submitDisabled">
+                            <div class="ft-16 ft-bd">Success!</div>
+                            <div class="ft-12 ft-md color-grey">Your video is being uploaded</div>
+                        </template>
+                        <template v-else>
+                            <div class="ft-16 ft-bd">Whoops! That's not quite right</div>
+                            <div class="ft-12 ft-md color-grey">{{ submitDisabled }}</div>
+                        </template>
                         <button class="pill white" @click="slotProps.activate()">
                             <i class="far fa-laptop"></i>
                             <span>Choose another file</span>
