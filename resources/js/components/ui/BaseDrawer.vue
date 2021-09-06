@@ -3,6 +3,7 @@
         <div class="overlay" @click="$emit('close')" />
         <div class="drawer" :class="[`pos-${position}`, { extend: extend }]" :style="extendStyle">
             <div class="header" v-touch:swipe.down="onSwipeDown" :class="{ 'show-shadow': showHeaderShadow }">
+                <div class="drag-handle"></div>
                 <slot name="header" />
             </div>
             <div class="body" @scroll.passive="onScrollBody">
@@ -111,6 +112,17 @@ export default {
             // &.show-shadow {
             //     box-shadow: $shadowModule;
             // }
+            .drag-handle {
+                width: 48px;
+                height: 4px;
+                border-radius: 4px;
+                background: $dark;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 8px;
+                margin: auto;
+            }
         }
         &.extend {
             transition: transform 0.1s ease-out;
