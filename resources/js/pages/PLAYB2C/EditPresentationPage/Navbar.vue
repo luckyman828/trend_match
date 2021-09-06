@@ -184,7 +184,11 @@ export default {
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async onDeletePresentation() {
             if (await this.$refs.deletePresentationDialog.confirm()) {
-                this.deleteFile(this.presentation)
+                await this.deleteFile(this.presentation).then(wasDeleted => {
+                    if (wasDeleted) {
+                        this.$router.push({ name: 'play.find' })
+                    }
+                })
             }
         },
         onSubmitDetails() {

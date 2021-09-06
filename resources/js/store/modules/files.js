@@ -282,72 +282,76 @@ export default {
             }
         },
         async deleteFile({ commit, dispatch }, file) {
-            commit('deleteFile', file.id)
+            return new Promise(resolve => {
+                commit('deleteFile', file.id)
 
-            const apiUrl = `/files/${file.id}`
+                const apiUrl = `/files/${file.id}`
 
-            // Start timer for deletion
-            let wasCancelled = false
-            commit(
-                'alerts/SHOW_SNACKBAR',
-                {
-                    msg: `${file.type} will be deleted`,
-                    iconClass: 'fa-trash',
-                    type: 'danger',
-                    callback: () => {
-                        wasCancelled = true
-                        undoDelete()
+                // Start timer for deletion
+                let wasCancelled = false
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `${file.type ? file.type : 'File'} will be deleted`,
+                        iconClass: 'fa-trash',
+                        type: 'danger',
+                        callback: () => {
+                            wasCancelled = true
+                            undoDelete()
+                            resolve(false)
+                        },
+                        callbackLabel: 'Undo',
+                        timeoutCallback: () => {
+                            if (!wasCancelled) {
+                                sendRequest()
+                                resolve(true)
+                            }
+                        },
                     },
-                    callbackLabel: 'Undo',
-                    timeoutCallback: () => {
-                        if (!wasCancelled) {
-                            sendRequest()
-                        }
-                    },
-                },
-                { root: true }
-            )
+                    { root: true }
+                )
 
-            const sendRequest = async () => {
-                await axios
-                    .delete(apiUrl)
-                    .then(response => {
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: `${file.type} permanently deleted`,
-                                iconClass: 'fa-check',
-                                type: 'success',
-                            },
-                            { root: true }
-                        )
-                    })
-                    .catch(err => {
-                        // Undo
-                        undoDelete()
-                        // Display message
-                        const errMsg = file.id
-                            ? `Error when deleting ${file.type}. Please try again.`
-                            : `Error when deleting ${file.type}. Please try again.`
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: errMsg,
-                                iconClass: 'fa-exclamation-triangle',
-                                type: 'warning',
-                                callback: () => dispatch('deleteFile', file),
-                                callbackLabel: 'Retry',
-                                duration: 0,
-                            },
-                            { root: true }
-                        )
-                    })
-            }
+                const sendRequest = async () => {
+                    await axios
+                        .delete(apiUrl)
+                        .then(response => {
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: `${file.type ? file.type : 'File'} permanently deleted`,
+                                    iconClass: 'fa-check',
+                                    type: 'success',
+                                },
+                                { root: true }
+                            )
+                        })
+                        .catch(err => {
+                            // Undo
+                            undoDelete()
+                            // Display message
+                            const errMsg = file.id
+                                ? `Error when deleting ${file.type ? file.type : 'File'}. Please try again.`
+                                : `Error when deleting ${file.type ? file.type : 'File'}. Please try again.`
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: errMsg,
+                                    iconClass: 'fa-exclamation-triangle',
+                                    type: 'warning',
+                                    callback: () => dispatch('deleteFile', file),
+                                    callbackLabel: 'Retry',
+                                    duration: 0,
+                                },
+                                { root: true }
+                            )
+                        })
+                }
 
-            // Undo delete
-            const undoDelete = () => {
-                commit('INSERT_FILE', file)
-            }
+                // Undo delete
+                const undoDelete = () => {
+                    commit('INSERT_FILE', file)
+                }
+            })
         },
         async deleteMultipleFiles({ commit, dispatch }, files) {
             // Create a new array that holds all the files in case the parsed array is tampered with
