@@ -70,7 +70,7 @@ export default {
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
             // let baseUrl = null
             // TEMP
-            let baseUrl = 'https://search.bonaparteshop.com/api/${theLocale}/v1.0/product/search'
+            let baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v1.0/product/search`
             // END TEMP
             const locale = 'DA_DK'
             const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
@@ -202,7 +202,7 @@ export default {
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
             // let baseUrl = null
             // TEMP
-            let baseUrl = 'https://search.bonaparteshop.com/api/${theLocale}/v1.0/product/search'
+            let baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v2.0/Product/GetStyle`
             // END TEMP
             const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
             if (enabledFeatures.play_shop_bap_qa) {
