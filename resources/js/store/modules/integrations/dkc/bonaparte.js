@@ -152,7 +152,7 @@ export default {
                                 })
                                 .map(image => ({
                                     url: `${image.url}&w=232&h=348`,
-                                    name: `type=${image.type}&perspectiveKey=${image.perspectiveKey}&viewKey="${image.viewKey}`,
+                                    name: `type=${image.type}&perspectiveKey=${image.perspectiveKey}&viewKey=${image.viewKey}`,
                                 })),
                             ean_sizes: !product.availableSizes
                                 ? []
@@ -291,8 +291,7 @@ export default {
             }
         },
         async convertDKCProductToKollekt({ dispatch, getters, rootGetters }, product) {
-            // TEMP DKC ONLY
-            // Fetch size ean for the product
+            // Fetch data for the product
             const productData = await dispatch('fetchProduct', { product })
 
             product.composition = productData.productCompositionDKC
@@ -315,26 +314,22 @@ export default {
                     quantity: sku.stockCount,
                     size: sku.size,
                 }))
+
+                // Fetch the images in full resolution
+                variant.pictures.map(picture => {
+                    picture.urlToUpload = picture.url.slice(0, picture.url.indexOf('&w='))
+                })
             })
-            // END TEMP BAP ONLY
+
+            const file = rootGetters['playPresentation/getPresentation']
 
             // Create product
             await dispatch(
                 'products/insertProducts',
                 {
-                    file: getters.getPresentation,
+                    file,
                     products: [product],
                     addToState: true,
-                },
-                { root: true }
-            )
-
-            // Sync images
-            dispatch(
-                'files/syncExternalImages',
-                {
-                    file: getters.getPresentation,
-                    products: [product],
                 },
                 { root: true }
             )

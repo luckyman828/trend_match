@@ -499,11 +499,12 @@ export default {
                 products.map(product => {
                     product.variants.map(variant => {
                         variant.pictures.map((picture, index) => {
-                            if (!picture.url || picture.url.search('kollektcdn.com') >= 0) return // Don't upload images that don't exists or are already on our cdn
+                            if (!picture.url || picture.url.search('kollektcdn.com') >= 0 || !picture.urlToUpload)
+                                return // Don't upload images that don't exists or are already on our cdn
                             imageMaps.push({
                                 mapping_id: variant.id,
                                 datasource_id: product.datasource_id,
-                                url: picture.url,
+                                url: picture.urlToUpload ? picture.urlToUpload : picture.url,
                                 pictureIndex: index,
                             })
                             Vue.set(product, 'imageSyncStatus', 'syncing')
