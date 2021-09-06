@@ -41,8 +41,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
-
 .base-table-v2 {
     table {
         border-collapse: collapse;

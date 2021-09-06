@@ -75,7 +75,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .chat-form {
     position: relative;
     overflow: hidden;

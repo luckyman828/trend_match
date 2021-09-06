@@ -43,7 +43,7 @@
                     <span>{{ submitText || 'Save' }}</span>
                 </button>
                 <button
-                    class="invisible ghost-hover"
+                    class="no-bg ghost-hover"
                     @click="
                         slotProps.hide()
                         $emit('cancel')

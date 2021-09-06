@@ -18,7 +18,7 @@
                 />
             </td>
             <td class="expand" :class="{ active: childrenExpanded }" @click.stop="toggleExpanded" :style="indent">
-                <span class="square invisible" v-if="selection.children.length > 0">
+                <span class="square no-bg" v-if="selection.children.length > 0">
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
@@ -134,13 +134,13 @@
             <td class="action">
                 <BaseButton
                     :disabled="!isClickable"
-                    buttonClass="invisible pill ghost-hover primary sm"
+                    buttonClass="no-bg pill ghost-hover primary sm"
                     @click="onGoToSelection"
                 >
                     <span>Open</span>
                     <!-- <span v-else>Join Presentation</span> -->
                 </BaseButton>
-                <button v-if="userHasEditAccess" class="invisible circle ghost-hover sm" @click="emitShowContext">
+                <button v-if="userHasEditAccess" class="no-bg circle ghost-hover sm" @click="emitShowContext">
                     <i class="far fa-ellipsis-h"></i>
                 </button>
             </td>
@@ -387,7 +387,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .selections-table-row {
     tr {
         min-height: 56px;

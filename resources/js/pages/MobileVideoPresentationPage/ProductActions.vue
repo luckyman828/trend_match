@@ -41,8 +41,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .product-actions {
     position: fixed;
     bottom: 28px;

@@ -86,8 +86,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .product-search-list-item {
     height: 138px;
     padding: 8px;

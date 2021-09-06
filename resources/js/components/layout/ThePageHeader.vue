@@ -1,7 +1,7 @@
 <template>
     <div class="page-header">
         <div class="left">
-            <h1>{{title}}</h1>
+            <h1>{{ title }}</h1>
         </div>
         <div class="right"></div>
     </div>
@@ -10,15 +10,11 @@
 <script>
 export default {
     name: 'thePageHeader',
-    props: [
-        'title'
-    ]
+    props: ['title'],
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .page-header {
     display: flex;
     justify-content: space-between;

@@ -107,7 +107,7 @@
                     <span>Open tickets only</span>
                 </BaseCheckboxInputField>
 
-                <button class="invisible primary" v-if="filtersActive" @click="resetFilters">
+                <button class="no-bg primary" v-if="filtersActive" @click="resetFilters">
                     <span>Clear filter</span>
                 </button>
             </template>
@@ -796,7 +796,6 @@ export default {
 </style>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .products-table-wrapper {
     ::v-deep {
         tr:not(.table-top-bar) > * {

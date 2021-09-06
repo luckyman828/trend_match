@@ -30,7 +30,7 @@
                 <BaseButton
                     class="add-new-button"
                     v-if="!isLoading && isSystemAdmin"
-                    buttonClass="primary invisible ghost-hover"
+                    buttonClass="primary no-bg ghost-hover"
                     @click="onAddEntry"
                 >
                     <i class="far fa-plus"></i>
@@ -59,11 +59,7 @@
 
                     <template v-slot:last v-if="logMeta.page < logMeta.page_count">
                         <tr class="flex-list center-v center-h">
-                            <button
-                                class="invisible primary ghost-hover"
-                                v-if="!loadingLog"
-                                @click="onFetchMoreLogEntries"
-                            >
+                            <button class="no-bg primary ghost-hover" v-if="!loadingLog" @click="onFetchMoreLogEntries">
                                 <span>Load older entries</span>
                             </button>
                             <BaseLoader msg="Loading log entries.." v-else />
@@ -76,7 +72,7 @@
 
                     <template v-slot:footer>
                         <td class="flex-list justify" style="width: 100%" v-if="isSystemAdmin">
-                            <BaseButton buttonClass="primary invisible ghost-hover" @click="onAddEntry">
+                            <BaseButton buttonClass="primary no-bg ghost-hover" @click="onAddEntry">
                                 <i class="far fa-plus"></i>
                                 <span>Add Entry</span>
                             </BaseButton>

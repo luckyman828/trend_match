@@ -9,12 +9,12 @@
             :class="[
                 { active: theCurrentOptionIndex == index },
                 sizeClass,
-                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'invisible ghost-hover',
+                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'no-bg ghost-hover',
             ]"
         >
             <slot :option="option" :isActive="theCurrentOptionIndex == index" />
             <span v-if="labelKey">{{ option[labelKey] }} </span>
-            <span class="dark xxs pill count" v-if="countKey">
+            <span class="dark xxs pill count" v-if="countKey && option[countKey] != null">
                 <span>{{ option[countKey] }}</span>
             </span>
         </div>
@@ -27,7 +27,7 @@ export default {
     props: {
         options: { default: [] },
         labelKey: { default: 'label' },
-        countKey: {},
+        countKey: { default: 'count' },
         valueKey: {},
         currentOptionIndex: {},
         sizeClass: {},
@@ -56,12 +56,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .segmented-control {
     padding: 2px;
     background: $grey;
     &.theme-light {
         background: $bluegrey250;
+        .option {
+            font-weight: 700;
+            color: black;
+            i {
+                color: black;
+            }
+        }
     }
     border-radius: 50px;
     white-space: nowrap;

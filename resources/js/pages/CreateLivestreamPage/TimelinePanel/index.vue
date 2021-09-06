@@ -70,7 +70,6 @@ export default {
             getVideoTimings: 'getVideoTimings',
             zoom: 'getTimelineZoom',
             timelineRail: 'getTimelineRail',
-            timelineEl: 'getTimelineEl',
             snapThreshold: 'getSnapThreshold',
             zoomLevels: 'getZoomLevels',
         }),
@@ -177,8 +176,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .timeline-panel {
     grid-area: timeline;
     display: flex;

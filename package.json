@@ -10,15 +10,19 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "@fortawesome/fontawesome-pro": "^5.15.3",
         "@babel/plugin-proposal-class-properties": "^7.13.0",
+        "@fortawesome/fontawesome-pro": "^5.15.3",
+        "autoprefixer": "^10.3.1",
         "axios": "^0.21.1",
         "case-sensitive-paths-webpack-plugin": "^2.4.0",
         "cross-env": "^5.2.1",
         "laravel-mix": "^4.1.4",
+        "postcss": "^8.3.6",
         "resolve-url-loader": "^2.3.1",
         "sass": "^1.32.8",
         "sass-loader": "^7.3.1",
+        "sass-resources-loader": "^2.2.4",
+        "tailwindcss": "^2.2.7",
         "vue": "^2.6.12",
         "vue-template-compiler": "^2.6.12"
     },

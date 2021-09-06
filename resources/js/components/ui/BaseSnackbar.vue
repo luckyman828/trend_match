@@ -13,7 +13,7 @@
             </div>
             <div class="callback" v-if="snackbar.callback">
                 <BaseButton
-                    buttonClass="invisible primary ghost-hover"
+                    buttonClass="no-bg primary ghost-hover"
                     @click.stop="
                         snackbar.callback()
                         onDeleteSnackbar()
@@ -22,7 +22,7 @@
                     <span>{{ snackbar.callbackLabel }}</span>
                 </BaseButton>
             </div>
-            <button class="invisible ghost-hover" @click.stop="onDeleteSnackbar">
+            <button class="no-bg ghost-hover" @click.stop="onDeleteSnackbar">
                 <span>Dismiss</span>
             </button>
 
@@ -56,6 +56,14 @@ export default {
         },
         count() {
             return this.snackbar.count
+        },
+        iconClass() {
+            // Define default icons for the different classes
+            if (this.snackbar && this.snackbar.iconClass) return this.snackbar.iconClass
+            if (this.snackbar.type == 'info') return 'fa-info-circle'
+            if (this.snackbar.type == 'warning') return 'fa-exclamation-triangle'
+            if (this.snackbar.type == 'danger') return 'fa-exclamation-circle'
+            if (this.snackbar.type == 'succes') return 'fa-check'
         },
     },
     watch: {
@@ -140,8 +148,6 @@ var Timer = function(callback, delay, resetCallback) {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .snackbar {
     width: 400px;
     display: flex;

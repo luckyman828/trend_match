@@ -220,12 +220,26 @@ export default {
         ],
         currentFolderId: null,
         uids: [],
+        darkMode: false,
     },
 
     getters: {
         getInitDone: state => state.initDone,
         getAuthenticatedInitDone: state => state.authenticatedInitDone,
         uids: state => state.uids,
+        getLocalStorageEnabled: state => {
+            function lsTest() {
+                var test = 'test'
+                try {
+                    localStorage.setItem(test, test)
+                    localStorage.removeItem(test)
+                    return true
+                } catch (e) {
+                    return false
+                }
+            }
+            return lsTest()
+        },
         currentTeamId: state => {
             return state.currentTeamId
         },
@@ -328,6 +342,7 @@ export default {
                 }
             }
         },
+        getDarkModeActive: state => state.darkMode,
     },
 
     actions: {
@@ -422,5 +437,8 @@ export default {
         // setAvailableCurrencies(state, currencies) {
         //     state.availableCurrencies = currencies
         // },
+        SET_DARK_MODE_ACTIVE(state, newVal) {
+            state.darkMode = newVal
+        },
     },
 }

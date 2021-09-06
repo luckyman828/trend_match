@@ -53,7 +53,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible ghost-hover"
+                        buttonClass="primary no-bg ghost-hover"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="
                             authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'
@@ -225,7 +225,7 @@
                             <span>Save</span>
                         </button>
                         <button
-                            class="invisible ghost-hover"
+                            class="no-bg ghost-hover"
                             style="margin-left: 8px;"
                             @click="
                                 slotProps.hide()
@@ -279,7 +279,7 @@
                         >
                             <span>Save</span>
                         </button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
+                        <button class="no-bg ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                     </div>
                 </div>
             </template>
@@ -554,8 +554,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .help-text {
     margin-top: 8px;
     display: block;

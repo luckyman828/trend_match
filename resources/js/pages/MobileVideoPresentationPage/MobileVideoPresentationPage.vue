@@ -182,7 +182,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .video-presentation-page {
     position: fixed;
     bottom: 0px;

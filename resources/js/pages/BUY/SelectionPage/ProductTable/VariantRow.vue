@@ -158,7 +158,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .variant-row {
     padding: 8px 16px 8px 46px;
     align-items: flex-start;

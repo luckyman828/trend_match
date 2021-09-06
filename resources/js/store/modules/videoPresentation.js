@@ -61,7 +61,7 @@ export default {
     },
 
     actions: {
-        async fetchFileVideo({ dispatch }, fileId) {
+        async fetchFileVideo({ dispatch, commit }, fileId) {
             const apiUrl = `/files/${fileId}/video`
             let video
             await axios
@@ -391,6 +391,7 @@ export default {
             }
         },
         REMOVE_TIMING(state, index) {
+            console.log('remove timing')
             state.currentVideo.timings.splice(index, 1)
         },
         SET_TIMELINE_ZOOM(state, zoom) {

@@ -20,7 +20,7 @@
         </div>
         <BaseButton
             v-if="!isUnavailable"
-            :buttonClass="['pill sm', isCurrent ? 'invisible grey' : 'white']"
+            :buttonClass="['pill sm', isCurrent ? 'no-bg grey' : 'white']"
             :disabled="isDisabled"
         >
             <span v-if="isCurrent">Active</span>
@@ -54,7 +54,7 @@ export default {
             availableApps: 'getEnabledApps',
         }),
         isDisabled() {
-            return this.isCurrent || !this.app.isReleased
+            return this.isCurrent
         },
         isCurrent() {
             return this.currentApp && this.currentApp.name == this.app.name
@@ -79,7 +79,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .app-list-item {
     padding: 8px;
     width: 280px;

@@ -32,14 +32,29 @@ import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
 import kollektApps from './modules/kollektApps'
 import kollektFeatures from './modules/kollektFeatures'
+import productGroups from './modules/productGroups'
+
+//PLAY
+import videos from './modules/play/videos'
+import playPresentations from './modules/play/presentations'
+import player from './modules/play/player'
+import playPresentation from './modules/play/presentation'
+import playEmbed from './modules/play/embed'
+
+// PLAY B2C
 import wishlist from './modules/playb2c/wishlist'
 import basket from './modules/playb2c/basket'
-import videos from './modules/playb2c/videos'
+
+// BUY
 import buyProducts from './modules/buy/buyProducts'
-import integrationDkc from './modules/integrations/dkc'
 import backgroundJobs from './modules/backgroundJobs'
 import liveUpdates from './modules/liveUpdates'
 import supportLog from './modules/supportLog'
+
+// INTERGRATIONS
+import integrationDkc from './modules/integrations/dkc'
+import bonaparte from './modules/integrations/dkc/bonaparte'
+
 const cloneDeep = require('clone-deep')
 
 // Load Vuex
@@ -87,6 +102,12 @@ export const initialStoreModules = {
     backgroundJobs,
     liveUpdates,
     supportLog,
+    playPresentations,
+    playPresentation,
+    player,
+    playEmbed,
+    bonaparte,
+    productGroups,
 }
 
 // const store = new Vuex.Store({
@@ -104,5 +125,7 @@ const store = new Vuex.Store({
     },
 })
 // Set the token in the store
-store.state.auth.token = localStorage.getItem('user-token') || ''
+try {
+    store.state.auth.token = localStorage.getItem('user-token') || ''
+} catch (e) {}
 export default store

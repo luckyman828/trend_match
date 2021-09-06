@@ -52,6 +52,11 @@ export default {
     watch: {
         show(isVisible) {
             this.extendAmount = 0
+            if (isVisible) {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'disableClose' })
+            } else {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'enableClose' })
+            }
         },
     },
     methods: {
@@ -60,26 +65,24 @@ export default {
             this.extend = false
         },
         onScrollBody(e) {
-            const threshold = 20
-            const scrollY = e.target.scrollTop
-            if (scrollY > this.extendAmount) {
-                this.extendAmount = scrollY
-            }
-            if (scrollY > threshold) {
-                this.extend = true
-            } else {
-                this.$nextTick(() => {
-                    this.extend = false
-                })
-            }
+            // const threshold = 20
+            // const scrollY = e.target.scrollTop
+            // if (scrollY > this.extendAmount) {
+            //     this.extendAmount = scrollY
+            // }
+            // if (scrollY > threshold) {
+            //     this.extend = true
+            // } else {
+            //     this.$nextTick(() => {
+            //         this.extend = false
+            //     })
+            // }
         },
     },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .drawer-wrapper {
     position: fixed;
     top: 0;
@@ -105,9 +108,9 @@ export default {
         .header {
             padding: 12px 16px;
             // min-height: 80px;
-            &.show-shadow {
-                box-shadow: $shadowModule;
-            }
+            // &.show-shadow {
+            //     box-shadow: $shadowModule;
+            // }
         }
         &.extend {
             transition: transform 0.1s ease-out;

@@ -37,11 +37,11 @@
 
             <template v-slot:footer>
                 <td class="flex-list justify" style="width: 100%">
-                    <BaseButton buttonClass="primary invisible" @click="showAddSelectionsContext">
+                    <BaseButton buttonClass="primary no-bg" @click="showAddSelectionsContext">
                         <i class="far fa-plus"></i>
                         <span>Add selection(s)</span>
                     </BaseButton>
-                    <BaseButton buttonClass="red invisible" @click="onDeleteChannel">
+                    <BaseButton buttonClass="red no-bg" @click="onDeleteChannel">
                         <i class="far fa-trash"></i>
                         <span>Delete channel</span>
                     </BaseButton>
@@ -169,7 +169,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 h3 {
     margin: 0;
 }

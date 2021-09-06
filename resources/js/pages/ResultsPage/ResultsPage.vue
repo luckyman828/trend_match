@@ -409,7 +409,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .results-page {
     padding: 20px;
     padding-bottom: 100px;

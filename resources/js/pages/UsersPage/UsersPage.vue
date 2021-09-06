@@ -42,7 +42,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 h1 {
     margin-bottom: 16px;
 }

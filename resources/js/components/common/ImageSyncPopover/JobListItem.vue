@@ -79,7 +79,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .job-list-item {
     position: relative;
     .file-name-wrapper {

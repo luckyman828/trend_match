@@ -62,7 +62,7 @@
             :readOnly="readOnly"
         />
 
-        <BaseButton v-if="!readOnly" buttonClass="invisible ghost-hover dark" @click="$emit('remove')"
+        <BaseButton v-if="!readOnly" buttonClass="no-bg ghost-hover dark" @click="$emit('remove')"
             ><i class="far fa-trash"></i
         ></BaseButton>
     </div>
@@ -178,7 +178,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .rule-item {
     padding: 16px;
     border: $borderModule;

@@ -52,7 +52,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .root-login {
     display: block;
     background: #b08818;

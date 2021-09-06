@@ -265,8 +265,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .table-wrapper {
     margin-bottom: 40px;
 }

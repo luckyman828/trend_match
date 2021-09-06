@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 import router from '../../router'
 
 export default {
@@ -22,7 +23,7 @@ export default {
     },
 
     actions: {
-        async fetchUsers({ commit, state, rootGetters }) {
+        async fetchUsers({ commit, dispatch, state, rootGetters }) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             commit('setLoading', true)
@@ -32,8 +33,10 @@ export default {
             const apiUrl = `/workspaces/${workspaceId}/users`
             axios
                 .get(apiUrl)
-                .then(response => {
-                    state.users = response.data
+                .then(async response => {
+                    const users = response.data
+                    state.users = users
+                    await dispatch('initUsers', users)
                     commit('setLoading', false)
                     commit('SET_USER_STATUS', 'success')
                 })
@@ -106,8 +109,10 @@ export default {
                     url: apiUrl,
                     data: dataToPost,
                 })
-                    .then(response => {
+                    .then(async response => {
                         const newUsers = response.data.new_users.concat(response.data.existed_users)
+                        await dispatch('initUsers', newUsers)
+
                         commit('ADD_USERS', newUsers)
                         // Display message
                         commit(
@@ -137,6 +142,14 @@ export default {
                         )
                         reject(err)
                     })
+            })
+        },
+        async insertOrUpdateWorkspaceUsers({ rootGetters }, users) {
+            const currentWorkspaceId = rootGetters['workspaces/getCurrentWorkspaceId']
+            const apiUrl = `workspaces/${currentWorkspaceId}/users`
+            await axios.post(apiUrl, {
+                method: 'Add',
+                users,
             })
         },
         async removeUsersFromWorkspace({ commit, dispatch }, { workspaceId, users }) {
@@ -323,6 +336,33 @@ export default {
                         { root: true }
                     )
                 })
+        },
+        initUsers({ rootGetters }, users) {
+            users.map(user => {
+                if (!user.apps) Vue.set(user, 'apps', [])
+                Object.defineProperty(user, 'appRole', {
+                    get: () => {
+                        const currentApp = rootGetters['kollektApps/getCurrentApp']
+                        if (!currentApp) return 'None'
+                        const appRole = user.apps.find(app => app.name == currentApp.name)
+                        return appRole ? appRole.role : 'None'
+                    },
+                    set(newRole) {
+                        const currentApp = rootGetters['kollektApps/getCurrentApp']
+                        if (!currentApp) return
+                        const appRoleIndex = user.apps.findIndex(app => app.name == currentApp.name)
+                        if (!newRole || (newRole == 'None' && appRoleIndex > 0)) {
+                            user.apps.splice(appRoleIndex, 1)
+                        } else {
+                            if (appRoleIndex < 0) {
+                                user.apps.push({ app: currentApp.name, role: newRole })
+                            } else {
+                                user.apps[appRoleIndex].role = newRole
+                            }
+                        }
+                    },
+                })
+            })
         },
     },
 

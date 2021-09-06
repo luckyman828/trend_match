@@ -3,7 +3,7 @@
         trigger="manual"
         :open="editActive || showSizes"
         placement="top-end"
-        popoverClass="min invisible"
+        popoverClass="min no-bg"
         :autoHide="false"
     >
         <div
@@ -227,7 +227,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .assortment-list-item {
     position: relative;
     min-height: 52px;

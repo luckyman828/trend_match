@@ -57,7 +57,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        :buttonClass="'primary invisible ghost-hover'"
+                        :buttonClass="'primary no-bg ghost-hover'"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create teams'"
                         @click="onNewTeam"
@@ -411,8 +411,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .teams-table {
     ::v-deep {
         td,

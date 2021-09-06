@@ -1,36 +1,67 @@
 <template>
-
     <div class="radio-buttons">
         <div class="search" v-if="search">
-            <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField"
-            @click.stop>
+            <input
+                class="input-wrapper small"
+                placeholder="Search.."
+                type="search"
+                v-model="searchString"
+                ref="searchField"
+                @click.stop
+            />
             <span v-if="searchString.length > 0" class="close" @click="searchString = ''">
                 <i class="fas fa-times"></i>
             </span>
         </div>
         <div class="wrapper">
-            <div class="option" v-for="(option, index) in optionsFiltered" :key="index" 
-            :class="[{'has-description': optionDescriptionKey}, {'active': option[optionValueKey] ? option[optionValueKey] == selection : option == selection}]">
+            <div
+                class="option"
+                v-for="(option, index) in optionsFiltered"
+                :key="index"
+                :class="[
+                    { 'has-description': optionDescriptionKey },
+                    { active: option[optionValueKey] ? option[optionValueKey] == selection : option == selection },
+                ]"
+            >
                 <label class="radiobox">
-                    <input v-if="optionValueKey" type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option[optionValueKey]" v-model="selection" @change="change()" @click="click">
-                    <input v-else type="radio" name="radio-option" :ref="'radio-option-' + option.id" :id="'radio-option-' + option.id" :value="option" v-model="selection" @change="change()" @click="click">
+                    <input
+                        v-if="optionValueKey"
+                        type="radio"
+                        name="radio-option"
+                        :ref="'radio-option-' + option.id"
+                        :id="'radio-option-' + option.id"
+                        :value="option[optionValueKey]"
+                        v-model="selection"
+                        @change="change()"
+                        @click="click"
+                    />
+                    <input
+                        v-else
+                        type="radio"
+                        name="radio-option"
+                        :ref="'radio-option-' + option.id"
+                        :id="'radio-option-' + option.id"
+                        :value="option"
+                        v-model="selection"
+                        @change="change()"
+                        @click="click"
+                    />
                     <span class="radiomark"></span>
                     <div class="label">
                         <template v-if="optionNameKey">
-                            {{option[optionNameKey]}}
+                            {{ option[optionNameKey] }}
                         </template>
                         <template v-else>
-                            {{option}}
+                            {{ option }}
                         </template>
                         <p class="description" v-if="optionDescriptionKey">
-                            {{option[optionDescriptionKey]}}
+                            {{ option[optionDescriptionKey] }}
                         </p>
                     </div>
                 </label>
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -43,44 +74,38 @@ export default {
         'optionDescriptionKey',
         'currentOptionId',
         'search',
-        'submitOnChange'
+        'submitOnChange',
     ],
-    data: function () { return {
-        selection: null,
-        searchString: '',
-        // currentOption
-    }},
+    data: function() {
+        return {
+            selection: null,
+            searchString: '',
+            // currentOption
+        }
+    },
     watch: {
         currentOptionId(newVal, oldVal) {
             this.update()
-        }
+        },
     },
     computed: {
-        valueChanged() {
-
-        },
-        currentOption () {
+        valueChanged() {},
+        currentOption() {
             if (this.selection != null) {
                 if (this.optionValueKey != null) {
-                    if ( this.options.find(x => x[this.optionValueKey] == this.selection) ) {
+                    if (this.options.find(x => x[this.optionValueKey] == this.selection)) {
                         if (this.optionNameKey != null) {
                             return this.options.find(x => x[this.optionValueKey] == this.selection)[this.optionNameKey]
-                        }
-                        else return this.selection
-                    }
-                    else return 'select b'
-                }
-                else {
-                    if ( this.options.find(x => x == this.selection) ) {
+                        } else return this.selection
+                    } else return 'select b'
+                } else {
+                    if (this.options.find(x => x == this.selection)) {
                         if (this.optionNameKey != null) {
                             return this.options.find(x => x == this.selection)[this.optionNameKey]
-                        }
-                        else return this.selection
-                    }
-                    else return 'select a'
+                        } else return this.selection
+                    } else return 'select a'
                 }
-            }
-            else return 'nothing'
+            } else return 'nothing'
         },
         optionsFiltered() {
             const options = this.options
@@ -88,16 +113,15 @@ export default {
             let optionsToReturn = []
             if (searchString) {
                 if (this.optionNameKey) {
-                    optionsToReturn= options.filter(x => x[this.optionNameKey].toLowerCase().startsWith(searchString))
+                    optionsToReturn = options.filter(x => x[this.optionNameKey].toLowerCase().startsWith(searchString))
                 } else if (this.optionValueKey) {
-                    optionsToReturn= options.filter(x => x[this.optionValueKey].toLowerCase().startsWith(searchString))
+                    optionsToReturn = options.filter(x => x[this.optionValueKey].toLowerCase().startsWith(searchString))
                 } else {
-                    optionsToReturn= options.filter(x => x.toLowerCase().startsWith(searchString))
+                    optionsToReturn = options.filter(x => x.toLowerCase().startsWith(searchString))
                 }
-            } 
-            else optionsToReturn = options
+            } else optionsToReturn = options
             return optionsToReturn
-        }
+        },
     },
     methods: {
         submit() {
@@ -114,7 +138,7 @@ export default {
         click() {
             this.$emit('onClick', this.selection)
         },
-        clear () {
+        clear() {
             this.selection = []
             document.querySelectorAll('input[type=radio]').forEach(input => {
                 input.checked = false
@@ -131,96 +155,93 @@ export default {
             if (this.currentOptionId != null)
                 if (this.optionValueKey) {
                     this.selection = this.options.find(x => x.id == this.currentOptionId)[this.optionValueKey]
-                }
-                else {
+                } else {
                     this.selection = this.options.find(x => x == this.currentOptionId)
                 }
-        }
+        },
     },
     mounted() {
         this.update()
-    }
+    },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
-    .radio-buttons .wrapper {
-        max-height: 260px;
-        overflow: auto;
-        .option {
-            font-weight: 400;
-            font-size: 12px;
+.radio-buttons .wrapper {
+    max-height: 260px;
+    overflow: auto;
+    .option {
+        font-weight: 400;
+        font-size: 12px;
+        cursor: pointer;
+        label {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
             cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .description {
+            font-size: 12px;
+            font-weight: 400;
+            margin-top: -4px;
+            max-width: 200px;
+        }
+        &:hover,
+        &.active {
+            background: $bgModuleActive;
+        }
+        &.has-description {
             label {
-                padding: 8px 16px;
-                display: flex;
-                align-items: center;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 500;
-            }
-            .description {
-                font-size: 12px;
-                font-weight: 400;
-                margin-top: -4px;
-                max-width: 200px;
-            }
-            &:hover, &.active {
-                background: $bgModuleActive;
-            }
-            &.has-description {
-                label {
-                    align-items: flex-start;
-                    .radiomark {
-                        margin-top: 4px;
-                    }
+                align-items: flex-start;
+                .radiomark {
+                    margin-top: 4px;
                 }
             }
         }
     }
-    .radiobox {
-        font-weight: 500;
-        &:hover {
-            background: $bgModuleActive;
-            .radiomark {
-                border-color: $primary;
-            }
-        }
+}
+.radiobox {
+    font-weight: 500;
+    &:hover {
+        background: $bgModuleActive;
         .radiomark {
-            border: solid 2px $fontIcon;
-            height: 20px;
-            width: 20px;
-            min-width: 20px;
-            margin-right: 10px;
-        }
-        input:checked + .radiomark {
-            border: solid 7px $primary;
-            &::after {
-                content: none;
-            }
+            border-color: $primary;
         }
     }
-    .search {
-        padding: 8px;
-        position: relative;
-        input.input-wrapper.small {
-            padding-right: 32px;
-            box-sizing: border-box;
-        }
-        .close {
-            position: absolute;
-            right: 8px;
-            top: 11px;
-            font-size: 12px;
-            color: $dark05;
-            cursor: pointer;
-            padding: 4px 12px;
-            &:hover {
-                opacity: .8;
-            }
+    .radiomark {
+        border: solid 2px $fontIcon;
+        height: 20px;
+        width: 20px;
+        min-width: 20px;
+        margin-right: 10px;
+    }
+    input:checked + .radiomark {
+        border: solid 7px $primary;
+        &::after {
+            content: none;
         }
     }
-
+}
+.search {
+    padding: 8px;
+    position: relative;
+    input.input-wrapper.small {
+        padding-right: 32px;
+        box-sizing: border-box;
+    }
+    .close {
+        position: absolute;
+        right: 8px;
+        top: 11px;
+        font-size: 12px;
+        color: $dark05;
+        cursor: pointer;
+        padding: 4px 12px;
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+}
 </style>

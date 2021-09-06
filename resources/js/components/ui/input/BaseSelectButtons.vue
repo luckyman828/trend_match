@@ -71,6 +71,7 @@
                 </label>
             </div>
 
+            <!-- MULTI ARRAY  -->
             <template v-if="multipleOptionArrays">
                 <div
                     class="option-group"
@@ -148,7 +149,9 @@
                     </div>
                 </div>
             </template>
+            <!-- END MULTI ARRAY -->
 
+            <!-- REGULAR  -->
             <template v-else>
                 <div
                     class="option"
@@ -166,6 +169,9 @@
                                     : option[optionValueKey]
                                     ? selection.includes(option[optionValueKey])
                                     : selection.includes(selection)),
+                        },
+                        {
+                            disabled: getOptionIsDisabled(option),
                         },
                     ]"
                 >
@@ -218,6 +224,8 @@
                 </div>
             </template>
 
+            <!-- END REGULAR -->
+
             <blockquote v-if="!options || options.length <= 0">No options available</blockquote>
         </div>
     </div>
@@ -250,6 +258,7 @@ export default {
         'focusSearchOnMount',
         'cloneOptionOnSubmit',
         'focusOptionIndex',
+        'disabledOptions',
     ],
     data: function() {
         return {
@@ -377,6 +386,16 @@ export default {
         focusFirstOption() {
             this.$refs.option[0].focus()
         },
+        getOptionValue(option) {
+            const value = this.optionValueKey ? option[this.optionValueKey] : option
+            return value
+        },
+        getOptionIsDisabled(option) {
+            return (
+                this.disabledOptions &&
+                this.disabledOptions.find(x => this.getOptionValue(x) == this.getOptionValue(option))
+            )
+        },
     },
     mounted() {
         this.focusSearch()
@@ -388,8 +407,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .select-buttons {
     &:not(:last-child) {
         margin-bottom: 12px;
@@ -429,6 +446,11 @@ export default {
         font-weight: 400;
         font-size: 12px;
         cursor: pointer;
+        &.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+            cursor: default;
+        }
         label {
             padding: 8px 16px;
             display: flex;

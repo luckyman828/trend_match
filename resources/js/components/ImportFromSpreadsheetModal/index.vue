@@ -375,7 +375,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .upload-to-file-modal {
     &.map-fields {
         .modal {

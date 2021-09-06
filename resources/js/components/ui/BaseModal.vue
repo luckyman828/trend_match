@@ -17,7 +17,7 @@
                     <div class="body">
                         <slot :close="close" />
                     </div>
-                    <button class="close circle" @click="close"><i class="far fa-times"></i></button>
+                    <button class="close circle" @click="close" v-if="!hideClose"><i class="far fa-times"></i></button>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
 <script>
 export default {
     name: 'Modal',
-    props: ['header', 'subHeader', 'classes', 'goBack', 'show'],
+    props: ['header', 'subHeader', 'classes', 'goBack', 'show', 'hideClose'],
     data: function() {
         return {}
     },
@@ -44,6 +44,7 @@ export default {
     methods: {
         close() {
             this.$emit('close')
+            this.$emit('update:show', false)
         },
         hotkeyHandler(event) {
             const key = event.code
@@ -64,8 +65,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .modal-wrapper {
     position: fixed;
     z-index: 99;

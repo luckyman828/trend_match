@@ -33,7 +33,7 @@
             </button>
         </LoginInputField>
 
-        <router-link class="button invisible" :to="{ name: 'recoverPassword' }">
+        <router-link class="button no-bg" :to="{ name: 'recoverPassword' }">
             <span>Forgot your password</span>
             <i class="far fa-question-circle"></i>
         </router-link>
@@ -113,8 +113,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .login-form {
     height: 100%;
     .key-icon {

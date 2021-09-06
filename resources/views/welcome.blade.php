@@ -46,6 +46,7 @@
             <div id="app">
                 <app></app>
                 <portal-target name="modals" multiple></portal-target>
+                <portal-target name="popover" multiple></portal-target>
             </div>
         </div>
 

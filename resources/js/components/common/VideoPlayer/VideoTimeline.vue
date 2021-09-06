@@ -102,11 +102,9 @@ export default {
         },
         onTouchDragMove(e) {
             if (!e.touches) return
-            console.log('on touch drag move')
             this.getDragTime(e.touches[0])
         },
         onDragEnd() {
-            console.log('on drag end')
             this.seekTo(this.dragTime)
             this.removeDragListeners()
 
@@ -137,7 +135,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .timeline {
     position: relative;
     .timing-list {

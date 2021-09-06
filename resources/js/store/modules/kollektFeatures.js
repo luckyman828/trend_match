@@ -11,6 +11,9 @@ export default {
             'select_always_show_alignment_input',
             'select_always_show_feedback_input',
             'force_ticket_labels',
+            'play_shop_bap_qa',
+            'play_shop_bonaparte',
+            'play_shop_companys',
         ],
     },
     getters: {

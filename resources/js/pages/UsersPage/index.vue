@@ -1,6 +1,6 @@
 <template>
     <PageLoader>
-        <UsersPage/>
+        <UsersPage />
     </PageLoader>
 </template>
 
@@ -13,11 +13,9 @@ export default {
     name: 'usersPageLoader',
     components: {
         UsersPage,
-        PageLoader
+        PageLoader,
     },
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

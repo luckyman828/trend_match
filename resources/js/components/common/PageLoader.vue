@@ -41,12 +41,11 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .page-loader {
     height: 500px;
     &.fit-page {
         height: 100%;
-        .loader {
+        > .loader {
             position: absolute;
             left: 50%;
             top: 50%;

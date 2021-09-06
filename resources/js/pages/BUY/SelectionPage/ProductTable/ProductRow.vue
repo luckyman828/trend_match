@@ -89,7 +89,7 @@
         </div>
 
         <div class="actions flex-list center-v full-h">
-            <div class="quantity pill invisible sm">
+            <div class="quantity pill no-bg sm">
                 <span>{{ product.quantity }}</span>
                 <i class="far fa-box"></i>
             </div>
@@ -394,7 +394,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .products-table-row {
     padding: 8px 16px 8px 8px;
     align-items: flex-start;

@@ -3,12 +3,13 @@
         class="input-field"
         :class="[
             type,
-            { 'read-only': readOnly },
+            { 'read-only': readOnly || type == 'copy' },
             { error: error || errorTooltip },
             status,
             { 'has-label': label },
             { 'has-inner-label': innerLabel },
             { 'has-icon-right': !!$slots.default },
+            theme && `theme-${theme}`,
             inputClass,
         ]"
     >
@@ -27,7 +28,7 @@
                 :placeholder="placeholder"
                 :autocomplete="autocomplete"
                 :value="value"
-                :disabled="disabled || readOnly"
+                :disabled="disabled || readOnly || type == 'copy'"
                 v-bind="$attrs"
                 :class="[{ 'input-wrapper': type != 'select' }, inputClass]"
                 @input="$emit('input', $event.target.value)"
@@ -39,7 +40,7 @@
                 @keydown="onKeydown"
             />
             <div class="icon-right">
-                <slot :onCancel="onCancel" :onSubmit="onSubmit" />
+                <slot :onCancel="onCancel" :onSubmit="onSubmit" :activate="focus" :copy="onCopy" />
             </div>
         </div>
         <div class="error-msg" v-if="error && typeof error == 'string'">
@@ -50,6 +51,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
     name: 'inputField',
     data: function() {
@@ -76,6 +78,7 @@ export default {
         'actionOnBlur',
         'innerLabel',
         'pattern',
+        'theme',
     ],
     computed: {
         inputField() {
@@ -88,9 +91,13 @@ export default {
         },
     },
     methods: {
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onClick(e) {
             if (this.type == 'select') {
                 this.$emit('click', e)
+            }
+            if (this.type == 'copy') {
+                this.onCopy()
             }
         },
         focus() {
@@ -123,6 +130,10 @@ export default {
             this.initialValue = this.value
             this.$emit('input', this.initialValue)
             this.$emit('submit', this.initialValue)
+        },
+        onCopy() {
+            this.copyToClipboard(this.value)
+            this.SHOW_SNACKBAR({ iconClass: 'fa-copy', type: 'info', msg: 'Copied to clipboard' })
         },
         onKeydown(e) {
             if (!this.pattern) return
@@ -162,10 +173,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .input-field {
     position: relative;
+    &.copy {
+        cursor: pointer;
+        &.theme-light {
+            input {
+                border: solid 2px transparent;
+                cursor: pointer;
+            }
+            &:hover {
+                input {
+                    border-color: $themeLightBorderHover;
+                }
+            }
+        }
+    }
+    &.lg {
+        height: 48px;
+    }
     &.read-only {
         .input-wrapper {
             cursor: text;
@@ -226,6 +252,19 @@ export default {
                 font-size: 8px;
             }
         }
+        &.lg {
+            .input-wrapper {
+                padding-top: 20px;
+                padding-left: 12px;
+                border-radius: $borderRadiusMd;
+                height: 48px;
+            }
+            .inner-label {
+                left: 12px;
+                top: 8px;
+                line-height: 1;
+            }
+        }
     }
     &.error {
         .input-wrapper {
@@ -246,6 +285,22 @@ export default {
     &.has-icon-right {
         .input-wrapper {
             padding-right: 36px;
+        }
+    }
+    &.theme-light {
+        .input-wrapper {
+            background: $themeLightBg;
+            font-size: 12px;
+            font-weight: 800;
+            padding-left: 12px;
+            &:not(:focus) {
+                border-color: transparent;
+            }
+        }
+        .inner-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: $themeLightFontSoft;
         }
     }
 }
@@ -276,14 +331,13 @@ export default {
     position: absolute;
     left: 0;
     top: 0;
-    width: 40px;
-    height: 40px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     &.icon-right {
         left: auto;
-        right: 0;
+        right: 8px;
     }
 }
 .error-msg {

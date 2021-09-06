@@ -155,8 +155,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .edit-input-wrapper {
     line-height: 1.6;
     .input-wrapper {

@@ -9,7 +9,7 @@
         </td>
         <td class="email">{{ user.email }}</td>
         <td class="action">
-            <button class="primary invisible ghost-hover" @click="removeUsersFromFile({ file, users: [user] })">
+            <button class="primary no-bg ghost-hover" @click="removeUsersFromFile({ file, users: [user] })">
                 <i class="far fa-user-times"></i>
                 <span>Remove user</span>
             </button>
@@ -39,6 +39,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-@import '~@/_variables.scss';
-</style>
+<style scoped lang="scss"></style>

@@ -5,7 +5,7 @@
         class="context-menu"
         ref="contextMenu"
         :style="menuWidth"
-        :class="{ inline: inline }"
+        :class="[{ inline: inline }, `theme-${theme}`]"
     >
         <div class="item-group header" v-if="hasHeader">
             <strong>
@@ -34,6 +34,8 @@ export default {
             default: () => [],
         },
         inline: { default: false },
+        theme: {},
+        autoWidth: {},
     },
     data: function() {
         return {
@@ -52,6 +54,7 @@ export default {
             return !!this.$slots.footer || !!this.$scopedSlots.footer
         },
         menuWidth() {
+            if (this.autoWidth) return
             // if (this.columns) {
             const columnCount = this.columns ? this.columns : 1
             const baseWidth = 240
@@ -59,9 +62,18 @@ export default {
             // }
         },
     },
+    watch: {
+        visible(isVisible) {
+            if (isVisible) {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'disableClose' })
+            } else {
+                this.$store.dispatch('playEmbed/postMessage', { action: 'enableClose' })
+            }
+        },
+    },
     methods: {
         ...mapMutations('contextMenu', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
-        show(e) {
+        show(e, item, clickOffset = { x: 0, y: 0 }) {
             // Increment the amount of visible context menus if this context menu is not already visible
             if (!this.visible) {
                 this.INCREMENT_VISIBLE_AMOUNT()
@@ -71,9 +83,12 @@ export default {
             e.stopPropagation()
             // Save a reference to the mouseClick event
             this.mouseEvent = e
+            this.item = item
+            this.$emit('show', item)
+
             // Set the current context menu item
-            const mouseX = e.clientX
-            const mouseY = e.clientY
+            const mouseX = e.clientX + clickOffset.x
+            const mouseY = e.clientY + clickOffset.y
             // Make the context menu visisble
             this.visible = true
             // Wait for the DOM to update before we position the Context Menu
@@ -192,8 +207,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .context-menu,
 .context-menu:focus,
 .context-menu .sub-menu {
@@ -201,13 +214,18 @@ export default {
     border-radius: $borderRadiusModule;
     border: $borderModule;
     box-shadow: $shadowModuleHard;
-    z-index: 1;
+    z-index: 99;
     position: fixed;
     // overflow: hidden;
     display: flex;
     flex-direction: column;
     &.inline {
         position: relative;
+    }
+    &.theme-none {
+        border: none;
+        border-radius: 0;
+        background: none;
     }
     .columns {
         display: flex;
@@ -234,6 +252,12 @@ export default {
         }
     }
     .item-group {
+        &.disabled {
+            opacity: 0.5;
+            > * {
+                pointer-events: none;
+            }
+        }
         > .header {
             padding: 8px 16px;
             line-height: 1;

@@ -79,7 +79,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .no-products-row {
     width: 100%;
     text-align: center;

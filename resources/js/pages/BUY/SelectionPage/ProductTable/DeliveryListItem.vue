@@ -3,7 +3,7 @@
         trigger="manual"
         :open="editActive || editSplit"
         placement="top-end"
-        popoverClass="min invisible"
+        popoverClass="min no-bg"
         :autoHide="false"
     >
         <div
@@ -228,7 +228,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .delivery-list-item {
     // width: 164px;
     // overflow: hidden;

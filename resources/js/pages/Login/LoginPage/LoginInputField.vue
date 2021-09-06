@@ -14,8 +14,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .login-input-field {
     position: relative;
     height: 48px;

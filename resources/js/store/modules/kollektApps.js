@@ -3,7 +3,13 @@ import router from '../../router'
 export default {
     namespaced: true,
     state: {
-        currentApp: localStorage.getItem('kollektApp') || null,
+        currentApp: () => {
+            try {
+                return localStorage.getItem('kollektApp') || null
+            } catch (e) {
+                return null
+            }
+        },
         apps: [
             {
                 name: 'select',
@@ -58,12 +64,20 @@ export default {
     getters: {
         getApps: state => state.apps,
         getCurrentApp: (state, getters) => getters.getApps.find(x => x.name == state.currentApp),
+        getCurrentAppUsers: (state, getters, rootState, rootGetters) => {
+            const users = rootGetters['users/getUsers']
+            const currentApp = getters.getCurrentApp
+            if (!users || !currentApp) return []
+            return users.filter(user => user.apps.find(appRole => appRole.app == currentApp.name))
+        },
     },
     actions: {},
     mutations: {
         SET_KOLLEKT_APP(state, app) {
             state.currentApp = app
-            localStorage.setItem('kollektApp', app)
+            try {
+                localStorage.setItem('kollektApp', app)
+            } catch (e) {}
         },
         NAVIGATE_TO_CURRENT_APP(state) {
             router.push({ name: state.currentApp })

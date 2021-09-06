@@ -12,14 +12,10 @@ export default {
     name: 'actionListPopover',
     components: { ProductActionButton },
     props: ['product'],
-    created() {
-        console.log('hello')
-    },
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .action-list {
     padding: 8px;
 }

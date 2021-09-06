@@ -67,7 +67,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .edit-video-presentation {
     display: grid;
     grid-template-columns: 300px auto;

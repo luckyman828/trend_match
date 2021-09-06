@@ -262,11 +262,11 @@
                                     <i class="far fa-times-circle"></i>
                                     <span>out</span>
                                 </BaseButton>
-                                <button class="view invisible ghost-hover primary" @click="onViewSingle">
+                                <button class="view no-bg ghost-hover primary" @click="onViewSingle">
                                     <span>View</span>
                                 </button>
                                 <button
-                                    class="options invisible ghost-hover show-screen-md"
+                                    class="options no-bg ghost-hover show-screen-md"
                                     @click="$emit('showContext', $event)"
                                 >
                                     <i class="far fa-ellipsis-h"></i>
@@ -277,7 +277,7 @@
                 </template>
                 <!-- END Single Selection Input only -->
                 <template v-else>
-                    <button class="invisible ghost-hover primary" @click="onViewSingle"><span>View</span></button>
+                    <button class="no-bg ghost-hover primary" @click="onViewSingle"><span>View</span></button>
                 </template>
 
                 <!-- Master actions -->
@@ -605,7 +605,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .products-table-row {
     display: block;
     padding: 0;
@@ -704,7 +703,7 @@ td.action {
             &:hover {
                 overflow: visible;
                 .fly-over .inner {
-                    background: $bgWhiteHover;
+                    background: $themeWhiteBgHover;
                 }
                 button.options {
                     display: none;
@@ -732,7 +731,7 @@ td.action {
                 top: 0;
                 left: -40px;
                 width: 40px;
-                background: linear-gradient(90deg, transparent, $bgWhiteHover);
+                background: linear-gradient(90deg, transparent, $themeWhiteBgHover);
                 pointer-events: none;
             }
         }

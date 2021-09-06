@@ -12,7 +12,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .loading-wrapper {
     min-height: 100vh;
     width: 100%;

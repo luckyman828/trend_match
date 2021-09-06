@@ -1,8 +1,8 @@
 <template>
-    <div class="search" v-observe-visibility="focusOnMount && onVisibilityChanged">
+    <div class="search" :class="[theme && 'theme-' + theme]" v-observe-visibility="focusOnMount && onVisibilityChanged">
         <input
             class="input-wrapper"
-            :class="inputClasses"
+            :class="[inputClasses]"
             :placeholder="placeholderText || 'Search..'"
             type="search"
             v-model="searchString"
@@ -39,6 +39,7 @@ export default {
         inputClasses: {
             default: 'small',
         },
+        theme: {},
     },
     data: function() {
         return {
@@ -261,8 +262,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .search {
     position: relative;
     input.input-wrapper {
@@ -283,6 +282,16 @@ export default {
         align-items: center;
         &:hover i {
             color: $font;
+        }
+    }
+    &.theme-light {
+        // background: ;
+        &::v-deep {
+            input {
+                border-radius: 16px;
+                border-color: transparent;
+                background: $themeGreyBg;
+            }
         }
     }
 }

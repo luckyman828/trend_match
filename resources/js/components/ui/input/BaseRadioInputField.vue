@@ -1,9 +1,14 @@
 <template>
-    <label class="radio-input input-wrapper" :class="{'read-only': disabled}"
-    :tabindex="disabled ? -1 : 0">
-        <BaseRadiobox ref="input" class="radio" :disabled="disabled"
-        :value="value" :modelValue="modelValue" @change="$emit('input', $event)"/>
-        <span><slot/></span>
+    <label class="radio-input input-wrapper" :class="{ 'read-only': disabled }" :tabindex="disabled ? -1 : 0">
+        <BaseRadiobox
+            ref="input"
+            class="radio"
+            :disabled="disabled"
+            :value="value"
+            :modelValue="modelValue"
+            @change="$emit('input', $event)"
+        />
+        <span><slot /></span>
     </label>
 </template>
 
@@ -13,18 +18,13 @@ export default {
     model: {
         prop: 'modelValue',
     },
-    props: [
-        'value',
-        'modelValue',
-        'disabled'
-    ],
+    props: ['value', 'modelValue', 'disabled'],
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .radio-input {
-    &.read-only{
+    &.read-only {
         cursor: auto;
     }
     cursor: pointer;

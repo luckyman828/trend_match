@@ -53,7 +53,7 @@
                             </div>
                         </div>
                         <div class="right">
-                            <button type="button" class="invisible ghost-wrapper" @click="writeActive = false">
+                            <button type="button" class="no-bg ghost-wrapper" @click="writeActive = false">
                                 <span>Cancel</span>
                             </button>
                             <button
@@ -213,7 +213,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 ::v-deep {
     &.flyin-column {
         .header {

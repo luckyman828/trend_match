@@ -114,6 +114,7 @@ async function instantiateSelectProducts(products) {
                       return {
                           size: sizeComponents[0].trim(),
                           ean: sizeComponents[1].trim(),
+                          ref_id: sizeComponents[1].trim(),
                       }
                   })
                   // Pictures
@@ -252,6 +253,7 @@ async function instantiateBuyProducts(products) {
                       return {
                           size: sizeComponents[0].trim(),
                           ean: sizeComponents[1].trim(),
+                          ref_id: sizeComponents[1].trim(),
                       }
                   })
                   // Pictures

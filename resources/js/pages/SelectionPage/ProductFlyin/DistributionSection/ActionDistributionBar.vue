@@ -54,7 +54,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .distribution-bar {
     padding: 12px;
     display: flex;

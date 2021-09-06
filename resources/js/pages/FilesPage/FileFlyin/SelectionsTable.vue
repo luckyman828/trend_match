@@ -139,7 +139,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible ghost-hover"
+                        buttonClass="primary no-bg ghost-hover"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can create new masters"
                         tooltip="Create a new Master"
@@ -150,7 +150,7 @@
                 </td>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible ghost-hover"
+                        buttonClass="primary no-bg ghost-hover"
                         :disabled="
                             authUserWorkspaceRole != 'Admin' || (getSelectionsTree.length != 1 && !focusSelection)
                         "
@@ -176,7 +176,7 @@
                 </td>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible ghost-hover"
+                        buttonClass="primary no-bg ghost-hover"
                         :disabled="
                             authUserWorkspaceRole != 'Admin' ||
                                 (getSelectionsTree.length != 1 && !focusSelection) ||
@@ -444,7 +444,7 @@
                         >
                             <span>Clone</span>
                         </button>
-                        <button class="invisible ghost-hover" style="margin-left: 8px;" @click="slotProps.hide()">
+                        <button class="no-bg ghost-hover" style="margin-left: 8px;" @click="slotProps.hide()">
                             <span>Cancel</span>
                         </button>
                     </div>
@@ -899,8 +899,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .selections-table {
     // Target child style
     ::v-deep {

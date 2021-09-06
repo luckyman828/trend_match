@@ -88,8 +88,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .form-controls {
     display: flex;
     justify-content: flex-end;
