@@ -290,5 +290,56 @@ export default {
                 })
             }
         },
+        async convertDKCProductToKollekt({ dispatch, getters, rootGetters }, product) {
+            // TEMP DKC ONLY
+            // Fetch size ean for the product
+            const productData = await dispatch('fetchProduct', { product })
+
+            product.composition = productData.productCompositionDKC
+            product.sale_description = `${productData.styleFit1 ? `${productData.styleFit1}\n` : ''}${
+                productData.styleFit2 ? `${productData.styleFit2}\n` : ''
+            }${productData.styleFit3 ? `${productData.styleFit3}\n` : ''}${
+                productData.styleFit4 ? `${productData.styleFit4}\n` : ''
+            }${productData.styleFit5 ? `${productData.styleFit5}\n` : ''}`
+            // product.wash
+
+            product.variants.map(variant => {
+                const variantData = Object.values(productData.variants).find(
+                    variantData => variantData.productColorName == variant.color
+                )
+                if (!variantData) return
+                // Overwrite the ean_sizes of our variant with the newly fetched data
+                variant.ean_sizes = variantData.skUs.map(sku => ({
+                    ean: sku.ean,
+                    ref_id: sku.ean,
+                    quantity: sku.stockCount,
+                    size: sku.size,
+                }))
+            })
+            // END TEMP BAP ONLY
+
+            // Create product
+            await dispatch(
+                'products/insertProducts',
+                {
+                    file: getters.getPresentation,
+                    products: [product],
+                    addToState: true,
+                },
+                { root: true }
+            )
+
+            // Sync images
+            dispatch(
+                'files/syncExternalImages',
+                {
+                    file: getters.getPresentation,
+                    products: [product],
+                },
+                { root: true }
+            )
+
+            return product
+        },
     },
 }

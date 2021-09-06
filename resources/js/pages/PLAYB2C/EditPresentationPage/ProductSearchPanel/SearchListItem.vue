@@ -159,7 +159,7 @@ export default {
         ...mapActions('playPresentation', ['addTiming']),
         ...mapActions('productGroups', ['addVariantMap', 'removeVariantMap']),
         ...mapActions('products', ['insertProducts']),
-        async getSavedTimingProduct() {
+        async getKollektProduct() {
             // Check if the product exists on Kollekt
             const existingProduct = this.$store.getters['products/getProducts'].find(
                 product => product.datasource_id == this.product.datasource_id
@@ -170,15 +170,17 @@ export default {
             // Otherwise create it
             if (!this.product.id && !existingProduct) {
                 this.syncingExternalProduct = true
-                product = await this.$store.dispatch('playPresentation/createKollektProductFromTiming', this.product)
+                // TEMP DKC
+                product = await this.$store.dispatch('bonaparte/convertDKCProductToKollekt', this.product)
+                // END TEMP DKC
                 this.syncingExternalProduct = false
             }
 
             return product
         },
         async onAddTiming() {
-            const product = await this.getSavedTimingProduct()
-            const variant = product.variants[this.variantIndex]
+            const product = await this.getKollektProduct()
+            const variant = product.variants.find(variant => variant.name == this.variant.name)
 
             const newTiming = {
                 id: null,
@@ -189,14 +191,14 @@ export default {
             this.addTiming({ newTiming })
         },
         async onAddToLook() {
-            const product = await this.getSavedTimingProduct()
-            const variant = product.variants[this.variantIndex]
+            const product = await this.getKollektProduct()
+            const variant = product.variants.find(variant => variant.name == this.variant.name)
 
             this.addVariantMap({ productGroup: this.currentLook, variant })
         },
         async onCreateLook() {
-            const product = await this.getSavedTimingProduct()
-            const variant = product.variants[this.variantIndex]
+            const product = await this.getKollektProduct()
+            const variant = product.variants.find(variant => variant.name == this.variant.name)
 
             this.$emit('create-look', variant)
         },
