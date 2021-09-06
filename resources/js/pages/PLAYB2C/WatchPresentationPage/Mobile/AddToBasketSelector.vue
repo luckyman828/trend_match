@@ -22,6 +22,7 @@
                     :submitOnChange="true"
                     :options="item.ean_sizes"
                     optionNameKey="size"
+                    :disabledOptions="item.ean_sizes.filter(sizeObj => !sizeObj.inStock)"
                     v-model="selectedSizeDetail"
                     @change="onChangeSize"
                 />

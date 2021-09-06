@@ -38,9 +38,9 @@
                     class="primary pill ghost-hover"
                     :class="variantAddedToBasket ? '' : 'no-bg'"
                     :disabled="!variant.inStock"
-                    @click="$emit('add-to-basket', variant)"
+                    @click="variantAddedToBasket ? onRemoveFromBasket() : $emit('add-to-basket', variant)"
                 >
-                    <i class="far fa-shopping-bag sold-out">
+                    <i class="far fa-shopping-bag" :class="{ 'sold-out': !variant.inStock }">
                         <i v-if="variantAddedToBasket" class="far fa-check pos-right pos-bottom"></i>
                     </i>
                     <span v-if="variantAddedToBasket">Added</span>
@@ -68,6 +68,11 @@ export default {
         }),
         variantAddedToBasket() {
             return this.getVariantIsInBasket(this.variant)
+        },
+    },
+    methods: {
+        onRemoveFromBasket() {
+            this.$store.dispatch('basket/removeFromBasket', { variant: this.variant })
         },
     },
 }
