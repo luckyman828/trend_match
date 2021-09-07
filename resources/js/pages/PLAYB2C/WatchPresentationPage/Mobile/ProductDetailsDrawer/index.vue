@@ -1,7 +1,9 @@
 <template>
     <BaseDrawer position="bottom" :show="show" class="product-details-drawer" @close="$emit('close')">
-        <template v-slot:header v-if="product">
+        <template v-slot:outside v-if="product">
             <CurrentTimingPreview class="current-timing-preview" />
+        </template>
+        <template v-slot:header v-if="product">
             <div class="header-inner flex-list justify">
                 <div class="flex-list flex-v sm">
                     <div class="brand">{{ product.brand }}</div>
