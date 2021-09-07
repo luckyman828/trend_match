@@ -229,67 +229,74 @@ export default {
         },
         async syncProducts({ dispatch, rootGetters }, { products, locale }) {
             console.log('sync products', products)
-            for (const product of products) {
-                const newProductData = await dispatch('fetchProduct', { product, locale })
-                if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) continue
-                const firstVariant = Object.values(newProductData.variants)[0]
+            // for (const product of products) {
+            // }
+            await Promise.all(
+                products.map(async product => {
+                    const newProductData = await dispatch('fetchProduct', { product, locale })
+                    // if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) continue
+                    if (!newProductData || !newProductData.variants || newProductData.variants.length <= 0) return
+                    const firstVariant = Object.values(newProductData.variants)[0]
 
-                // Update base product
-                // product.name =
-                product.brand = newProductData.styleBrand
-                product.name = firstVariant.productHeader
-                product.composition = newProductData.productCompositionDKC
-                product.sale_description = `${newProductData.styleFitting1 ? `${newProductData.styleFitting1}\n` : ''}${
-                    newProductData.styleFitting2 ? `${newProductData.styleFitting2}\n` : ''
-                }${newProductData.styleFitting3 ? `${newProductData.styleFitting3}\n` : ''}${
-                    newProductData.styleFitting4 ? `${newProductData.styleFitting4}\n` : ''
-                }${newProductData.styleFitting5 ? `${newProductData.styleFitting5}\n` : ''}`
+                    // Update base product
+                    // product.name =
+                    product.brand = newProductData.styleBrand
+                    product.name = firstVariant.productHeader
+                    product.composition = newProductData.productCompositionDKC
+                    product.sale_description = `${
+                        newProductData.styleFitting1 ? `${newProductData.styleFitting1}\n` : ''
+                    }${newProductData.styleFitting2 ? `${newProductData.styleFitting2}\n` : ''}${
+                        newProductData.styleFitting3 ? `${newProductData.styleFitting3}\n` : ''
+                    }${newProductData.styleFitting4 ? `${newProductData.styleFitting4}\n` : ''}${
+                        newProductData.styleFitting5 ? `${newProductData.styleFitting5}\n` : ''
+                    }`
 
-                // Update variants
-                product.variants.map(variant => {
-                    const newVariantData = Object.values(newProductData.variants).find(newVariantData => {
-                        return variant.ean_sizes.find(sizeObj =>
-                            newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
-                        )
-                    })
-                    if (!newVariantData) return
-
-                    variant.name = newVariantData.productColorName
-
-                    // Update prices
-                    const dkcLocaleMap = rootGetters['integrationDkc/getLocales']
-                    const currency = locale
-                        ? dkcLocaleMap.find(localeMap => localeMap.locale == locale).currency
-                        : 'DKK'
-
-                    const newPrice = newVariantData.beforePrice
-                        ? parseFloat(newVariantData.beforePrice.replaceAll(',', '.').replaceAll(/[^(0-9|.)]/g, ''))
-                        : newVariantData.priceRaw
-                    const newSalePrice = newVariantData.beforePrice ? newVariantData.priceRaw : 0
-
-                    if (variant.prices.length <= 0) {
-                        variant.prices.push({
-                            recommended_retail_price: newPrice,
-                            wholesale_price: newSalePrice,
-                            currency,
+                    // Update variants
+                    product.variants.map(variant => {
+                        const newVariantData = Object.values(newProductData.variants).find(newVariantData => {
+                            return variant.ean_sizes.find(sizeObj =>
+                                newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
+                            )
                         })
-                    } else {
-                        variant.prices[0].recommended_retail_price = newPrice
-                        variant.prices[0].wholesale_price = newSalePrice
-                        variant.prices[0].currency = currency
-                    }
+                        if (!newVariantData) return
 
-                    // END Update prices
+                        variant.name = newVariantData.productColorName
 
-                    // Update stock
-                    variant.ean_sizes.map(sizeObj => {
-                        // Find the new size data
-                        const newSizeData = newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
-                        if (!newSizeData) return
-                        sizeObj.quantity = newSizeData.inStock
+                        // Update prices
+                        const dkcLocaleMap = rootGetters['integrationDkc/getLocales']
+                        const currency = locale
+                            ? dkcLocaleMap.find(localeMap => localeMap.locale == locale).currency
+                            : 'DKK'
+
+                        const newPrice = newVariantData.beforePrice
+                            ? parseFloat(newVariantData.beforePrice.replaceAll(',', '.').replaceAll(/[^(0-9|.)]/g, ''))
+                            : newVariantData.priceRaw
+                        const newSalePrice = newVariantData.beforePrice ? newVariantData.priceRaw : 0
+
+                        if (variant.prices.length <= 0) {
+                            variant.prices.push({
+                                recommended_retail_price: newPrice,
+                                wholesale_price: newSalePrice,
+                                currency,
+                            })
+                        } else {
+                            variant.prices[0].recommended_retail_price = newPrice
+                            variant.prices[0].wholesale_price = newSalePrice
+                            variant.prices[0].currency = currency
+                        }
+
+                        // END Update prices
+
+                        // Update stock
+                        variant.ean_sizes.map(sizeObj => {
+                            // Find the new size data
+                            const newSizeData = newVariantData.skUs.find(sku => sizeObj.ean == sku.ean)
+                            if (!newSizeData) return
+                            sizeObj.quantity = newSizeData.inStock
+                        })
                     })
                 })
-            }
+            )
         },
         async convertDKCProductToKollekt({ dispatch, getters, rootGetters }, product) {
             // Fetch data for the product
