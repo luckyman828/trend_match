@@ -20,7 +20,7 @@ async function onContentWindowChange(newContentWindow) {
 async function getBasket() {
     // console.log('[PLAY] dkc get basket')
     const shopBasket = await window.w2mInterop.getBasket()
-    if (!shopBasket.basketLines) return
+    if (!shopBasket || !shopBasket.basketLines) return
 
     // Transform the basket response to a kollekt-compatible model
     contentWindow.postMessage(
