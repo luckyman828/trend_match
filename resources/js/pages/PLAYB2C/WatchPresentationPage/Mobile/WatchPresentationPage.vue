@@ -111,12 +111,12 @@
 
                 <TimingListDrawer :show="showTimingList" @close="showTimingList = false" />
 
-                <ProductDetailsDrawer :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
                 <SavedStylesDrawer
                     :show="!!showSavedProductsDrawer"
                     :view.sync="savedProductsView"
                     @close="showSavedProductsDrawer = false"
                 />
+                <ProductDetailsDrawer :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
             </template>
 
             <template v-slot:ended>

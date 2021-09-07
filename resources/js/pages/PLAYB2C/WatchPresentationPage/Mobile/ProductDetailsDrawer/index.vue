@@ -126,6 +126,7 @@ export default {
 }
 .product-details-drawer {
     line-height: 1.4;
+    z-index: 2;
     .brand {
         font-weight: 12px;
         font-weight: 700;
