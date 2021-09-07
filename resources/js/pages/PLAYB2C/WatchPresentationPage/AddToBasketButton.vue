@@ -73,6 +73,15 @@ export default {
             })
         },
     },
+    watch: {
+        variantAddedToBasket(isAdded) {
+            if (this.resetOnSubmit) {
+                setTimeout(() => {
+                    this.$refs.sizeSelector.reset()
+                }, 5)
+            }
+        },
+    },
     methods: {
         ...mapActions('basket', ['addToBasket', 'removeFromBasket']),
         onAddToBasket(sizeDetail) {
