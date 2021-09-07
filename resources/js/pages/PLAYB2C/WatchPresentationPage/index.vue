@@ -144,6 +144,7 @@ export default {
             }
 
             if (msgData.action == 'updateBasketItems') {
+                console.log('update basket item', msgData)
                 msgData.items.map(item => {
                     const basketItem = this.$store.getters['basket/getBasketItem'](item)
                     if (!basketItem) return

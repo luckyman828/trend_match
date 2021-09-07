@@ -69,6 +69,7 @@ export default {
             await dispatch('playEmbed/postMessage', { action: 'updateItemQuantity', item }, { root: true })
         },
         async changeItemSize({ dispatch, getters }, { item, newSizeDetail, oldSizeDetail }) {
+            console.log('change item size', { item, newSizeDetail, oldSizeDetail })
             // Vue.set(item, 'sizeDetail', newSizeDetail)
 
             // Remove old and add new if the old item is still in the basket / has not already been updated
