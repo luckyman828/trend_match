@@ -181,9 +181,16 @@ export function embed({
         const presentationLocale = button.getAttribute('data-kollekt-play-locale')
 
         const iFrameBaseUrl = `${appUrl}/#/play/watch/`
+        console.log('iframe base url', appUrl, iFrameBaseUrl)
         iframeEl.src = `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}${
             presentationLocale ? `&locale=${presentationLocale}` : ''
         }`
+        console.log(
+            'iframe src',
+            `${iFrameBaseUrl}${presentationId}?timestamp=${new Date().getTime()}${
+                presentationLocale ? `&locale=${presentationLocale}` : ''
+            }`
+        )
         wrapperEl.style.display = 'block'
 
         // Emit event
