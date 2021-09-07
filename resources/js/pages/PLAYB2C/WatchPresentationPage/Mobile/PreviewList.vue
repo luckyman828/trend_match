@@ -41,7 +41,6 @@ export default {
     },
     methods: {
         async onNewTiming(newTiming) {
-            console.log('on new timing', newTiming)
             const animationDuration = 200
             const el = this.$refs.previewList
 

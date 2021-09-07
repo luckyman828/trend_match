@@ -103,7 +103,6 @@ export default {
     },
     watch: {
         sizeDetail(newSizeDetail, oldSizeDetail) {
-            console.log('baslet changes item size')
             this.changeItemSize({
                 item: this.item,
                 newSizeDetail,

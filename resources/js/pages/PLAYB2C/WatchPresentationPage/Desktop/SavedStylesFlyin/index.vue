@@ -33,7 +33,7 @@
                 <template v-else>
                     <BasketItem
                         v-for="item in basket"
-                        :key="item.id"
+                        :key="item.sizeDetail.ref_id"
                         :item="item"
                         @edit-basket-variants="$event => onEditBasketVariants($event, item)"
                     />
