@@ -13,7 +13,7 @@ export function embed({
     window.kollekt_play_init = true
 
     // Kollekt PLAY
-    const version = `0.0.0 - (17)`
+    const version = `1.0.0 - (0)`
     console.log('Init PLAY embed script. Version: ' + version)
     document.head.insertAdjacentHTML(
         'beforeend',

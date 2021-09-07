@@ -1,6 +1,5 @@
 import { embed } from './play.js'
-const version = `0.0.0 - (5)`
-console.log('Init PLAY DKC embed script. Version: ' + version)
+const version = `1.0.0 - (0)`
 
 const appUrl = process.env.MIX_APP_URL // `https://kollekt_feature.test`
 const targetOrigin = `${appUrl}`
@@ -19,9 +18,9 @@ async function onContentWindowChange(newContentWindow) {
 }
 
 async function getBasket() {
-    console.log('[PLAY] dkc get basket')
+    // console.log('[PLAY] dkc get basket')
     const shopBasket = await window.w2mInterop.getBasket()
-    // Transform the basket response to a kollekt-compatible model
+    if (!shopBasket.basketLines) return
 
     // Transform the basket response to a kollekt-compatible model
     contentWindow.postMessage(
@@ -40,7 +39,7 @@ async function getBasket() {
 }
 
 async function addToBasket(items) {
-    console.log('[PLAY] dkc add to basket', items)
+    // console.log('[PLAY] dkc add to basket', items)
     await window.w2mInterop.addMultipleToBasket(items.map(item => ({ ean: item.sizeDetail.ean, quantity: 1 })))
 
     const newBasket = await w2mInterop.getBasket()
