@@ -151,7 +151,12 @@ export default {
             return this.product.variants[this.variantIndex]
         },
         inCurrentLook() {
-            return this.currentLook.variantMaps.find(map => map.variant_id == this.variant.id)
+            return this.currentLook.variantMaps.find(map => {
+                return (
+                    this.variant.product.datasource_id == map.product.datasource_id &&
+                    this.variant.name == map.variant.name
+                )
+            })
         },
     },
     methods: {
