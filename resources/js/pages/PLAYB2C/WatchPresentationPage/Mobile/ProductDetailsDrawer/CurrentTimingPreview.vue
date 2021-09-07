@@ -38,7 +38,7 @@ export default {
 .current-timing-preview {
     padding: 8px;
     border-radius: 16px;
-    max-width: calc(100% - 16px);
+    max-width: calc(100% - 16px - 44px);
     .rail {
         overflow-x: auto;
         width: 100%;

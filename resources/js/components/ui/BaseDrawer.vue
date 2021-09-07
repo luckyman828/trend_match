@@ -2,7 +2,13 @@
     <div class="drawer-wrapper" :class="[{ show: show }]">
         <div class="overlay" @click="$emit('close')" />
         <div class="drawer" :class="[`pos-${position}`, { extend: extend }]" :style="extendStyle">
+            <div class="outside">
+                <slot name="outside" />
+            </div>
             <div class="header" v-touch:swipe.down="onSwipeDown" :class="{ 'show-shadow': showHeaderShadow }">
+                <button class="close white circle" @click="onSwipeDown">
+                    <i class="far fa-times"></i>
+                </button>
                 <div class="drag-handle"></div>
                 <slot name="header" />
             </div>
@@ -96,6 +102,9 @@ export default {
         display: none;
         z-index: 1;
     }
+    .outside {
+        position: relative;
+    }
     .drawer {
         // height: 548px;
         height: 100%;
@@ -122,6 +131,13 @@ export default {
                 right: 0;
                 top: 8px;
                 margin: auto;
+            }
+            .close {
+                top: -8px;
+                transform: translateY(-100%);
+                right: 8px;
+                position: absolute;
+                display: none;
             }
         }
         &.extend {
@@ -157,6 +173,11 @@ export default {
         }
         .overlay {
             display: block;
+        }
+        .header {
+            .close {
+                display: inline-flex;
+            }
         }
     }
     > .footer {
