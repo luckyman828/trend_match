@@ -1,6 +1,10 @@
 <template>
     <div class="basket-item flex-list md">
-        <BaseImageSizer fit="cover" class="image">
+        <BaseImageSizer
+            fit="cover"
+            class="image"
+            @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { product: variant.product, variant })"
+        >
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
                 <SavingPercentagePill :variant="variant" />

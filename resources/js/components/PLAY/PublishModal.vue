@@ -66,7 +66,7 @@
                 <BaseInputField
                     class="lg"
                     innerLabel="Embed link"
-                    :value="`<script src=&quot;${origin}/js/play-dkc.js&quot;></script>`"
+                    :value="`<script src=&quot;${origin}/js/public/play-dkc.js&quot;></script>`"
                     theme="light"
                     type="copy"
                 >

@@ -7,6 +7,7 @@
             v-touch:moved="onDragStart"
             v-touch:moving="onTouchDragMove"
             v-touch:end="onDragEnd"
+            v-touch:start="onTouchStart"
         />
         <div class="timeline-wrapper" ref="timeline">
             <div class="rail" :style="railStyle">
@@ -97,6 +98,10 @@ export default {
             this.getDragTime(e)
             this.addDragListeners()
         },
+        onTouchStart(e) {
+            if (!e.touches) return
+            this.getDragTime(e.touches[0])
+        },
         onDragMove(e) {
             this.getDragTime(e)
         },
@@ -105,6 +110,9 @@ export default {
             this.getDragTime(e.touches[0])
         },
         onDragEnd() {
+            if (this.dragTime == null) {
+                return
+            }
             this.seekTo(this.dragTime)
             this.removeDragListeners()
 
