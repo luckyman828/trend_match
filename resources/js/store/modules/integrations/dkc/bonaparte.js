@@ -68,9 +68,9 @@ export default {
         },
         async fetchProductsBySearch({ dispatch, rootGetters }, searchString) {
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
-            let baseUrl = null
             const locale = 'DA_DK'
             const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
+            let baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v1.0/product/search` // TEMP DEFAULT
             if (enabledFeatures.play_shop_bap_qa) {
                 baseUrl = `https://search-bap-qa.bap-test.com/api/${theLocale}/v1.0/product/search`
             }
@@ -198,7 +198,7 @@ export default {
         async fetchProduct({ rootGetters }, { product, locale }) {
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
             const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
-            let baseUrl = null
+            let baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v2.0/Product/GetStyle`
             if (enabledFeatures.play_shop_bap_qa) {
                 baseUrl = `https://search-bap-qa.bap-test.com/api/${theLocale}/v2.0/Product/GetStyle`
                 // ?style=30306309&includeVariantNo=194023`
