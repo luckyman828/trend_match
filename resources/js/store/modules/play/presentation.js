@@ -118,8 +118,14 @@ export default {
             // Fetch presentation video
             const apiUrl = `/files/${presentationId}/video`
             let video
+
             await axios
-                .get(apiUrl)
+                .get(apiUrl, {
+                    transformRequest: (data, headers) => {
+                        delete headers.common['Authorization'] // Don't use authorization for public endpoint
+                        return data
+                    },
+                })
                 .then(async response => {
                     const presentation = response.data.file
                     Vue.set(presentation, 'id', presentationId)
