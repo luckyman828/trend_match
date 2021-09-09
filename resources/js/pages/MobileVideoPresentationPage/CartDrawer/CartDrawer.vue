@@ -49,8 +49,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .body {
     display: flex;
     flex-direction: column;

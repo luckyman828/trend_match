@@ -13,7 +13,7 @@
         </template>
         <template v-slot:default v-if="product">
             <div class="body-inner form-wrapper">
-                <MainImageSection :variant="currentVariant" class="form-element" @click.native="onShowLightbox" />
+                <MainImageSection :variant="currentVariant" class="form-element" />
 
                 <VariantRail
                     class="form-element"
@@ -23,41 +23,47 @@
                 />
 
                 <div class="price flex-list center-v form-element">
-                    <div class="current-price ft-14 ft-bd">
-                        {{
-                            product.yourPrice.wholesale_price
-                                ? product.yourPrice.wholesale_price
-                                : product.yourPrice.recommended_retail_price
-                        }}
-                        {{ product.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-12 color-ft-soft ft-strike" v-if="product.yourPrice.wholesale_price">
-                        {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :variant="currentVariant" class="ft-14" style="font-size: 14px;" />
+                    <OldPrice :variant="currentVariant" class="ft-14" style="font-size: 14px;" />
                 </div>
 
-                <div class="form-element list-item">
+                <div class="form-element flex-list-item">
                     <label>Sizes</label>
                     <div class="size-list flex-list">
-                        <div class="true-square size" v-for="size in currentVariant.ean_sizes" :key="size.ean">
+                        <div
+                            class="true-square size"
+                            :class="{ 'sold-out': !size.inStock }"
+                            v-for="size in currentVariant.ean_sizes"
+                            :key="size.ean"
+                        >
                             {{ size.size }}
                         </div>
                     </div>
                 </div>
 
-                <div class="form-element flex-list md">
-                    <i class="fal fa-info-circle md"></i>
-                    <div class="list-item">
-                        <label>Description</label>
-                        <span class="value description"> {{ product.sale_description }}</span>
+                <div class="flex-list flex-v space-lg">
+                    <div class="form-element flex-list md">
+                        <i class="fal fa-info-circle md"></i>
+                        <div class="flex-list-item">
+                            <label>Description</label>
+                            <span class="value description"> {{ product.sale_description }}</span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-element flex-list md">
-                    <i class="fal fa-flower md"></i>
-                    <div class="list-item">
-                        <label>Composition</label>
-                        <span class="value"> {{ product.composition }}</span>
+                    <div class="form-element flex-list md">
+                        <i class="fal fa-flower md"></i>
+                        <div class="flex-list-item">
+                            <label>Composition</label>
+                            <span class="value"> {{ product.composition }}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-element flex-list md">
+                        <i class="fal fa-tshirt md"></i>
+                        <div class="flex-list-item">
+                            <label>Style number</label>
+                            <span class="value"> {{ product.datasource_id }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,10 +77,12 @@ import { mapGetters } from 'vuex'
 import MainImageSection from './MainImageSection'
 import VariantRail from './VariantRail'
 import AddToBasketSelector from '../AddToBasketSelector'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'productDetailsFlyin',
-    components: { MainImageSection, VariantRail, AddToBasketSelector },
+    components: { MainImageSection, VariantRail, AddToBasketSelector, CurrentPrice, OldPrice },
     props: ['show'],
     data: function() {
         return {
@@ -94,11 +102,6 @@ export default {
         setCurrentVariant(variant) {
             this.currentVariant = variant
         },
-        onShowLightbox() {
-            this.$store.commit('lightbox/SET_LIGHTBOX_VISIBLE', true)
-            const images = this.currentVariant.pictures.map(picture => picture.url)
-            this.$store.commit('lightbox/SET_LIGHTBOX_IMAGES', images)
-        },
     },
     watch: {
         show(isVisible) {
@@ -116,8 +119,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .product-details-flyin {
     line-height: 1.4;
     background: white;
@@ -136,16 +137,6 @@ export default {
     .header-inner {
         padding: 8px 8px 0 16px;
     }
-    .price {
-        font-size: 14px;
-        font-weight: 500;
-        text-align: right;
-        .old-price {
-            text-decoration: line-through;
-            font-size: 12px;
-            opacity: 0.5;
-        }
-    }
     .body-inner {
         padding: 0 0 100px;
     }
@@ -158,8 +149,21 @@ export default {
         border-color: $grey300;
         color: $fontBody;
         font-size: 900;
+        position: relative;
+        &.sold-out {
+            opacity: 0.5;
+            &::after {
+                position: absolute;
+                content: '|';
+                font-weight: 500;
+                font-size: 28px;
+                left: 14px;
+                top: 0px;
+                transform: rotateZ(45deg);
+            }
+        }
     }
-    .list-item {
+    .flex-list-item {
         min-width: 72px;
         > * {
             display: block;

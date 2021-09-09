@@ -540,6 +540,7 @@ export default {
                         { root: true }
                     )
                 })
+            return products
         },
         async updateFileProducts({ commit, dispatch }, { fileId, products }) {
             const apiUrl = `/files/${fileId}/products`
@@ -591,13 +592,13 @@ export default {
                 sale_description: productData.sale_description || null,
                 min_order: productData.min_order || null,
                 min_variant_order: productData.min_variant_order || null,
-                brand: productData.delivery_date || null,
-                category: productData.delivery_date || null,
+                brand: productData.brand || null,
+                category: productData.category || null,
                 delivery_date: productData.delivery_date || null,
                 delivery_dates: productData.delivery_dates || [],
                 buying_group: productData.buying_group || null,
                 is_editor_choice: productData.is_editor_choice || null,
-                compositions: productData.compositions || null,
+                composition: productData.composition || null,
                 labels: productData.labels || [],
                 prices: productData.prices || [],
                 variants: productData.variants || [],
@@ -620,6 +621,7 @@ export default {
                 labels: variantData.labels || [],
                 pictures: variantData.pictures || [],
                 style_option_id: variantData.style_option_id || null,
+                prices: variantData.prices || [],
             }
         },
         setCurrentProduct({ commit }, product) {
@@ -1071,6 +1073,8 @@ export default {
         },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
+                if (product.isInit) return
+                Vue.set(product, 'isInit', true)
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
 
@@ -1384,6 +1388,12 @@ export default {
                     },
                 })
 
+                Object.defineProperty(product, 'inStock', {
+                    get: function() {
+                        return !!product.variants.find(variant => variant.inStock)
+                    },
+                })
+
                 // VARIANTS
                 Vue.set(product, 'variantsRaw', [...product.variants])
                 Object.defineProperty(product, 'variants', {
@@ -1403,16 +1413,15 @@ export default {
 
                 product.variants.forEach((variant, variantIndex) => {
                     Vue.set(variant, 'isInit', true)
-                    Vue.set(variant, 'product_id', product.id)
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
                     Vue.set(variant, 'index', variantIndex)
-                    Vue.set(variant, 'product_id', product.id)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
                     if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
                     if (!variant.delivery_dates) Vue.set(variant, 'delivery_dates', [])
+                    if (!variant.prices) Vue.set(variant, 'prices', [])
                     // Custom Props
                     if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
 
@@ -1426,10 +1435,37 @@ export default {
                             return product
                         },
                     })
+                    Object.defineProperty(variant, 'product_id', {
+                        get: function() {
+                            return product.id
+                        },
+                    })
 
                     Object.defineProperty(variant, 'yourPrice', {
                         get: function() {
-                            return product.yourPrice
+                            // Check if the product has any prices
+                            if (variant.prices.length <= 0) {
+                                if (!!product.yourPrice) {
+                                    return product.yourPrice
+                                }
+                                // If no prices are available, return a default empty price object
+                                const newPrice = {
+                                    currency: 'Not set',
+                                    mark_up: null,
+                                    wholesale_price: null,
+                                    recommended_retail_price: null,
+                                }
+                                return newPrice
+                            }
+                            // Else check if we have a preferred currency set, and try to match that
+                            if (product.preferred_currency) {
+                                const preferredPrice = variant.prices.find(
+                                    x => x.currency == product.preferred_currency
+                                )
+                                if (preferredPrice) return preferredPrice
+                            }
+                            // If nothing else worked, return the first available price
+                            return variant.prices[0]
                         },
                     })
                     Object.defineProperty(variant, 'getActiveSelectionInput', {
@@ -1483,9 +1519,20 @@ export default {
                         },
                     })
 
+                    Object.defineProperty(variant, 'inStock', {
+                        get: function() {
+                            return !!variant.ean_sizes.find(sizeObj => sizeObj.inStock)
+                        },
+                    })
+
                     // EAN SIZES
                     variant.ean_sizes.map(x => {
                         Vue.set(x, 'quantity', 0)
+                        Object.defineProperty(x, 'inStock', {
+                            get() {
+                                return x.quantity > 0
+                            },
+                        })
                     })
                 })
             })

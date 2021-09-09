@@ -14,17 +14,16 @@
             @mouseenter="showPopover = true"
         >
             <BaseImageSizer class="img-wrapper" fit="cover">
-                <BaseVariantImage :variant="variant" size="sm" />
+                <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+                <div class="labels">
+                    <SavingPercentagePill :variant="variant" />
+                    <button class="pill red xs" v-if="!variant.inStock">
+                        <span>Sold out</span>
+                    </button>
+                </div>
             </BaseImageSizer>
-            <div class="price-wrapper">
-                <span class="price"
-                    >{{
-                        variant.product.yourPrice.wholesale_price
-                            ? variant.product.yourPrice.wholesale_price
-                            : variant.product.yourPrice.recommended_retail_price
-                    }}
-                    {{ variant.product.yourPrice.currency }}</span
-                >
+            <div class="price-wrapper flex-list">
+                <CurrentPrice :variant="variant" />
             </div>
             <div class="icon-list flex-list space-sm">
                 <div class="circle xs red" v-if="isInWishlist">
@@ -43,15 +42,11 @@
             ref="actionPopover"
             :id="`action-popover-${variant.id}`"
         >
-            <AddToWishlistButton
-                :variants="[variant]"
-                class="invisible true-square float-icon-hover"
-                theme="invisible"
-            />
+            <AddToWishlistButton :variants="[variant]" class="no-bg true-square float-icon-hover" theme="no-bg" />
             <AddToBasketButton
                 :variant="variant"
                 textStyle="none"
-                buttonClass="invisible true-square float-icon-hover"
+                buttonClass="no-bg true-square float-icon-hover"
                 :resetOnSubmit="true"
                 :popoverContainer="`#action-popover-${variant.id}`"
                 :sizePopoverOpen.sync="sizePopoverOpen"
@@ -65,10 +60,13 @@
 import { mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../AddToWishlistButton.vue'
 import AddToBasketButton from '../AddToBasketButton'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'PreviewListItem',
-    components: { AddToWishlistButton, AddToBasketButton },
+    components: { AddToWishlistButton, AddToBasketButton, CurrentPrice, OldPrice, SavingPercentagePill },
     props: ['variant'],
     data() {
         return {
@@ -112,8 +110,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .preview-list-item {
     width: 100%;
     background: white;
@@ -136,6 +132,14 @@ export default {
         top: 4px;
         right: 4px;
         position: absolute;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

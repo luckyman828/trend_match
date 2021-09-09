@@ -41,15 +41,13 @@
         </div>
 
         <div class="flex-list flex-v space-sm">
-            <button v-if="!resendingEmail" class="button invisible" type="button" @click="onResendEmail">
+            <button v-if="!resendingEmail" class="button no-bg" type="button" @click="onResendEmail">
                 <i class="far fa-reply"></i>
                 <span>Re-send verification code</span>
             </button>
             <BaseLoader v-else msg="re-sending e-mail" />
 
-            <router-link class="button invisible" :to="{ name: 'recoverPassword' }"
-                >Enter a different e-mail</router-link
-            >
+            <router-link class="button no-bg" :to="{ name: 'recoverPassword' }">Enter a different e-mail</router-link>
         </div>
     </form>
 </template>
@@ -104,8 +102,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .verification-code-form {
     height: 100%;
     .key-icon {

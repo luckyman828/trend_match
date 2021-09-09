@@ -214,8 +214,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .scanner-mode-controls {
     background: $dark;
     color: white;

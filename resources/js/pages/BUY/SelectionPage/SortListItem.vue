@@ -46,7 +46,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .sort-list-item {
     .full-width {
         width: 100%;

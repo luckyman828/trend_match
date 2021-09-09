@@ -159,8 +159,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .navbar-file {
     width: 100%;
     display: flex;

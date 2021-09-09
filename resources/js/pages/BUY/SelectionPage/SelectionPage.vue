@@ -171,7 +171,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .selection-page {
     padding-top: 8px;
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="loader">
+    <div class="loader" :class="theme && 'theme-' + theme">
         <span class="message" v-if="msg" v-html="msg"></span>
         <svg
             width="50px"
@@ -11,6 +11,7 @@
             style="background: none;"
         >
             <circle
+                class="circle"
                 cx="50"
                 cy="50"
                 fill="none"
@@ -38,19 +39,25 @@
 <script>
 export default {
     name: 'loader',
-    props: ['msg'],
+    props: ['msg', 'theme'],
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .loader {
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    &.theme-dark {
+        .message {
+            color: $font;
+        }
+        svg circle {
+            stroke: $dark !important;
+        }
+    }
 }
 
 svg {

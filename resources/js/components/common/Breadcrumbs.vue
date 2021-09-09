@@ -1,18 +1,18 @@
 <template>
     <div class="breadcrumbs">
-        <button class="invisible ghost-hover sm" @click="onGoToHome">
+        <button class="no-bg ghost-hover sm" @click="onGoToHome">
             <i class="far fa-building"></i><span>{{ currentWorkspace.title }}</span>
         </button>
         <div class="breadcrumb" v-for="(folder, index) in getCurrentFilePath" :key="folder.id">
             <template v-if="!currentFolder || folder.id != currentFolder.id">
-                <button @click="setCurrentFolder(folder, index)" class="invisible ghost-hover sm">
+                <button @click="setCurrentFolder(folder, index)" class="no-bg ghost-hover sm">
                     <i class="far fa-folder"></i>
                     <span>{{ folder.name }}</span>
                     <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
                 </button>
             </template>
             <template v-else>
-                <button class="invisible ghost-hover sm">
+                <button class="no-bg ghost-hover sm">
                     <i class="far fa-folder-open"></i>
                     <span>{{ folder.name }}</span>
                     <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->

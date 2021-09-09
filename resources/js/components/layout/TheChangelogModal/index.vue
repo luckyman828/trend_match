@@ -1662,7 +1662,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .changelog {
     .modal {
         width: 80%;

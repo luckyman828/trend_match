@@ -24,15 +24,10 @@ export default {
             this.$emit('hide')
         },
     },
-    created() {
-        console.log('hello')
-    },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .add-to-basket-popover {
     padding: 8px;
     border-radius: $borderRadiusMd;

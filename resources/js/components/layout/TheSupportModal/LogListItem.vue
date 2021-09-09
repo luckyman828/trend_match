@@ -24,7 +24,7 @@
             <span v-else>{{ duration }}</span>
         </td>
         <td v-if="isSystemAdmin">
-            <button class="invisible ghost-hover true-square" @click="onDeleteEntry">
+            <button class="no-bg ghost-hover true-square" @click="onDeleteEntry">
                 <i class="far fa-trash"></i>
             </button>
         </td>
@@ -100,7 +100,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .log-list-item {
     width: 100%;
 }

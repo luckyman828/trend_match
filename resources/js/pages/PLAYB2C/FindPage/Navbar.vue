@@ -68,22 +68,14 @@ export default {
         },
     },
     methods: {
-        ...mapActions('playPresentations', ['instantiateBasePresentation', 'insertPresentation']),
-        ...mapMutations('playPresentation', ['SET_PRESENTATION']),
         async onNewPresentation() {
-            // Secretly create a new file
-            const newPresentation = await this.instantiateBasePresentation()
-            this.SET_PRESENTATION(newPresentation)
             this.showNewPresentationModal = true
-            await this.insertPresentation(newPresentation)
         },
     },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .navbar-files {
     display: flex;
     justify-content: space-between;

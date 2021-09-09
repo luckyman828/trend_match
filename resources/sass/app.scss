@@ -140,6 +140,9 @@ textarea {
 .ft-10 {
     font-size: 10px !important;
 }
+.ft-11 {
+    font-size: 11px !important;
+}
 .ft-12 {
     font-size: 12px !important;
 }
@@ -160,7 +163,7 @@ textarea {
 }
 .ft-strike {
     text-decoration: line-through;
-    opacity: 0.75;
+    opacity: 0.6;
 }
 .lh-min {
     line-height: 1;
@@ -594,7 +597,7 @@ input[type='submit'] {
                 color: nth($color, 4);
             }
 
-            &.invisible,
+            &.no-bg,
             &.ghost {
                 color: nth($color, 2);
                 background: transparent;
@@ -668,12 +671,11 @@ input[type='submit'] {
         background: $bluegrey250;
         border: solid 2px $bluegrey250;
     }
-    &.invisible {
+    &.no-bg {
         font-weight: 500;
         background: none;
         border-color: transparent;
         color: $fontButtonInvisible;
-        visibility: visible;
         i {
             color: $iconButtonInvisible;
         }
@@ -849,7 +851,7 @@ i {
             width: auto;
             // COLORS
             @each $color in $brand-colors {
-                button.#{nth($color,1)}:not(.ghost):not(.invisible) & {
+                button.#{nth($color,1)}:not(.ghost):not(.no-bg) & {
                     text-shadow: -1px -1px 0 nth($color, 2), 1px -1px 0 nth($color, 2), -1px 1px 0 nth($color, 2),
                         1px 1px 0 nth($color, 2);
                 }
@@ -920,7 +922,7 @@ i {
     &.active {
         display: block;
     }
-    &.invisible {
+    &.no-bg {
         background: transparent;
     }
 }
@@ -1174,7 +1176,7 @@ i {
             padding: 8px;
         }
     }
-    &.invisible {
+    &.no-bg {
         .tooltip-inner {
             border: none;
             box-shadow: none;
@@ -2269,5 +2271,29 @@ body {
         background: rgba(255, 255, 255, 0.25);
         backdrop-filter: blur(8px) brightness(80%);
         z-index: -1;
+    }
+}
+
+// ANIMATIONS
+.bg-shimmer {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeholderShimmer;
+    -webkit-animation-timing-function: linear;
+
+    @keyframes placeholderShimmer {
+        0% {
+            background-position: 100% 0;
+        }
+
+        100% {
+            background-position: -100% 0;
+        }
     }
 }

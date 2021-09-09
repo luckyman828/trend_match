@@ -65,8 +65,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .modal-wrapper {
     position: fixed;
     z-index: 99;

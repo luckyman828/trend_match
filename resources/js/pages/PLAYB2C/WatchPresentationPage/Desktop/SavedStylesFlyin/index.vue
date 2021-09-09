@@ -33,7 +33,7 @@
                 <template v-else>
                     <BasketItem
                         v-for="item in basket"
-                        :key="item.id"
+                        :key="item.sizeDetail.ref_id"
                         :item="item"
                         @edit-basket-variants="$event => onEditBasketVariants($event, item)"
                     />
@@ -41,7 +41,7 @@
             </div>
         </template>
         <div class="cta-wrapper">
-            <BaseButton
+            <!-- <BaseButton
                 v-if="view == 'Basket'"
                 class="checkout-button full-width"
                 buttonClass="dark full-width checkout-button"
@@ -56,7 +56,18 @@
                     >Go to Checkout
                     <template v-if="basket.length > 0"> - {{ basketTotal }} {{ basketCurrency }}</template></span
                 >
+            </BaseButton> -->
+
+            <!-- TEMP  -->
+            <BaseButton
+                v-if="view == 'Basket'"
+                class="checkout-button full-width"
+                buttonClass="dark full-width checkout-button"
+                @click="onGoToCheckout"
+            >
+                <span>Afslut og shop videre</span>
             </BaseButton>
+            <!-- END TEMP  -->
         </div>
 
         <BaseContextMenu ref="addToWishlistPopover" :autoWidth="true">
@@ -127,7 +138,8 @@ export default {
             this.wishlistSnapshot = [...this.wishlist]
         },
         onGoToCheckout() {
-            this.$store.dispatch('basket/goToCheckout')
+            this.$store.dispatch('playEmbed/postMessage', { action: 'closePresentation' })
+            // this.$store.dispatch('basket/goToCheckout')
         },
         onEditWishlistVariants(mouseEvent, variant) {
             this.popoverProduct = variant.product
@@ -138,14 +150,10 @@ export default {
             this.$refs.addToBasketPopover.show(mouseEvent)
         },
     },
-    created() {
-        console.log('hello')
-    },
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .saved-styles-flyin {
     &::v-deep {
         .flyin {

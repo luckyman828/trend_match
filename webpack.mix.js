@@ -18,11 +18,14 @@ mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/public-scripts/play.js', 'public/js/public')
     .js('resources/js/public-scripts/play-dkc.js', 'public/js/public')
     .js('resources/js/public-scripts/play-shopify.js', 'public/js/public')
+    .js('resources/js/public-scripts/play-ga.js', 'public/js/public')
     .sass('resources/sass/app.scss', 'public/css')
     .copy('node_modules/@fortawesome/fontawesome-pro/webfonts', 'public/webfonts')
     .options({
         processCssUrls: false,
         postCss: [tailwindcss('./tailwind.config.js')],
+        // extractVueStyles: true,
+        globalVueStyles: 'resources/sass/_variables.scss', // Import scss variables in every component implicitly
     })
     .webpackConfig({
         resolve: {

@@ -21,7 +21,7 @@
         </div>
         <BaseButton
             v-if="!isUnavailable"
-            :buttonClass="['pill sm w-md', isCurrent ? 'invisible grey' : 'white']"
+            :buttonClass="['pill sm w-md', isCurrent ? 'no-bg grey' : 'white']"
             :disabled="isDisabled"
         >
             <span v-if="isCurrent">Active</span>
@@ -83,7 +83,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .app-list-item {
     .name {
         text-transform: uppercase;

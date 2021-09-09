@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="action-list flex-list" @click="signOut">
-                    <button class="invisible ghost-hover pill">
+                    <button class="no-bg ghost-hover pill">
                         <i class="far fa-sign-out"></i>
                         <span>Sign out</span>
                     </button>
@@ -168,7 +168,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .kollekt-app-selector {
     width: 608px;
     h1 {

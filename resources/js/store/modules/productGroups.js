@@ -24,6 +24,39 @@ export default {
                 await dispatch('initProductGroups', productGroups)
                 commit('SET_PRODUCT_GROUPS', productGroups)
             })
+            productGroups = await dispatch('cleanUpProductGroups', { fileId, productGroups })
+            return productGroups
+        },
+        async cleanUpProductGroups({ dispatch, commit }, { fileId, productGroups }) {
+            let deleteCount = 0
+            for (let i = productGroups.length - 1; i >= 0; i--) {
+                const productGroup = productGroups[i]
+                for (let i = productGroup.variantMaps.length - 1; i >= 0; i--) {
+                    // Remove variantmaps with no linked variant
+                    const variantMap = productGroup.variantMaps[i]
+                    if (!variantMap.variant) {
+                        productGroup.variantMaps.splice(i, 1)
+                    }
+                }
+                if (productGroup.variantMaps.length <= 0) {
+                    deleteCount++
+                    await dispatch('deleteProductGroup', { fileId, productGroup })
+                    // productGroups.splice(i, 1)
+                } else {
+                    await dispatch('insertOrUpdateProductGroup', { fileId, productGroup })
+                }
+            }
+            if (deleteCount > 0) {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `Deleted ${deleteCount} empty product group${deleteCount > 1 ? 's' : ''}`,
+                        iconClass: 'fa-trash',
+                        type: 'danger',
+                    },
+                    { root: true }
+                )
+            }
             return productGroups
         },
         async insertOrUpdateProductGroup({ commit, dispatch }, { fileId, productGroup }) {
@@ -66,10 +99,10 @@ export default {
             })
         },
         async addVariantMap({ dispatch }, { productGroup, variant, productId, variantId }) {
-            const newVaraintMap = await dispatch('instantiateBaseVariantMap')
-            newVaraintMap.variant_id = variant ? variant.id : variantId
-            newVaraintMap.product_id = variant ? variant.product_id : productId
-            productGroup.variantMaps.push(newVaraintMap)
+            const newVariantMap = await dispatch('instantiateBaseVariantMap')
+            newVariantMap.variant_id = variant ? variant.id : variantId
+            newVariantMap.product_id = variant ? variant.product_id : productId
+            productGroup.variantMaps.push(newVariantMap)
         },
         async removeVariantMap({}, { productGroup, variant }) {
             const index = productGroup.variantMaps.findIndex(variantMap => variantMap.variant_id == variant.id)
@@ -154,12 +187,43 @@ export default {
                               )
                     },
                 })
+                Object.defineProperty(group.yourPrice, 'totalPrice', {
+                    get() {
+                        return roundDecimals(
+                            group.variantMaps.reduce((total, curr) => {
+                                const price = curr.product.prices.find(
+                                    price => price.currency == group.yourPrice.currency
+                                )
+                                if (!price) return total
+                                return (total += price.recommended_retail_price)
+                            }, 0),
+                            2
+                        )
+                    },
+                })
+                Object.defineProperty(group.yourPrice, 'currentPrice', {
+                    get() {
+                        return roundDecimals(
+                            group.variantMaps.reduce((total, curr) => {
+                                const price = curr.product.prices.find(
+                                    price => price.currency == group.yourPrice.currency
+                                )
+                                if (!price) return total
+                                return (total += price.wholesale_price
+                                    ? price.wholesale_price
+                                    : price.recommended_retail_price)
+                            }, 0),
+                            2
+                        )
+                    },
+                })
 
                 group.initDone = true
             })
         },
         initVariantMaps({ rootGetters }, variantMaps) {
             variantMaps.map(variantMap => {
+                variantMap.isInit = true
                 Object.defineProperty(variantMap, 'product', {
                     get() {
                         const products = rootGetters['products/products']
@@ -168,7 +232,10 @@ export default {
                 })
                 Object.defineProperty(variantMap, 'variant', {
                     get() {
-                        return variantMap.product.variants.find(variant => variant.id == variantMap.variant_id)
+                        return (
+                            variantMap.product &&
+                            variantMap.product.variants.find(variant => variant.id == variantMap.variant_id)
+                        )
                     },
                 })
             })

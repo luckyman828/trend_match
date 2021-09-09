@@ -2,7 +2,14 @@
     <div class="drawer-wrapper" :class="[{ show: show }]">
         <div class="overlay" @click="$emit('close')" />
         <div class="drawer" :class="[`pos-${position}`, { extend: extend }]" :style="extendStyle">
+            <div class="outside">
+                <slot name="outside" />
+            </div>
             <div class="header" v-touch:swipe.down="onSwipeDown" :class="{ 'show-shadow': showHeaderShadow }">
+                <button class="close white circle" @click="onSwipeDown">
+                    <i class="far fa-times"></i>
+                </button>
+                <div class="drag-handle"></div>
                 <slot name="header" />
             </div>
             <div class="body" @scroll.passive="onScrollBody">
@@ -65,26 +72,24 @@ export default {
             this.extend = false
         },
         onScrollBody(e) {
-            const threshold = 20
-            const scrollY = e.target.scrollTop
-            if (scrollY > this.extendAmount) {
-                this.extendAmount = scrollY
-            }
-            if (scrollY > threshold) {
-                this.extend = true
-            } else {
-                this.$nextTick(() => {
-                    this.extend = false
-                })
-            }
+            // const threshold = 20
+            // const scrollY = e.target.scrollTop
+            // if (scrollY > this.extendAmount) {
+            //     this.extendAmount = scrollY
+            // }
+            // if (scrollY > threshold) {
+            //     this.extend = true
+            // } else {
+            //     this.$nextTick(() => {
+            //         this.extend = false
+            //     })
+            // }
         },
     },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .drawer-wrapper {
     position: fixed;
     top: 0;
@@ -96,6 +101,9 @@ export default {
     .overlay {
         display: none;
         z-index: 1;
+    }
+    .outside {
+        position: relative;
     }
     .drawer {
         // height: 548px;
@@ -110,8 +118,26 @@ export default {
         .header {
             padding: 12px 16px;
             // min-height: 80px;
-            &.show-shadow {
-                box-shadow: $shadowModule;
+            // &.show-shadow {
+            //     box-shadow: $shadowModule;
+            // }
+            .drag-handle {
+                width: 48px;
+                height: 4px;
+                border-radius: 4px;
+                background: $dark;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 8px;
+                margin: auto;
+            }
+            .close {
+                top: -8px;
+                transform: translateY(-100%);
+                right: 8px;
+                position: absolute;
+                display: none;
             }
         }
         &.extend {
@@ -121,7 +147,7 @@ export default {
             bottom: 0;
             border-radius: 16px 16px 0 0;
             transform: translateY(100%);
-            max-height: 85vh;
+            max-height: 90vh;
             .body {
                 overflow: auto;
             }
@@ -147,6 +173,11 @@ export default {
         }
         .overlay {
             display: block;
+        }
+        .header {
+            .close {
+                display: inline-flex;
+            }
         }
     }
     > .footer {

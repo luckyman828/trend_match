@@ -42,8 +42,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .flex-wrapper {
     width: 100%;
     display: flex;

@@ -14,8 +14,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .chat-message {
     background: rgba(black, 0.6);
     border-radius: 16px 2px 2px 16px;

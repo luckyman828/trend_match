@@ -51,7 +51,7 @@
         <template v-slot v-if="show">
             <BaseFlyinColumn>
                 <span style="margin-right: 8px;">Variants ({{ product.variants.length }})</span>
-                <button class="invisible ghost-hover" @click="onAddVariant">
+                <button class="no-bg ghost-hover" @click="onAddVariant">
                     <i class="far fa-plus"></i><span>Add Variant</span>
                 </button>
                 <Draggable v-model="product.variants" class="product-variants">
@@ -333,7 +333,7 @@
                         />
 
                         <div style="display: flex; align-items: center; height: 40px;">
-                            <button class="invisible ghost-hover" @click="onRemoveDelivery(index)">
+                            <button class="no-bg ghost-hover" @click="onRemoveDelivery(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
                         </div>
@@ -442,7 +442,7 @@
                         <!-- <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span> -->
 
                         <div style="display: flex; align-items: center; height: 40px;">
-                            <button class="invisible ghost-hover" @click="removeCurrency(index)">
+                            <button class="no-bg ghost-hover" @click="removeCurrency(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
                         </div>
@@ -494,7 +494,7 @@
                         />
 
                         <div style="display: flex; align-items: center; height: 40px;">
-                            <button class="invisible ghost-hover" @click="removeAssortment(index)">
+                            <button class="no-bg ghost-hover" @click="removeAssortment(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
                         </div>
@@ -527,7 +527,7 @@
                                 <div class="drag-handle square ghost primary" style="margin-left: 8px;">
                                     <i class="far fa-arrows-alt-v"></i>
                                 </div>
-                                <button class="invisible ghost-hover" @click="onRemoveAssortmentSize(index)">
+                                <button class="no-bg ghost-hover" @click="onRemoveAssortmentSize(index)">
                                     <i class="far fa-trash-alt"></i>
                                 </button>
                             </div>
@@ -572,7 +572,7 @@
                             />
 
                             <div style="display: flex; align-items: center; height: 40px;">
-                                <button class="invisible ghost-hover" @click="onRemoveSize(index)">
+                                <button class="no-bg ghost-hover" @click="onRemoveSize(index)">
                                     <i class="far fa-trash-alt"></i>
                                 </button>
                             </div>
@@ -664,7 +664,7 @@
                         />
 
                         <div style="display: flex; align-items: center; height: 40px;">
-                            <button class="invisible ghost-hover" @click="removeEAN(index)">
+                            <button class="no-bg ghost-hover" @click="removeEAN(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
                         </div>
@@ -913,6 +913,11 @@ export default {
         initProduct(isSameProduct) {
             // Make a copy of the product, so we can check for changes compared to the original
             const productClone = JSON.parse(JSON.stringify(this.currentProduct))
+            productClone.isInit = false
+            productClone.variants &&
+                productClone.variants.map(variant => {
+                    variant.isInit = false
+                })
             this.productToEdit = productClone
             this.initProducts([this.productToEdit])
             if (!isSameProduct) {
@@ -1313,8 +1318,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .product-title-wrapper {
     flex-direction: column;
     justify-content: flex-start;

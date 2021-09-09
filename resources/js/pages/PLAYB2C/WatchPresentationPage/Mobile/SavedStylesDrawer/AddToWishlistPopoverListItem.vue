@@ -1,7 +1,13 @@
 <template>
     <div class="add-to-wishlist-popover-list-item flex-list justify">
         <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <SavingPercentagePill :variant="variant" />
+                <button class="pill red xxs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
 
         <div class="flex-list justify details">
@@ -13,12 +19,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-10">
-                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-strike ft-10 ft-bd">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :variant="variant" />
+                    <OldPrice :variant="variant" />
                 </div>
             </div>
 
@@ -33,10 +35,13 @@
 <script>
 import ChooseSizePopover from '../../ChooseSizePopover'
 import AddToWishlistButton from '../../AddToWishlistButton'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'AddToWishlistPopoverListItem',
-    components: { ChooseSizePopover, AddToWishlistButton },
+    components: { ChooseSizePopover, AddToWishlistButton, CurrentPrice, OldPrice, SavingPercentagePill },
     props: ['variant'],
     data() {
         return {}
@@ -45,8 +50,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .add-to-wishlist-popover-list-item {
     padding: 8px;
     border-radius: $borderRadiusMd;
@@ -59,6 +62,14 @@ export default {
     .name-section {
         max-width: 160px;
         padding-right: 8px;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

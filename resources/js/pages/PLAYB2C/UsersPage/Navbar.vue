@@ -37,8 +37,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .navbar-users {
     display: flex;
     justify-content: space-between;

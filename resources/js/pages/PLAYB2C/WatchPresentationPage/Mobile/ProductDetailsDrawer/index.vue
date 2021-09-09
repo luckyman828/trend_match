@@ -1,5 +1,8 @@
 <template>
     <BaseDrawer position="bottom" :show="show" class="product-details-drawer" @close="$emit('close')">
+        <template v-slot:outside v-if="product">
+            <CurrentTimingPreview class="current-timing-preview" />
+        </template>
         <template v-slot:header v-if="product">
             <div class="header-inner flex-list justify">
                 <div class="flex-list flex-v sm">
@@ -7,17 +10,8 @@
                     <h3 class="product-name">{{ product.name }}</h3>
                 </div>
                 <div class="price">
-                    <div class="current-price">
-                        {{
-                            product.yourPrice.wholesale_price
-                                ? product.yourPrice.wholesale_price
-                                : product.yourPrice.recommended_retail_price
-                        }}
-                        {{ product.yourPrice.currency }}
-                    </div>
-                    <div class="old-price" v-if="product.yourPrice.wholesale_price">
-                        {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice class="ft-14" :variant="currentVariant" />
+                    <OldPrice class="ft-12" :variant="currentVariant" />
                 </div>
             </div>
         </template>
@@ -32,10 +26,15 @@
                     @show-variant="$event => (currentVariant = $event)"
                 />
 
-                <div class="form-element list-item">
+                <div class="form-element flex-list-item">
                     <label>Sizes</label>
                     <div class="size-list flex-list">
-                        <div class="square size" v-for="size in currentVariant.ean_sizes" :key="size.ean">
+                        <div
+                            class="true-square size"
+                            :class="{ 'sold-out': !size.inStock }"
+                            v-for="size in currentVariant.ean_sizes"
+                            :key="size.ean"
+                        >
                             {{ size.size }}
                         </div>
                     </div>
@@ -45,7 +44,7 @@
 
                 <div class="form-element flex-list md">
                     <i class="fal fa-info-circle md"></i>
-                    <div class="list-item">
+                    <div class="flex-list-item">
                         <label>Description</label>
                         <span class="value description"> {{ product.sale_description }}</span>
                     </div>
@@ -53,9 +52,17 @@
 
                 <div class="form-element flex-list md">
                     <i class="fal fa-flower md"></i>
-                    <div class="list-item">
+                    <div class="flex-list-item">
                         <label>Composition</label>
                         <span class="value"> {{ product.composition }}</span>
+                    </div>
+                </div>
+
+                <div class="form-element flex-list md">
+                    <i class="fal fa-tshirt md"></i>
+                    <div class="flex-list-item">
+                        <label>Style number</label>
+                        <span class="value"> {{ product.datasource_id }}</span>
                     </div>
                 </div>
             </div>
@@ -69,10 +76,13 @@ import { mapGetters } from 'vuex'
 import ImageRail from './ImageRail'
 import VariantRail from './VariantRail'
 import AddToBasketSelector from '../AddToBasketSelector'
+import CurrentTimingPreview from './CurrentTimingPreview'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'play.productDetailsDrawer',
-    components: { ImageRail, VariantRail, AddToBasketSelector },
+    components: { ImageRail, VariantRail, AddToBasketSelector, CurrentTimingPreview, CurrentPrice, OldPrice },
     props: ['show'],
     data: function() {
         return {
@@ -87,40 +97,43 @@ export default {
             return this.pdpItem && this.pdpItem.product
         },
     },
-    methods: {
-        setCurrentVariant(variant) {
-            this.currentVariant = variant
-        },
-    },
     watch: {
         show(isVisible) {
             if (isVisible) {
                 this.setCurrentVariant(this.pdpItem.variant ? this.pdpItem.variant : this.pdpItem.product.variants[0])
             }
         },
+        pdpItem(newItem) {
+            if (newItem) {
+                this.setCurrentVariant(newItem.variant)
+            }
+        },
+    },
+    methods: {
+        setCurrentVariant(variant) {
+            this.currentVariant = variant
+        },
     },
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
+.current-timing-preview {
+    position: absolute;
+    left: 8px;
+    top: -8px;
+    transform: translateY(-100%);
+}
 .product-details-drawer {
     line-height: 1.4;
+    z-index: 2;
     .brand {
         font-weight: 12px;
         font-weight: 700;
         color: $fontSoft;
     }
     .price {
-        font-size: 14px;
-        font-weight: 500;
         text-align: right;
-        .old-price {
-            text-decoration: line-through;
-            font-size: 12px;
-            opacity: 0.5;
-        }
     }
     .body-inner {
         padding: 0 16px 100px;
@@ -134,8 +147,21 @@ export default {
         border-color: $grey300;
         color: $fontBody;
         font-size: 900;
+        position: relative;
+        &.sold-out {
+            opacity: 0.5;
+            &::after {
+                position: absolute;
+                content: '|';
+                font-weight: 500;
+                font-size: 28px;
+                left: 14px;
+                top: 0px;
+                transform: rotateZ(45deg);
+            }
+        }
     }
-    .list-item {
+    .flex-list-item {
         min-width: 72px;
         > * {
             display: block;

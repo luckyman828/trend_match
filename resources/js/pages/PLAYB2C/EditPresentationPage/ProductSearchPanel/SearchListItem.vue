@@ -7,7 +7,7 @@
             @keydown.enter="onAddTiming"
         >
             <BaseImageSizer fit="cover" class="image">
-                <BaseVariantImage :variant="variant" size="sm" />
+                <BaseVariantImage :variant="variant" size="sm" :key="variant.id" class="bg-shimmer" />
             </BaseImageSizer>
 
             <div class="flex-list flex-v justify details">
@@ -20,15 +20,8 @@
                             <span class="truncate">{{ product.name }}</span>
                         </div>
                         <div class="price flex-list center-v">
-                            <div class="current-price ft-bd ft-10" v-if="product.yourPrice.wholesale_price">
-                                {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
-                            </div>
-                            <div
-                                class="old-price ft-10 ft-bd"
-                                :class="{ 'ft-strike': !!product.yourPrice.wholesale_price }"
-                            >
-                                {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
-                            </div>
+                            <CurrentPrice :variant="variant" />
+                            <OldPrice :variant="variant" />
                         </div>
                     </div>
                 </div>
@@ -70,18 +63,19 @@
             <!-- ACTIONS  -->
             <div class="action-list flex-list center-v">
                 <!-- Not editing look -->
-                <template v-if="!currentLook">
+                <BaseLoader class="sync-loader" msg="Syncing" v-if="syncingExternalProduct" />
+                <template v-else-if="!currentLook">
                     <BaseButton
-                        buttonClass="circle invisible"
+                        buttonClass="circle no-bg"
                         targetAreaPadding="4px"
-                        @click="$emit('create-look', variant)"
+                        @click="onCreateLook"
                         tabindex="-1"
                         v-tooltip="'Create a look'"
                     >
                         <i class="far fa-layer-group yellow"></i>
                     </BaseButton>
                     <BaseButton
-                        buttonClass="invisible circle"
+                        buttonClass="no-bg circle"
                         targetAreaPadding="4px"
                         @click="onAddTiming"
                         tabindex="-1"
@@ -128,17 +122,22 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
 import variantImage from '../../../../mixins/variantImage'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
 
 export default {
     name: 'SearchListItem',
     components: {
         Draggable,
+        CurrentPrice,
+        OldPrice,
     },
     props: ['product', 'focusIndex'],
     mixins: [variantImage],
     data() {
         return {
             variantIndex: 0,
+            syncingExternalProduct: false,
         }
     },
     computed: {
@@ -152,35 +151,85 @@ export default {
             return this.product.variants[this.variantIndex]
         },
         inCurrentLook() {
-            return this.currentLook.variantMaps.find(map => map.variant_id == this.variant.id)
+            return this.currentLook.variantMaps.find(map => {
+                return (
+                    this.variant.product.datasource_id == map.product.datasource_id &&
+                    this.variant.name == map.variant.name
+                )
+            })
         },
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
         ...mapActions('playPresentation', ['addTiming']),
         ...mapActions('productGroups', ['addVariantMap', 'removeVariantMap']),
-        onAddTiming() {
+        ...mapActions('products', ['insertProducts']),
+        async getKollektProduct() {
+            // Check if the product exists on Kollekt
+            const existingProduct = this.$store.getters['products/getProducts'].find(
+                product => product.datasource_id == this.product.datasource_id
+            )
+
+            let product = existingProduct ? existingProduct : this.product
+
+            // Otherwise create it
+            if (!this.product.id && !existingProduct) {
+                this.syncingExternalProduct = true
+                // TEMP DKC
+                product = await this.$store.dispatch('bonaparte/convertDKCProductToKollekt', this.product)
+                // END TEMP DKC
+                this.syncingExternalProduct = false
+            }
+
+            return product
+        },
+        async onAddTiming() {
+            const product = await this.getKollektProduct()
+            const variant = product.variants.find(variant => variant.name == this.variant.name)
+
             const newTiming = {
                 id: null,
                 start_at_ms: 0,
                 end_at_ms: this.videoDuration / 12,
-                variants: [{ product_id: this.product.id, variant_id: this.variant.id }],
+                variants: [{ product_id: product.id, variant_id: variant.id }],
             }
             this.addTiming({ newTiming })
         },
-        onAddToLook() {
-            this.addVariantMap({ productGroup: this.currentLook, variant: this.variant })
+        async onAddToLook() {
+            const product = await this.getKollektProduct()
+            const variant = product.variants.find(variant => variant.name == this.variant.name)
+
+            this.addVariantMap({ productGroup: this.currentLook, variant })
+        },
+        async onCreateLook() {
+            const product = await this.getKollektProduct()
+            const variant = product.variants.find(variant => variant.name == this.variant.name)
+
+            this.$emit('create-look', variant)
         },
         onRemoveFromLook() {
             this.removeVariantMap({ productGroup: this.currentLook, variant: this.variant })
+        },
+        async createKollektProduct() {
+            // Create product
+            const product = await this.insertProducts({
+                file: this.$store.getters['playPresentation/getPresentation'],
+                products: [this.product],
+                addToState: true,
+            })
+            // Sync images
+            this.$store.dispatch('files/syncExternalImages', {
+                file: this.$store.getters['playPresentation/getPresentation'],
+                products: [this.product],
+            })
+            // Fetch size ean for the product
+            const productData = this.$store.dispatch('bonaparte/fetchProduct', { product })
         },
     },
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .item-wrapper {
     margin-bottom: 4px;
 }
@@ -234,6 +283,9 @@ export default {
         position: absolute;
         top: 8px;
         right: 8px;
+    }
+    .sync-loader {
+        height: 40px;
     }
     .variant-selector {
         width: 100%;

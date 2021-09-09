@@ -1,10 +1,14 @@
 <template>
     <div class="add-to-wishlist-popover-list-item flex-list justify">
-        <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+        <BaseImageSizer
+            fit="cover"
+            class="image clickable"
+            @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { variant, product: variant.product })"
+        >
+            <VariantImage class="resize-target" :variant="variant" labelSize="xxs" />
         </BaseImageSizer>
 
-        <div class="flex-list justify details">
+        <div class="flex-list justify details flex-1">
             <!-- LEFT  -->
             <div class="name-section flex-list flex-v space-sm">
                 <div class="flex-list flex-v lh-min space-xs">
@@ -13,12 +17,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-10">
-                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-strike ft-10 ft-bd">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :variant="variant" />
+                    <OldPrice :variant="variant" />
                 </div>
             </div>
 
@@ -33,10 +33,13 @@
 <script>
 import ChooseSizePopover from '../../ChooseSizePopover'
 import AddToWishlistButton from '../../AddToWishlistButton'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import VariantImage from '../../../../../components/PLAY/VariantImage'
 
 export default {
     name: 'AddToWishlistPopoverListItem',
-    components: { ChooseSizePopover, AddToWishlistButton },
+    components: { ChooseSizePopover, AddToWishlistButton, CurrentPrice, OldPrice, VariantImage },
     props: ['variant'],
     data() {
         return {}
@@ -45,8 +48,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .add-to-wishlist-popover-list-item {
     padding: 8px;
     border-radius: $borderRadiusMd;
@@ -59,6 +60,14 @@ export default {
     .name-section {
         max-width: 160px;
         padding-right: 8px;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

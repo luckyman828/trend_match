@@ -1,7 +1,7 @@
 <template>
     <v-popover
         trigger="click"
-        :disabled="!variant || !!variantAddedToBasket || !!sizeDetail"
+        :disabled="!variant || !!variantAddedToBasket || !!sizeDetail || !variant.inStock"
         :container="popoverContainer"
         @show="$emit('update:sizePopoverOpen', true)"
         @hide="$emit('update:sizePopoverOpen', false)"
@@ -9,6 +9,7 @@
         <BaseStateAlternatingButton
             :buttonClass="[buttonClass, variantAddedToBasket && 'active']"
             :active="variantAddedToBasket"
+            :class="{ 'sold-out': !variant.inStock }"
             :baseState="{
                 class: baseClass,
                 text: textStyle == 'short' ? 'Add' : textStyle == 'none' ? '' : 'Add to basket',
@@ -26,7 +27,7 @@
                 iconLeft: 'far fa-shopping-bag',
                 nestedIconLeft: 'fas fa-times pos-right pos-bottom',
             }"
-            :disabled="!variant"
+            :disabled="!variant || !variant.inStock"
             @click="
                 localVariant = variant
                 variantAddedToBasket ? onRemoveFromBasket(localVariant) : sizeDetail && onAddToBasket(sizeDetail)
@@ -72,6 +73,15 @@ export default {
             })
         },
     },
+    watch: {
+        variantAddedToBasket(isAdded) {
+            if (this.resetOnSubmit) {
+                setTimeout(() => {
+                    this.$refs.sizeSelector.reset()
+                }, 5)
+            }
+        },
+    },
     methods: {
         ...mapActions('basket', ['addToBasket', 'removeFromBasket']),
         onAddToBasket(sizeDetail) {
@@ -95,4 +105,18 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+::v-deep {
+    button.sold-out > i {
+        &::after {
+            position: absolute;
+            content: '|';
+            font-weight: 900;
+            font-size: 26px;
+            left: 7px;
+            top: -7px;
+            transform: rotateZ(45deg);
+        }
+    }
+}
+</style>

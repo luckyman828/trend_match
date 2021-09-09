@@ -35,7 +35,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .sidebar-item.sidebar-space-logo-wrapper {
     cursor: pointer;
     display: block;

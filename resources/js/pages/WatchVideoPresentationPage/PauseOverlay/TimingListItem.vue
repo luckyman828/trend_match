@@ -42,7 +42,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .product-timing-list-item {
     width: 84px;
     min-width: 84px;

@@ -95,7 +95,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .product-list-item {
     &:not(:first-child) {
         margin-top: 40px;

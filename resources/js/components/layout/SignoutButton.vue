@@ -12,14 +12,12 @@ export default {
     name: 'signoutButton',
     methods: {
         ...mapActions('auth', ['logout']),
-    }
+    },
 }
 </script>
 
 <style scoped lang="scss">
-    @import '~@/_variables.scss';
-
-    button.link.signout-button {
-        height: 80px;
-    }
+button.link.signout-button {
+    height: 80px;
+}
 </style>

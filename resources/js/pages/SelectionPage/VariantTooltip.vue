@@ -224,8 +224,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 div.header {
     text-align: center;
     display: flex;

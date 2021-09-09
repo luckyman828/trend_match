@@ -42,7 +42,7 @@
                 </BaseSelectButton>
                 <!-- <div class="item-group actions">
                     <button class="primary" v-close-popover @click="onSetCurrentSelections"><span>Apply</span></button>
-                    <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>
+                    <button class="no-bg ghost-hover" v-close-popover><span>Cancel</span></button>
                 </div> -->
             </template>
         </v-popover>

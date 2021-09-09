@@ -227,7 +227,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .video-preview {
     position: absolute;
     height: 100%;

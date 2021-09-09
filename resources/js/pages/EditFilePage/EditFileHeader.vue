@@ -32,7 +32,6 @@
 </template>
 
 <script>
-
 export default {
     name: 'editFileHeader',
     props: ['file'],
@@ -41,8 +40,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .header {
     display: flex;
     justify-content: space-between;

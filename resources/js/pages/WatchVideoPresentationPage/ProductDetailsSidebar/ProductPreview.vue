@@ -73,8 +73,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .product-preview {
     pointer-events: none;
     display: inline-block;

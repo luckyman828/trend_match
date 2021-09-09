@@ -134,8 +134,6 @@ export default {
 </script>
 
 <style <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .new-request-form {
     padding: 20px 16px 28px;
     .form-header {

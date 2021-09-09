@@ -10,7 +10,7 @@
             <template v-if="playerStarted">
                 <div class="bottom-aligned flex-list flex-v md">
                     <div class="over-timeline flex-list flex-v md">
-                        <PreviewList v-if="currentTiming" />
+                        <PreviewList />
                         <div class="top flex-list justify flex-end-v">
                             <div class="left">
                                 <!-- <button class="bg-blur sm pill comment-button">
@@ -73,7 +73,7 @@
 
                     <div class="bottom flex-list equal-width justify center-v">
                         <div class="left flex-list">
-                            <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+                            <button v-if="!isLive" class="no-bg white circle ghost-hover" @click="togglePlaying">
                                 <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                             </button>
                             <VolumeControl :disableSlider="true" />
@@ -111,12 +111,35 @@
 
                 <TimingListDrawer :show="showTimingList" @close="showTimingList = false" />
 
-                <ProductDetailsDrawer :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
                 <SavedStylesDrawer
                     :show="!!showSavedProductsDrawer"
                     :view.sync="savedProductsView"
                     @close="showSavedProductsDrawer = false"
                 />
+                <ProductDetailsDrawer :show="!!pdpItem" @close="SET_PDP_ITEM(null)" />
+            </template>
+
+            <template v-slot:ended>
+                <div
+                    class="ended-wrapper flex-list flex-v center-h center-v space-md"
+                    style="height: 100%; width: 100%"
+                >
+                    <button
+                        class="primary pill lg w-lg"
+                        @click="
+                            showSavedProductsDrawer = true
+                            savedProductsView = 'basket'
+                        "
+                    >
+                        <span>Se kurv</span>
+                    </button>
+                    <button
+                        class="white pill lg w-lg"
+                        @click="$store.dispatch('playEmbed/postMessage', { action: 'closePresentation' })"
+                    >
+                        <span>Afslut og shop videre</span>
+                    </button>
+                </div>
             </template>
         </VideoPlayer>
     </div>
@@ -220,7 +243,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .watch-video-page {
     position: fixed;
     bottom: 0px;

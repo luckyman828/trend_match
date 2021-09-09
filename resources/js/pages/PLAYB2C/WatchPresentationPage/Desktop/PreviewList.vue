@@ -86,7 +86,6 @@ export default {
             }
         },
         onPopoverOpen(variantId, isOpen) {
-            console.log('on popover open', variantId, isOpen)
             if (isOpen) {
                 this.openSizePopovers.push(variantId)
             } else {
@@ -104,7 +103,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .preview-list-wrapper {
     transition: transform $videoPauseTransition;
     transform-origin: top left;
@@ -115,11 +113,13 @@ export default {
     .recently-started & {
         transform: translateY(60px);
         &.pdp-open {
-            transform: translateY(60px) translateX(384px) scale(0.5);
+            // transform: translateY(60px) translateX(384px) scale(0.5);
+            // transform: translateY(60px) translateX(384px);
         }
     }
     &.pdp-open {
-        transform: translateX(384px) scale(0.5);
+        // transform: translateX(384px) scale(0.5);
+        transform: translateX(384px);
     }
 }
 .preview-list {

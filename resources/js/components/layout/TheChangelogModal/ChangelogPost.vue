@@ -30,8 +30,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .changelog-post {
     background: white;
     border: $borderModule;

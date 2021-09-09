@@ -28,7 +28,7 @@
                 @input="$emit('update')"
             />
         </div>
-        <button class="delete-button invisible ghost-hover" @click="$emit('delete')">
+        <button class="delete-button no-bg ghost-hover" @click="$emit('delete')">
             <i class="far fa-trash"></i>
         </button>
     </div>
@@ -48,8 +48,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .custom-property-list-item {
     .delete-button {
         margin-top: 26px;

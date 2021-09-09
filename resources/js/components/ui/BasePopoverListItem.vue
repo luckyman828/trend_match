@@ -17,8 +17,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .row {
     font-size: 12px;
     padding: 4px 12px;

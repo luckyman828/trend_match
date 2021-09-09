@@ -87,7 +87,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .request-label-list {
     padding: 8px 0;
     .label-list-item {

@@ -35,7 +35,7 @@
                     <span>No option ID</span>
                 </BaseCheckboxInputField>
 
-                <button class="invisible primary" v-if="getFiltersAreActive" @click="onClearFilters">
+                <button class="no-bg primary" v-if="getFiltersAreActive" @click="onClearFilters">
                     <span>Clear filter</span>
                 </button>
             </template>
@@ -144,7 +144,7 @@
             </template>
             <template v-slot:footer>
                 <td class="flex-list">
-                    <BaseButton @click="onNewProduct" buttonClass="primary invisible">
+                    <BaseButton @click="onNewProduct" buttonClass="primary no-bg">
                         <i class="far fa-plus"></i><span>Add product</span>
                     </BaseButton>
                 </td>
@@ -416,8 +416,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .products-table-wrapper {
     button {
         position: relative;

@@ -30,8 +30,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .select-button {
     &.disabled .button-wrapper {
         opacity: 0.5;

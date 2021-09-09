@@ -295,7 +295,6 @@ export default {
         },
     },
     async created() {
-        // console.log('hello')
         // Set up a request intercepter that checks if the user is still authenticated
         axios.interceptors.response.use(
             response => response,
@@ -324,7 +323,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .loading-wrapper,
 .error-wrapper {
     min-height: 100vh;

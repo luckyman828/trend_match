@@ -58,7 +58,6 @@ export default {
 </script>
 
 <style <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .input-textarea {
     .input-wrapper {
         width: 100%;

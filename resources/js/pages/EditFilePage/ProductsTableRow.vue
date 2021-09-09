@@ -92,7 +92,7 @@
         </td>
 
         <td class="action">
-            <button class="invisible ghost-hover primary" v-if="!editOrderModeActive" @click="onViewSingle">
+            <button class="no-bg ghost-hover primary" v-if="!editOrderModeActive" @click="onViewSingle">
                 <span>View / Edit</span>
             </button>
 
@@ -167,7 +167,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .products-table-row {
     .img-wrapper {
         // border: $borderModule;

@@ -537,7 +537,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .quick-actions {
     border-bottom: $borderDivider;
     padding-bottom: 16px;

@@ -9,7 +9,7 @@
             :class="[
                 { active: theCurrentOptionIndex == index },
                 sizeClass,
-                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'invisible ghost-hover',
+                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'no-bg ghost-hover',
             ]"
         >
             <slot :option="option" :isActive="theCurrentOptionIndex == index" />
@@ -56,7 +56,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .segmented-control {
     padding: 2px;
     background: $grey;

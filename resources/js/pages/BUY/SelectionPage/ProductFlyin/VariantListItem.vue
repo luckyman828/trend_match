@@ -72,8 +72,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .variant-list-item-wrapper {
     margin-bottom: 8px;
     &:not(:last-child) {
