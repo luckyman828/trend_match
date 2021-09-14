@@ -1,18 +1,16 @@
 <template>
     <table class="map-fields-table">
-        <slot/>
+        <slot />
     </table>
 </template>
 
 <script>
 export default {
-    name: 'baseMapFieldsTable'
+    name: 'baseMapFieldsTable',
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 table {
     border-collapse: collapse;
     // margin-bottom: 20px;
@@ -23,7 +21,8 @@ table {
                 &.select {
                     padding: 0;
                 }
-                &:first-child, &.select + * {
+                &:first-child,
+                &.select + * {
                     padding-left: 0;
                 }
                 &:last-child {
@@ -33,5 +32,4 @@ table {
         }
     }
 }
-
 </style>

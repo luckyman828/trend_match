@@ -120,8 +120,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 textarea {
     resize: none;
 }

@@ -65,18 +65,34 @@
 
                         <!-- Has thumbnail -->
                         <template v-else>
-                            <div class="flex-list thumbnail-list">
+                            <div
+                                class="flex-list thumbnail-list"
+                                :class="{ uploading: uploadingThumbnail }"
+                                @click="slotProps.activate()"
+                            >
                                 <BaseImageSizer aspect="16:9" fit="cover" :controlWidth="true">
                                     <img :src="presentation.thumbnail" />
                                     <div class="pill xs dark size-pill">
                                         <span>16:9</span>
                                     </div>
+                                    <BaseLoader
+                                        class="thumbnail-loader"
+                                        msg="Uploading image"
+                                        theme="dark"
+                                        v-if="uploadingThumbnail"
+                                    />
                                 </BaseImageSizer>
                                 <BaseImageSizer aspect="9:16" fit="cover" :controlWidth="true">
                                     <img :src="presentation.thumbnail" />
                                     <div class="pill xs dark size-pill">
                                         <span>9:16</span>
                                     </div>
+                                    <BaseLoader
+                                        class="thumbnail-loader"
+                                        msg="Uploading image"
+                                        theme="dark"
+                                        v-if="uploadingThumbnail"
+                                    />
                                 </BaseImageSizer>
                             </div>
                             <button class="bottom-action white pill" @click="slotProps.activate()">
@@ -101,7 +117,9 @@ export default {
     name: 'presentationDetailsScreen',
     components: { FlowBaseScreen, ImageUploadArea },
     data() {
-        return {}
+        return {
+            uploadingThumbnail: false,
+        }
     },
     mixins: [formatBytes],
     computed: {
@@ -119,7 +137,9 @@ export default {
         },
         async onImageChange(newImage) {
             // Upload the image
+            this.uploadingThumbnail = true
             const imageUrl = await this.uploadImageToWorkspace(newImage)
+            this.uploadingThumbnail = false
             this.presentation.thumbnail = imageUrl
             this.updatePresentationDetails(this.presentation)
         },
@@ -138,7 +158,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .upload-progress-wrapper {
     position: absolute;
     left: 0;
@@ -193,6 +212,12 @@ export default {
         margin-bottom: 16px;
         line-height: 1;
     }
+    .thumbnail-loader {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
     .thumbnail-droparea {
         padding-bottom: 64px;
         .upload-graphic {
@@ -208,6 +233,11 @@ export default {
             width: 100%;
             img {
                 border-radius: $borderRadiusMd;
+            }
+            &.uploading {
+                img {
+                    opacity: 0.5;
+                }
             }
         }
         .size-pill {

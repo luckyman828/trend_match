@@ -44,7 +44,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible"
+                        buttonClass="primary no-bg"
                         :disabled="!userHasEditAccess"
                         v-tooltip="!userHasEditAccess && 'Only admins can add users to selections'"
                         @click="onAddTeam($event)"
@@ -99,7 +99,7 @@
                         @click="onAddTeamsToSelection(teamsToAdd);teamsToAdd = [];slotProps.hide()">
                             <span>Add <template v-if="teamsToAdd.length > 0">{{teamsToAdd.length}} 
                             </template>team<template v-if="teamsToAdd.length > 1">s</template></span></button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide(); teamsToAdd = []"><span>Cancel</span></button>
+                        <button class="no-bg ghost-hover" @click="slotProps.hide(); teamsToAdd = []"><span>Cancel</span></button>
                     </div>
                 </div>
             </template>

@@ -78,7 +78,7 @@
 
                 <div class="thread-controls" v-if="isTicket && !disableControls">
                     <button
-                        class="view-thread-button invisible dark ghost-hover sm"
+                        class="view-thread-button no-bg dark ghost-hover sm"
                         v-tooltip="'View request thread'"
                         @click="SET_CURRENT_REQUEST_THREAD(request)"
                     >
@@ -97,7 +97,7 @@
         <div class="controls" v-if="!selectionInput.is_completed && !editActive && !disableControls && hasEditAccess">
             <button
                 v-tooltip.top="{ content: 'Delete', delay: { show: 300 } }"
-                class="button invisible ghost-hover"
+                class="button no-bg ghost-hover"
                 @click="onDeleteRequest"
             >
                 <i class="far fa-trash-alt"></i>
@@ -105,7 +105,7 @@
 
             <button
                 v-tooltip.top="{ content: 'Edit', delay: { show: 300 } }"
-                class="button invisible ghost-hover"
+                class="button no-bg ghost-hover"
                 @click="onEditRequest"
             >
                 <i class="far fa-pen"></i>
@@ -272,7 +272,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .request-wrapper {
     margin-bottom: 4px;
     position: relative;

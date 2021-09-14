@@ -81,8 +81,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .big-icon {
     font-size: 60px;
     margin: 32px 0 48px;

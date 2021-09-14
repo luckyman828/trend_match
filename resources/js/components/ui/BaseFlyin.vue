@@ -119,7 +119,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .flyin-wrapper {
     &.visible {
         > .overlay {

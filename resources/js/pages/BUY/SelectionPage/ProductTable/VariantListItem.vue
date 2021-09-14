@@ -206,7 +206,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .variant-list-item {
     overflow: hidden;
     flex-shrink: 0;

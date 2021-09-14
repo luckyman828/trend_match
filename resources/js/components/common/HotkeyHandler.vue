@@ -45,8 +45,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .hotkey-handler {
     position: fixed;
     bottom: 12px;

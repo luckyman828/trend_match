@@ -69,8 +69,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .header {
     padding: 0 8px;
     margin-bottom: 8px;

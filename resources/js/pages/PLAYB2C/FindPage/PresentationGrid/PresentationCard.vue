@@ -93,8 +93,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .presentation-card {
     // width: 288px;
     // height: 208px;

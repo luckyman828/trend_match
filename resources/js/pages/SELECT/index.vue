@@ -58,7 +58,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .root-select {
     scroll-behavior: smooth;
     min-height: 100vh;

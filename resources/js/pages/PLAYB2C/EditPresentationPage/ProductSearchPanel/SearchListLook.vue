@@ -49,14 +49,20 @@
                 <!-- BOTTOM -->
                 <div class="flex-list justify" v-if="variant">
                     <div class="price flex-list center-v">
-                        <div class="current-price ft-bd ft-10">
-                            {{ look.yourPrice.wholesale_price }} {{ look.yourPrice.currency }}
+                        <div
+                            class="current-price ft-bd ft-11 color-red"
+                            v-if="look.yourPrice.currentPrice != look.yourPrice.totalPrice"
+                        >
+                            {{ look.yourPrice.currentPrice }} {{ look.yourPrice.currency }}
                         </div>
-                        <div class="old-price ft-strike ft-10 ft-bd">
-                            {{ look.yourPrice.recommended_retail_price }} {{ look.yourPrice.currency }}
+                        <div
+                            class="old-price ft-10 ft-bd"
+                            :class="{ 'ft-strike': look.yourPrice.currentPrice != look.yourPrice.totalPrice }"
+                        >
+                            {{ look.yourPrice.totalPrice }} {{ look.yourPrice.currency }}
                         </div>
                     </div>
-                    <div class="pill invisible xs dark">
+                    <div class="pill no-bg xs dark">
                         <i class="fas fa-tshirt"></i>
                         <span>{{ look.variantMaps.length }}</span>
                     </div>
@@ -86,7 +92,7 @@
                 </BaseButton>
 
                 <BaseButton
-                    buttonClass="invisible circle ghost-hover"
+                    buttonClass="no-bg circle ghost-hover"
                     targetAreaPadding="4px"
                     @click="onAddTiming"
                     :disabled="look.variants.length <= 0"
@@ -163,8 +169,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .item-wrapper {
     margin-bottom: 4px;
 }

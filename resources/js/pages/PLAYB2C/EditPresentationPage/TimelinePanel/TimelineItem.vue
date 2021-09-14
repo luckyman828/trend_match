@@ -57,7 +57,7 @@
         <div class="inner">
             <div class="img-wrapper">
                 <div class="img-sizer">
-                    <BaseVariantImage :variant="variant" size="sm" />
+                    <BaseVariantImage :variant="variant" size="sm" :key="variant && variant.id" />
                 </div>
             </div>
             <div class="details">
@@ -244,8 +244,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .timeline-item {
     background: white;
     border: solid 2px white;

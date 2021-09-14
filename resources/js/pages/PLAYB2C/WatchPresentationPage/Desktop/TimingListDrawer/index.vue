@@ -23,10 +23,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 ::v-deep {
     &.timing-list-drawer {
-        z-index: 1;
+        z-index: 2 !important;
         .overlay {
             opacity: 0;
         }

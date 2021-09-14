@@ -93,7 +93,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .variant-list-item {
     padding: 8px 12px 12px 8px;
     border-radius: 4px;

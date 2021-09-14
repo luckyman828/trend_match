@@ -208,8 +208,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .user-wrapper {
     padding: 20px 32px 40px;
     box-shadow: $shadowModule;

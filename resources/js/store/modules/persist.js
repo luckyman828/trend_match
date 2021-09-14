@@ -220,6 +220,7 @@ export default {
         ],
         currentFolderId: null,
         uids: [],
+        darkMode: false,
     },
 
     getters: {
@@ -341,6 +342,7 @@ export default {
                 }
             }
         },
+        getDarkModeActive: state => state.darkMode,
     },
 
     actions: {
@@ -435,5 +437,8 @@ export default {
         // setAvailableCurrencies(state, currencies) {
         //     state.availableCurrencies = currencies
         // },
+        SET_DARK_MODE_ACTIVE(state, newVal) {
+            state.darkMode = newVal
+        },
     },
 }

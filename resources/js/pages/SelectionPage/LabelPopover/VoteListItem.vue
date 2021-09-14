@@ -22,7 +22,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .vote-list-item {
     border: $borderEl;
     border-radius: $borderRadiusSm;

@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <TimelinePanel v-if="timingsReady" />
+        <TimelinePanel v-if="timingsReady && cleanUpDone" />
     </div>
 </template>
 
@@ -34,7 +34,7 @@ export default {
         VideoPlayer,
     },
     data: function() {
-        return {}
+        return { cleanUpDone: false }
     },
     computed: {
         ...mapGetters('playPresentation', {
@@ -60,7 +60,7 @@ export default {
         ...mapActions('playPresentation', ['updatePresentation']),
         ...mapMutations('playPresentation', ['REMOVE_TIMING']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
-        onTimingsReady() {
+        async onTimingsReady() {
             // Remove timings that no longer have a matching product
             if (this.videoTimings && this.videoTimings.length > 0) {
                 let removedCount = 0
@@ -80,9 +80,10 @@ export default {
                         type: 'info',
                         duration: 10000, // 10 seconds
                     })
-                    this.updatePresentation()
+                    await this.updatePresentation()
                 }
             }
+            this.cleanUpDone = true
         },
     },
     created() {
@@ -92,7 +93,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .edit-video-presentation {
     display: grid;
     grid-template-columns: 352px auto;

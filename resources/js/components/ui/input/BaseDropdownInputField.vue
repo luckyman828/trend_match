@@ -66,8 +66,10 @@
                 :optionDescriptionKey="descriptionKey"
                 :cloneOptionOnSubmit="cloneOptionOnSubmit"
                 :unsetOption="unsetOption"
+                :unsetValue="unsetValue"
                 :displayFunction="displayFunction"
                 @input="onSelect($event)"
+                @unset="$emit('input', unsetValue)"
             />
             <div class="footer" v-if="$slots.default">
                 <slot />
@@ -94,6 +96,7 @@ export default {
         'innerLabel',
         'valueToDisplayOverwrite',
         'unsetOption',
+        'unsetValue',
         'disabled',
         'disabledTooltip',
         'displayFunction',
@@ -220,8 +223,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .dropdown-field {
     position: relative;
     .dropdown-icon {

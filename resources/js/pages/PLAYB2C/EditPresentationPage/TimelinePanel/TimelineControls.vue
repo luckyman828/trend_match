@@ -3,7 +3,7 @@
         <div class="main">
             <div class="left">
                 <div class="button-list flex-list">
-                    <button class="invisible white circle white-hover" @click="togglePlaying">
+                    <button class="no-bg white circle ghost-hover" @click="togglePlaying">
                         <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                     </button>
                     <VolumeControl />
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="right">
-                <button class="invisible ghost-hover white" @click="onToggleZoom">
+                <button class="no-bg ghost-hover white" @click="onToggleZoom">
                     <span>Zoom: {{ zoom }}x</span>
                 </button>
             </div>
@@ -74,7 +74,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .timeline-controls {
     background: #000000;
     background: $dark;

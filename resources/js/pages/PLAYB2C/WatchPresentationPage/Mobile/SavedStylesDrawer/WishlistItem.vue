@@ -1,7 +1,17 @@
 <template>
     <div class="wishlist-item flex-list md">
-        <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+        <BaseImageSizer
+            fit="cover"
+            class="image"
+            @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { product: variant.product, variant })"
+        >
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <SavingPercentagePill :variant="variant" />
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
         <div class="flex-list flex-v justify details">
             <!-- Top row -->
@@ -12,17 +22,8 @@
                     </div>
                     <div class="product-name">{{ variant.name }}</div>
                     <div class="price flex-list md">
-                        <div class="current-price">
-                            {{
-                                variant.yourPrice.wholesale_price
-                                    ? variant.yourPrice.wholesale_price
-                                    : variant.yourPrice.recommended_retail_price
-                            }}
-                            {{ variant.yourPrice.currency }}
-                        </div>
-                        <div class="old-price" v-if="variant.yourPrice.wholesale_price">
-                            {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                        </div>
+                        <CurrentPrice :variant="variant" />
+                        <OldPrice :variant="variant" />
                     </div>
                 </div>
                 <div class="action-list flex-list">
@@ -39,10 +40,11 @@
                 </div>
                 <button
                     class="primary pill ghost-hover"
-                    :class="variantAddedToBasket ? '' : 'invisible'"
-                    @click="$emit('add-to-basket', variant)"
+                    :class="variantAddedToBasket ? '' : 'no-bg'"
+                    :disabled="!variant.inStock"
+                    @click="variantAddedToBasket ? onRemoveFromBasket() : $emit('add-to-basket', variant)"
                 >
-                    <i class="far fa-shopping-bag">
+                    <i class="far fa-shopping-bag" :class="{ 'sold-out': !variant.inStock }">
                         <i v-if="variantAddedToBasket" class="far fa-check pos-right pos-bottom"></i>
                     </i>
                     <span v-if="variantAddedToBasket">Added</span>
@@ -56,10 +58,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'wishlistItem',
-    components: { AddToWishlistButton },
+    components: { AddToWishlistButton, CurrentPrice, OldPrice, SavingPercentagePill },
     props: ['variant'],
     computed: {
         ...mapGetters('basket', {
@@ -69,12 +74,15 @@ export default {
             return this.getVariantIsInBasket(this.variant)
         },
     },
+    methods: {
+        onRemoveFromBasket() {
+            this.$store.dispatch('basket/removeFromBasket', { variant: this.variant })
+        },
+    },
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .wishlist-item {
     padding: 6px 18px;
     border-top: $borderElSoft;
@@ -102,6 +110,25 @@ export default {
     .old-price {
         text-decoration: line-through;
         opacity: 0.5;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
+    }
+    i.sold-out {
+        &::after {
+            position: absolute;
+            content: '|';
+            font-weight: 900;
+            font-size: 26px;
+            left: 7px;
+            top: -7px;
+            transform: rotateZ(45deg);
+        }
     }
 }
 </style>

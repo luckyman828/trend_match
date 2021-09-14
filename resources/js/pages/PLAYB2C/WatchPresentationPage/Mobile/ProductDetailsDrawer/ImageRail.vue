@@ -4,6 +4,7 @@
             <BaseImageSizer class="img-wrapper" fit="cover" v-for="(picture, index) in variant.pictures" :key="index">
                 <BaseVariantImage
                     class="variant-image"
+                    :class="{ 'sold-out': !variant.inStock }"
                     :variant="variant"
                     :index="index"
                     size="lg"
@@ -17,11 +18,7 @@
             </BaseImageSizer>
         </div>
         <div class="pagination flex-list center-h">
-            <BaseButton
-                buttonClass="invisible circle dark xs"
-                v-for="(picture, index) in variant.pictures"
-                :key="index"
-            >
+            <BaseButton buttonClass="no-bg circle dark xs" v-for="(picture, index) in variant.pictures" :key="index">
                 <i class="fa-circle" :class="pictureIndex == index ? 'fas' : 'far'"></i>
             </BaseButton>
         </div>
@@ -29,8 +26,11 @@
 </template>
 
 <script>
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
+
 export default {
     name: 'imageRail',
+    components: { SavingPercentagePill },
     props: ['variant'],
     data() {
         return {
@@ -46,7 +46,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .image-rail {
     .rail {
         display: flex;

@@ -12,7 +12,7 @@
                     <span>{{ variant.name }}</span>
                 </div>
                 <div class="img-wrapper">
-                    <BaseVariantImage class="variant-image" :variant="variant" size="sm" />
+                    <VariantImage :variant="variant" labelSize="xxs" />
                 </div>
             </div>
         </div>
@@ -20,14 +20,17 @@
 </template>
 
 <script>
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
+import VariantImage from '../../../../../components/PLAY/VariantImage'
+
 export default {
     name: 'variantRail',
+    components: { SavingPercentagePill, VariantImage },
     props: ['product', 'currentVariant'],
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .variant-rail {
     .rail {
         display: flex;
@@ -83,6 +86,14 @@ export default {
             width: 16px;
             display: block;
         }
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

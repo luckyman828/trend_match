@@ -15,7 +15,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .value-display {
     padding: 8px;
     border-radius: $borderRadiusEl;

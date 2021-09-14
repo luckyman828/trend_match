@@ -37,14 +37,10 @@ export default {
     methods: {
         ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
     },
-    created() {
-        console.log('hello')
-    },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .product-details-sidebar {
     pointer-events: all;
     display: inline-block;

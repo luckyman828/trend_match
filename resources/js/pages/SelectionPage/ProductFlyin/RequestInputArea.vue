@@ -54,7 +54,7 @@
                     ><small class="request-success">Request saved <i class="fas fa-clipboard-check green"></i></small
                 ></BaseTempAlert>
                 <template>
-                    <button type="button" class="invisible ghost-hover" @click="onCancel">
+                    <button type="button" class="no-bg ghost-hover" @click="onCancel">
                         <span>Cancel</span>
                     </button>
                     <button type="button" class="primary" :class="{ disabled: submitDisabled }" @click="onSubmit">
@@ -259,7 +259,6 @@ export default {
 </script>
 
 <style <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .request-input-area {
     position: relative;
     .request-label {
@@ -312,7 +311,6 @@ export default {
 </style>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .available-label-list {
     padding: 8px 0;
     // background: white;

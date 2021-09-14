@@ -1,7 +1,13 @@
 <template>
     <div class="basket-item flex-list bg-theme-white theme-border">
         <BaseImageSizer fit="cover" class="image" @click.native="SET_PDP_ITEM({ variant, product: variant.product })">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <SavingPercentagePill :variant="variant" />
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
 
         <div class="flex-list flex-v justify details">
@@ -17,12 +23,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-12">
-                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-strike ft-12 ft-bd">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :variant="variant" />
+                    <OldPrice :variant="variant" />
                 </div>
             </div>
 
@@ -69,7 +71,7 @@
         <!-- ACTION  -->
         <div class="action-list flex-list center-v">
             <!-- <AddToWishlistButton class="circle sm" :variants="[variant]" /> -->
-            <button class="circle sm invisible bg-hover" @click="onRemoveFromBasket">
+            <button class="circle sm no-bg bg-hover" @click="onRemoveFromBasket">
                 <i class="far fa-trash"></i>
             </button>
         </div>
@@ -82,10 +84,13 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import ChooseSizePopover from '../../ChooseSizePopover'
 import variantImage from '../../../../../mixins/variantImage'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'basketItem',
-    components: { AddToWishlistButton, ChooseSizePopover },
+    components: { AddToWishlistButton, ChooseSizePopover, CurrentPrice, OldPrice, SavingPercentagePill },
     mixins: [variantImage],
     props: ['item'],
     computed: {
@@ -126,8 +131,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .basket-item {
     background: white;
     border-radius: $borderRadiusMd;
@@ -216,6 +219,14 @@ export default {
                 width: 100%;
             }
         }
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <button
         class="add-to-wishlist"
-        :class="isInWishlist ? 'active red' : theme != 'invisible' && 'white'"
+        :class="isInWishlist ? 'active red' : theme != 'no-bg' && 'white'"
         @click="onAddToWishlist"
     >
         <i class="fa-heart ft-12" style="margin-top: 1px;" :class="isInWishlist ? 'fas' : 'far'"></i>

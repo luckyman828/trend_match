@@ -207,8 +207,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .context-menu,
 .context-menu:focus,
 .context-menu .sub-menu {

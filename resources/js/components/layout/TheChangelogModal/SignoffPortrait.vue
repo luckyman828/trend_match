@@ -1,9 +1,9 @@
 <template>
     <div class="signoff-portrait">
-        <img :src="imageUrl">
+        <img :src="imageUrl" />
         <div class="title-list">
-            <span class="name">{{name}}</span>
-            <span class="title">{{title}}</span>
+            <span class="name">{{ name }}</span>
+            <span class="title">{{ title }}</span>
         </div>
     </div>
 </template>
@@ -11,16 +11,11 @@
 <script>
 export default {
     name: 'signoffPortrait',
-    props: [
-        'imageUrl',
-        'name',
-        'title',
-    ]
+    props: ['imageUrl', 'name', 'title'],
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .signoff-portrait {
     display: flex;
     align-items: center;

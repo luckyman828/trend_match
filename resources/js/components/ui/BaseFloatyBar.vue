@@ -31,8 +31,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .base-floaty-bar {
     position: fixed;
     bottom: -64px;

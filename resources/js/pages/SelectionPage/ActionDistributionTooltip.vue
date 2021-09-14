@@ -1,14 +1,15 @@
 <template>
     <div class="action-distribution-tooltip">
         <div class="header">
-            <h4>{{type == 'None' ? 'Not Decided' : type}}</h4>
+            <h4>{{ type == 'None' ? 'Not Decided' : type }}</h4>
         </div>
 
         <ActionDistributionList
-        :feedbackActions="selectionInput.feedbacks.filter(x => x.action == type)" 
-        :alignmentActions="selectionInput.actions.filter(x => x.action == type)"
-        :defaultTab="actionDistributionTooltipTab"
-        @changeTab="event => $emit('changeTab', event)"/>
+            :feedbackActions="selectionInput.feedbacks.filter(x => x.action == type)"
+            :alignmentActions="selectionInput.actions.filter(x => x.action == type)"
+            :defaultTab="actionDistributionTooltipTab"
+            @changeTab="event => $emit('changeTab', event)"
+        />
     </div>
 </template>
 
@@ -17,20 +18,14 @@ import ActionDistributionList from './ActionDistributionList'
 
 export default {
     name: 'actionDistributionTooltip',
-    props: [
-        'selectionInput',
-        'type',
-        'actionDistributionTooltipTab'
-    ],
+    props: ['selectionInput', 'type', 'actionDistributionTooltipTab'],
     components: {
-        ActionDistributionList
+        ActionDistributionList,
     },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 div.header {
     text-align: center;
     display: flex;

@@ -1,7 +1,7 @@
 <template>
     <th class="table-header" :class="sortKey">
         <template v-if="sortKey">
-            <button class="invisible sm sort" :class="{active: active}" @click="sort">
+            <button class="no-bg sm sort" :class="{ active: active }" @click="sort">
                 <span><slot></slot></span>
                 <i class="fas fa-sort" v-if="!active"></i>
                 <i class="fas fa-sort-down" v-else-if="active && sortAsc"></i>
@@ -17,26 +17,23 @@
 <script>
 export default {
     name: 'tableHeader',
-    props: [
-        'sortKey',
-        'currentSortKey',
-        'descDefault',
-        'defaultTo',
-    ],
-    data: function() { return {
-        sortAsc: this.descDefault ? false : true,
-        sortKeyIndex: 0,
-        consecutiveSortCount: 0
-    }},
+    props: ['sortKey', 'currentSortKey', 'descDefault', 'defaultTo'],
+    data: function() {
+        return {
+            sortAsc: this.descDefault ? false : true,
+            sortKeyIndex: 0,
+            consecutiveSortCount: 0,
+        }
+    },
     computed: {
-        active () {
+        active() {
             if (Array.isArray(this.sortKey)) {
                 return JSON.stringify(this.sortKey) == JSON.stringify(this.currentSortKey)
                 // return this.sortKey.includes(this.currentSortKey)
             } else {
                 return this.sortKey == this.currentSortKey
             }
-        }
+        },
     },
     watch: {
         active: function(newVal, oldVal) {
@@ -44,7 +41,7 @@ export default {
             if (newVal) {
                 this.sortAsc = this.descDefault ? false : true
             }
-        }
+        },
     },
     methods: {
         sort() {
@@ -58,54 +55,51 @@ export default {
                     this.sortAsc = true
                 }
             } else {
-                this.sortAsc =  this.descDefault ? false : true
+                this.sortAsc = this.descDefault ? false : true
                 this.consecutiveSortCount = 0
             }
             // if (Array.isArray(this.sortKey)) {
             //     this.$emit('sort', this.sortAsc, this.sortKey)
             // } else {
-                this.$emit('sort', this.sortAsc, sortKeyToEmit)
+            this.$emit('sort', this.sortAsc, sortKeyToEmit)
             // }
-        }
+        },
     },
-    mounted () {
-        if(this.active) { 
+    mounted() {
+        if (this.active) {
             this.$emit('sort', this.sortAsc, this.sortKey)
         }
-    }
+    },
 }
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
-    th {
-        font-size: 12px;
-        color: $fontTableHeader;
-        .sort {
-            &.active {
-                background: $light1;
-                color: $font;
-                i {
-                    color: $primary;
-                }
-            }
-            &:hover {
-                color: $dark05;
+th {
+    font-size: 12px;
+    color: $fontTableHeader;
+    .sort {
+        &.active {
+            background: $light1;
+            color: $font;
+            i {
+                color: $primary;
             }
         }
-        button {
-            margin-left: -8px;
-            // &:focus {
-            //     box-shadow: none;
-            // }
-        }
-        button.invisible:not(.ghost-hover):hover {
-            color: $primary;
-        }
-        button.invisible:not(.ghost-hover):not(.active):hover {
-            background: none;
+        &:hover {
+            color: $dark05;
         }
     }
-
+    button {
+        margin-left: -8px;
+        // &:focus {
+        //     box-shadow: none;
+        // }
+    }
+    button.no-bg:not(.ghost-hover):hover {
+        color: $primary;
+    }
+    button.no-bg:not(.ghost-hover):not(.active):hover {
+        background: none;
+    }
+}
 </style>

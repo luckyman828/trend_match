@@ -100,6 +100,29 @@
                 :view.sync="savedProductsView"
                 @close="showSavedProductsDrawer = false"
             />
+
+            <template v-slot:ended>
+                <div
+                    class="ended-wrapper flex-list flex-v center-h center-v space-md"
+                    style="height: 100%; width: 100%"
+                >
+                    <button
+                        class="primary pill lg w-lg"
+                        @click="
+                            showSavedProductsDrawer = true
+                            savedProductsView = 'basket'
+                        "
+                    >
+                        <span>Se kurv</span>
+                    </button>
+                    <button
+                        class="white pill lg w-lg"
+                        @click="$store.dispatch('playEmbed/postMessage', { action: 'closePresentation' })"
+                    >
+                        <span>Afslut og shop videre</span>
+                    </button>
+                </div>
+            </template>
         </VideoPlayer>
     </div>
 </template>
@@ -193,7 +216,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .watch-video-page {
     position: fixed;
     bottom: 0px;

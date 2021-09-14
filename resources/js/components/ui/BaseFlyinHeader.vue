@@ -44,8 +44,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
-
 .flyin-header {
     height: 48px;
     background: $bgContent;

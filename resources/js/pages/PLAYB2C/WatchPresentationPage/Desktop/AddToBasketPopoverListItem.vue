@@ -1,7 +1,11 @@
 <template>
     <div class="add-to-basket-popover-list-item flex-list justify">
-        <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+        <BaseImageSizer
+            fit="cover"
+            class="image clickable"
+            @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { variant, product: variant.product })"
+        >
+            <VariantImage class="resize-target" :variant="variant" labelSize="xxs" />
         </BaseImageSizer>
 
         <div class="flex-list flex-v justify details fill">
@@ -17,19 +21,20 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-10">
-                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-strike ft-10 ft-bd">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :variant="variant" />
+                    <OldPrice :variant="variant" />
                 </div>
             </div>
 
             <!-- BOTTOM -->
             <div class="flex-list">
-                <v-popover trigger="click" ref="sizePopover" :container="sizePopoverContainer">
-                    <button class="dark ghost full-width pill sm">
+                <v-popover
+                    trigger="click"
+                    ref="sizePopover"
+                    :container="sizePopoverContainer"
+                    :disabled="!variant.inStock"
+                >
+                    <button class="dark ghost full-width pill sm" :disabled="!variant.inStock">
                         <i class="far fa-ruler"></i>
                         <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
                         <span v-else>Choose size</span>
@@ -58,10 +63,14 @@
 <script>
 import ChooseSizePopover from '../ChooseSizePopover'
 import AddToBasketButton from '../AddToBasketButton'
+import CurrentPrice from '../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../components/PLAY/prices/SavingPercentagePill'
+import VariantImage from '../../../../components/PLAY/VariantImage'
 
 export default {
     name: 'AddToBasketPopoverListItem',
-    components: { ChooseSizePopover, AddToBasketButton },
+    components: { ChooseSizePopover, AddToBasketButton, CurrentPrice, OldPrice, SavingPercentagePill, VariantImage },
     props: ['variant', 'sizePopoverContainer'],
     data() {
         return {
@@ -72,8 +81,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .add-to-basket-popover-list-item {
     padding: 8px;
     border-radius: $borderRadiusMd;

@@ -74,15 +74,23 @@ export default {
     props: ['name', 'demoProps'],
     data() {
         return {
-            darkMode: false,
             showProps: false,
         }
+    },
+    computed: {
+        darkMode: {
+            get() {
+                return this.$store.getters['persist/getDarkModeActive']
+            },
+            set(newVal) {
+                this.$store.commit('persist/SET_DARK_MODE_ACTIVE', newVal)
+            },
+        },
     },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .component-demo {
     margin-bottom: 28px;
     padding-bottom: 20px;

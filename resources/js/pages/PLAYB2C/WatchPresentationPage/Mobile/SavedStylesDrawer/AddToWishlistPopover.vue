@@ -26,8 +26,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .add-to-wishlist-popover {
     padding: 8px;
     border-radius: $borderRadiusMd;

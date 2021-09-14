@@ -1,7 +1,17 @@
 <template>
     <div class="basket-item flex-list md">
-        <BaseImageSizer fit="cover" class="image">
-            <BaseVariantImage :variant="variant" size="sm" />
+        <BaseImageSizer
+            fit="cover"
+            class="image"
+            @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { product: variant.product, variant })"
+        >
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <SavingPercentagePill :variant="variant" />
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
         <div class="flex-list flex-v justify details">
             <!-- Top row -->
@@ -12,22 +22,13 @@
                     </div>
                     <div class="product-name">{{ variant.name }}</div>
                     <div class="price flex-list md">
-                        <div class="current-price">
-                            {{
-                                variant.yourPrice.wholesale_price
-                                    ? variant.yourPrice.wholesale_price
-                                    : variant.yourPrice.recommended_retail_price
-                            }}
-                            {{ variant.yourPrice.currency }}
-                        </div>
-                        <div class="old-price" v-if="variant.yourPrice.wholesale_price">
-                            {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                        </div>
+                        <CurrentPrice :variant="variant" />
+                        <OldPrice :variant="variant" />
                     </div>
                 </div>
                 <div class="action-list flex-list">
                     <!-- <AddToWishlistButton class="circle" :variants="[variant]" /> -->
-                    <button class="circle sm invisible bg-hover" @click="onRemoveFromBasket">
+                    <button class="circle sm no-bg bg-hover" @click="onRemoveFromBasket">
                         <i class="far fa-trash"></i>
                     </button>
                 </div>
@@ -78,10 +79,13 @@
 import { mapActions, mapGetters } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import ChooseSizePopover from '../../ChooseSizePopover'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'basketItem',
-    components: { AddToWishlistButton, ChooseSizePopover },
+    components: { AddToWishlistButton, ChooseSizePopover, CurrentPrice, OldPrice, SavingPercentagePill },
     props: ['item'],
     computed: {
         ...mapGetters('basket', {
@@ -123,8 +127,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .basket-item {
     padding: 6px 18px;
     border-top: $borderElSoft;
@@ -187,6 +189,14 @@ export default {
                 width: 100%;
             }
         }
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

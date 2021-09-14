@@ -30,7 +30,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .img-sizer .sizer {
     height: 0;
     padding-top: 133.3333%;

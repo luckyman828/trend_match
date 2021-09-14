@@ -75,7 +75,6 @@ export default {
 </script>
 
 <style <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .content-editable {
     white-space: pre-wrap;
     word-wrap: break-word;

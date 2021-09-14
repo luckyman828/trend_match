@@ -399,7 +399,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .import-from-database-controls {
     display: block;
     position: fixed;

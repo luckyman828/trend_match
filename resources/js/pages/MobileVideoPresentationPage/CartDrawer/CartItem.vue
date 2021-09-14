@@ -56,7 +56,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .cart-item {
     height: 120px;
     // margin-bottom: 4px;

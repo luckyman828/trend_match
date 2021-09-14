@@ -22,7 +22,7 @@
                         :chapterRuleCount="chapterRules.length"
                         @remove="onRemoveRule(index)"
                     />
-                    <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
+                    <button class="ghost-item no-bg primary ghost-hover" @click="onAddRule">
                         <i class="far fa-plus"></i>
                         <span>Add Filter</span>
                     </button>
@@ -33,7 +33,7 @@
                 <h3>Linked Chapter</h3>
                 <div class="rule-item-list">
                     <button
-                        class="ghost-item invisible primary ghost-hover"
+                        class="ghost-item no-bg primary ghost-hover"
                         v-if="!hasChapterLink"
                         @click="hasChapterLink = true"
                     >
@@ -53,7 +53,7 @@
                                 @input="onNewLinkedChapter"
                             />
                             <button
-                                class="invisible ghost-hover dark"
+                                class="no-bg ghost-hover dark"
                                 v-tooltip="'Remove chapter link'"
                                 @click="onNewLinkedChapter(null)"
                             >
@@ -325,7 +325,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 h3 {
     margin-bottom: 8px;
 }

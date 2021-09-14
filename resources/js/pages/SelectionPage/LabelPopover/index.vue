@@ -108,8 +108,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .label-popover {
     padding: 16px 2px 20px;
     width: 256px;

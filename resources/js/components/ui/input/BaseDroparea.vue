@@ -64,8 +64,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .drop-area {
     // outline: 2px dashed $light2;
     // outline-offset: -10px;

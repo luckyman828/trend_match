@@ -171,9 +171,7 @@
                                     : selection.includes(selection)),
                         },
                         {
-                            disabled:
-                                disabledOptions &&
-                                disabledOptions.find(x => x[optionValueKey] == option[optionValueKey]),
+                            disabled: getOptionIsDisabled(option),
                         },
                     ]"
                 >
@@ -388,6 +386,16 @@ export default {
         focusFirstOption() {
             this.$refs.option[0].focus()
         },
+        getOptionValue(option) {
+            const value = this.optionValueKey ? option[this.optionValueKey] : option
+            return value
+        },
+        getOptionIsDisabled(option) {
+            return (
+                this.disabledOptions &&
+                this.disabledOptions.find(x => this.getOptionValue(x) == this.getOptionValue(option))
+            )
+        },
     },
     mounted() {
         this.focusSearch()
@@ -399,8 +407,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .select-buttons {
     &:not(:last-child) {
         margin-bottom: 12px;

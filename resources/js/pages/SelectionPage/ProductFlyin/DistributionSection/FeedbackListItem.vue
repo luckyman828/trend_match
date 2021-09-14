@@ -44,7 +44,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .feedback-list-item {
     display: flex;
     align-items: center;

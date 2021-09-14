@@ -198,8 +198,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .ignored-users-list {
     text-align: left;
     font-size: 13px;

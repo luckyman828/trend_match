@@ -12,6 +12,20 @@
             </div>
         </div>
 
+        <div
+            class="empty-msg flex-list center-v center-h flex-v space-md"
+            v-if="presentations.length <= 0"
+            style="margin-top: 20px"
+        >
+            <img src="/images/undraw_void_3ggu.svg" alt="empty space" style="height: 35vh;" />
+            <div class="msg" style="text-align: center;">
+                Whoops, it's so empty here!<br /><strong>Let's create some presentations to get started</strong>
+            </div>
+            <button class="pill w-xl primary lg" @click="onShowNewPresentationModal()">
+                <span>Create new presentation</span>
+            </button>
+        </div>
+
         <NewPresentationModal
             v-if="showNewPresentationModal"
             :show="showNewPresentationModal"
@@ -156,8 +170,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .presentation-grid {
     display: flex;
     flex-wrap: wrap;

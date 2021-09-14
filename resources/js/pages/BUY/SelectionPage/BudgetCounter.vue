@@ -123,14 +123,12 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/_variables.scss';
 .over-tooltip {
     color: $red;
 }
 </style>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .budget-counter {
     width: 100%;
     max-width: 400px;

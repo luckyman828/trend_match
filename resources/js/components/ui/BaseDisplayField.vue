@@ -15,7 +15,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .display-field {
     .field {
         padding: 8px 16px;

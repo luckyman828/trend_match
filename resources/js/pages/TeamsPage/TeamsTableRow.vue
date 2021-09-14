@@ -47,7 +47,7 @@
             <span v-else>{{ team.currency ? team.currency : 'No currency set' }}</span>
         </td>
         <td class="action">
-            <button class="invisible ghost-hover primary" @click="showSingle()">
+            <button class="no-bg ghost-hover primary" @click="showSingle()">
                 <span>View{{ authUserWorkspaceRole == 'Admin' ? '/ Edit' : '' }}</span>
             </button>
         </td>
@@ -83,8 +83,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .currency .button {
     min-width: 64px;
     font-weight: 400;

@@ -2,7 +2,7 @@
     <div class="variant-name-input">
         <button
             v-if="!editActive"
-            class="display invisible ghost-hover full-width"
+            class="display no-bg ghost-hover full-width"
             @click="onActivateEdit"
             v-tooltip="`Color: <strong>${variant.color}</strong><br>Variant: <strong>${variant.variant}</strong>`"
         >
@@ -79,7 +79,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .display {
     justify-content: space-between;
     i {

@@ -161,21 +161,20 @@ export default {
         },
         startVisibilityTimeout() {
             this.visisbleTimeout = setTimeout(() => {
-                    this.isVisible = true
-                }, 300)
-        }
+                this.isVisible = true
+            }, 300)
+        },
     },
     destroyed() {
         if (this.visisbleTimeout) clearTimeout(this.visisbleTimeout)
     },
     created() {
-        if (this.show) this.startVisibilityTimeout() 
-    }
+        if (this.show) this.startVisibilityTimeout()
+    },
 }
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .product-details-sidebar {
     ::v-deep {
         .flyin {

@@ -77,7 +77,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .checkbox {
     position: relative;
     line-height: 0;

@@ -206,8 +206,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .timeline-item {
     background: white;
     border: solid 2px white;

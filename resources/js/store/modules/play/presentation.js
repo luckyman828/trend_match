@@ -125,7 +125,6 @@ export default {
                     Vue.set(presentation, 'id', presentationId)
                     commit('SET_PRESENTATION', presentation)
 
-                    console.log('presentation', response.data.workspace.play_shop)
                     commit('workspaces/SET_PLAY_SHOP', response.data.workspace.play_shop, { root: true })
 
                     video = response.data.video
@@ -393,7 +392,12 @@ export default {
                             return products.find(product => product.id == timing.variants[0].product_id)
                         }
                         if (timing.type == 'Look') {
-                            if (timing.productGroup && timing.productGroup.variantMaps.length <= 0) return
+                            if (
+                                !timing.productGroup ||
+                                (timing.productGroup &&
+                                    (timing.productGroup.variantMaps.length <= 0 || !timing.productGroup.variantMaps))
+                            )
+                                return
                             return timing.productGroup.variantMaps[0].product
                         }
                     },

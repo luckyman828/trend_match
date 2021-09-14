@@ -59,7 +59,7 @@
                     >
                         <span>Apply</span>
                     </BaseButton>
-                    <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>
+                    <button class="no-bg ghost-hover" v-close-popover><span>Cancel</span></button>
                 </div>
             </template>
         </v-popover>
@@ -140,8 +140,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .action-list {
     padding: 8px;
 }

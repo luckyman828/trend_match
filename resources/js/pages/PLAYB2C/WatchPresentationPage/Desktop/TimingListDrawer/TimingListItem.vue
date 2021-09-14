@@ -6,9 +6,12 @@
             </div>
             <div class="body">
                 <BaseImageSizer class="img-wrapper" fit="cover">
-                    <BaseVariantImage :variant="variant" />
+                    <BaseVariantImage :variant="variant" :class="{ 'sold-out': soldOut }" />
                 </BaseImageSizer>
-                <div class="icon-list">
+                <div class="icon-list flex-list justify flex-end-v">
+                    <div class="pill red xxs" v-if="soldOut">
+                        <span>Sold out</span>
+                    </div>
                     <div class="pill yellow xs" v-if="timing.variantList.length > 1">
                         <i class="far fa-layer-group"></i>
                         <span>{{ timing.variantList.length }}</span>
@@ -38,6 +41,9 @@ export default {
         variant() {
             return this.timing.variant
         },
+        soldOut() {
+            return !this.timing.variantList.find(variant => !!variant.inStock)
+        },
     },
     methods: {
         ...mapActions('player', ['seekTo']),
@@ -46,8 +52,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .timing-list-item {
     .card {
         width: 92px;
@@ -91,6 +95,9 @@ export default {
                 color: white;
             }
         }
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

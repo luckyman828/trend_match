@@ -33,7 +33,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .filter-counter {
     margin-left: auto;
 }

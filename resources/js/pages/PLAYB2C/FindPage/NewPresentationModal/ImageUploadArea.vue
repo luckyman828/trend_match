@@ -30,7 +30,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .image-upload-area {
     &:hover {
         .droparea {

@@ -55,9 +55,11 @@ export default {
             if (!getters.getIsMuted) {
                 commit('SET_PLAYER_MUTED', true)
                 player.volume = 0
+                player.muted = true
             } else {
                 commit('SET_PLAYER_MUTED', false)
                 player.volume = getters.getVolume
+                player.muted = false
             }
         },
         async setVolume({ commit, getters }, newVolume) {
@@ -65,6 +67,7 @@ export default {
             if (!player) return
             commit('SET_PLAYER_VOLUME', newVolume)
             player.volume = newVolume
+            player.muted = false
         },
         async togglePlaying({ commit, getters, dispatch }) {
             if (getters.getIsLive && (getters.desiredStatus == 'playing' || getters.getStatus == 'playing')) return

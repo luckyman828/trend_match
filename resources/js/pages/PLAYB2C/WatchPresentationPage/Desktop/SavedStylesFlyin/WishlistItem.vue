@@ -1,7 +1,13 @@
 <template>
     <div class="wishlist-item flex-list bg-theme-white theme-border">
         <BaseImageSizer fit="cover" class="image" @click.native="SET_PDP_ITEM({ variant, product: variant.product })">
-            <BaseVariantImage :variant="variant" size="sm" />
+            <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
+            <div class="labels">
+                <SavingPercentagePill :variant="variant" />
+                <button class="pill red xs" v-if="!variant.inStock">
+                    <span>Sold out</span>
+                </button>
+            </div>
         </BaseImageSizer>
 
         <div class="flex-list flex-v justify details">
@@ -17,12 +23,8 @@
                     </div>
                 </div>
                 <div class="price flex-list center-v">
-                    <div class="current-price ft-bd ft-12">
-                        {{ variant.yourPrice.wholesale_price }} {{ variant.yourPrice.currency }}
-                    </div>
-                    <div class="old-price ft-strike ft-12 ft-bd">
-                        {{ variant.yourPrice.recommended_retail_price }} {{ variant.yourPrice.currency }}
-                    </div>
+                    <CurrentPrice :variant="variant" />
+                    <OldPrice :variant="variant" />
                 </div>
             </div>
 
@@ -41,7 +43,7 @@
         <!-- ACTIONS  -->
         <div class="action-list flex-list center-v">
             <AddToWishlistButton class="circle sm" :variants="[variant]" />
-            <AddToBasketButton buttonClass="circle sm invisible" :variant="variant" textStyle="none" />
+            <AddToBasketButton buttonClass="circle sm no-bg" :variant="variant" textStyle="none" />
         </div>
         <!-- END ACTIONS  -->
     </div>
@@ -52,10 +54,13 @@ import { mapGetters, mapMutations } from 'vuex'
 import AddToWishlistButton from '../../AddToWishlistButton'
 import AddToBasketButton from '../../AddToBasketButton'
 import variantImage from '../../../../../mixins/variantImage'
+import CurrentPrice from '../../../../../components/PLAY/prices/CurrentPrice'
+import OldPrice from '../../../../../components/PLAY/prices/OldPrice'
+import SavingPercentagePill from '../../../../../components/PLAY/prices/SavingPercentagePill'
 
 export default {
     name: 'wishlistItem',
-    components: { AddToWishlistButton, AddToBasketButton },
+    components: { AddToWishlistButton, AddToBasketButton, CurrentPrice, OldPrice, SavingPercentagePill },
     mixins: [variantImage],
     props: ['variant'],
     computed: {
@@ -82,8 +87,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .wishlist-item {
     background: white;
     border-radius: $borderRadiusMd;
@@ -114,14 +117,19 @@ export default {
             bottom: 4px;
             right: 4px;
         }
-        // .color {
-        //     font-weight: ;
-        // }
     }
     .action-list {
         position: absolute;
         top: 8px;
         right: 8px;
+    }
+    .labels {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+    }
+    img.sold-out {
+        opacity: 0.5;
     }
 }
 </style>

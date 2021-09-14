@@ -8,10 +8,27 @@
                     <span>Copy link</span>
                 </button>
             </BaseInputField> -->
+            <BaseDropdownInputField
+                type="radio"
+                innerLabel="Presentation locale"
+                v-model="selectedLocale"
+                :options="allLocales"
+                valueKey="locale"
+                nameKey="locale"
+                descriptionKey="country"
+                :unsetOption="'No locale'"
+                :unsetValue="null"
+                placeholder="Select Locale"
+            />
+
             <BaseInputField
                 class="lg"
                 innerLabel="Open presenation attribute"
-                :value="`data-kollekt-play-id=&quot;${presentation.id}&quot;`"
+                :value="
+                    `data-kollekt-play-id=&quot;${presentation.id}&quot;${
+                        selectedLocale ? ` data-kollekt-play-locale=&quot;${selectedLocale}&quot;` : ''
+                    }`
+                "
                 theme="light"
                 type="copy"
             >
@@ -24,7 +41,7 @@
                 Add this attribute to any HTML element you would like to trigger showing this presentation on your
                 website.
             </div>
-            <div class="embed-section">
+            <!-- <div class="embed-section">
                 <div class="ft-14 ft-bd">Embed this presentation</div>
                 <BaseInputField
                     class="lg"
@@ -40,7 +57,7 @@
                         <span>Copy</span>
                     </button>
                 </BaseInputField>
-            </div>
+            </div> -->
             <div class="script-section">
                 <div class="ft-14 ft-bd">Embed script</div>
                 <div class="ft-12 ft-md color-grey">
@@ -49,7 +66,7 @@
                 <BaseInputField
                     class="lg"
                     innerLabel="Embed link"
-                    :value="`<script src=&quot;${origin}/js/play.js&quot;></script>`"
+                    :value="`<script src=&quot;${origin}/js/public/play-dkc.js&quot;></script>`"
                     theme="light"
                     type="copy"
                 >
@@ -69,11 +86,16 @@ export default {
     name: 'play.pulishModal',
     props: ['show'],
     data() {
-        return {}
+        return {
+            selectedLocale: null,
+        }
     },
     computed: {
         ...mapGetters('playPresentation', {
             presentation: 'getPresentation',
+        }),
+        ...mapGetters('integrationDkc', {
+            allLocales: 'getLocales',
         }),
         origin() {
             return window.origin
@@ -84,7 +106,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
 .input-field {
     flex: 1;
 }

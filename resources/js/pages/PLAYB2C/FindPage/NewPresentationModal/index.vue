@@ -33,9 +33,14 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('playPresentations', {
-            presentation: 'getCurrentPresentation',
+        ...mapGetters('playPresentation', {
+            presentation: 'getPresentation',
         }),
+    },
+    watch: {
+        show(isVisible) {
+            if (isVisible) this.onShow()
+        },
     },
     methods: {
         ...mapActions('videos', ['cancelUpload']),
@@ -47,6 +52,19 @@ export default {
             this.createFlow = flow
             this.screenIndex++
         },
+        async onShow() {
+            if (!this.presentation) {
+                // Secretly create a new file
+                const newPresentation = await this.$store.dispatch('playPresentations/instantiateBasePresentation')
+                this.$store.commit('playPresentation/SET_PRESENTATION', newPresentation)
+                await this.$store.dispatch('playPresentations/insertPresentation', newPresentation)
+            }
+        },
+    },
+    created() {
+        if (this.show) {
+            this.onShow()
+        }
     },
 }
 </script>

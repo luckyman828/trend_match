@@ -17,8 +17,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .table-top-bar {
     height: 48px;
     padding: 8px 12px;

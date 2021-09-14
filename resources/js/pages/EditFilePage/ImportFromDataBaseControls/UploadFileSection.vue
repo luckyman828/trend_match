@@ -116,7 +116,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .upload-file-section {
 }
 </style>

@@ -156,8 +156,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~@/_variables.scss';
-
 .sidebar {
     grid-area: sidebar;
     display: flex;

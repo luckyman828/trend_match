@@ -108,7 +108,7 @@
                             <span>Link sent</span>
                         </div>
 
-                        <!-- <button v-if="userHasEditAccess" class="invisible ghost-hover" 
+                        <!-- <button v-if="userHasEditAccess" class="no-bg ghost-hover" 
                             @click="showUserContext($event, rowProps.item)">
                                 <i class="far fa-ellipsis-h medium"></i>
                             </button>
@@ -126,7 +126,7 @@
                     <td class="action">
                         <button
                             v-if="userHasEditAccess"
-                            class="primary ghost-hover invisible"
+                            class="primary ghost-hover no-bg"
                             @click="onReAddUsersToSelection(selected.length > 0 ? selected : [rowProps.item])"
                         >
                             <span>Add user</span>
@@ -165,7 +165,7 @@
             <template v-slot:footer>
                 <td v-if="currentUsersTableTab == 'Members'">
                     <BaseButton
-                        buttonClass="primary invisible"
+                        buttonClass="primary no-bg"
                         :disabled="!userHasEditAccess"
                         v-tooltip="!userHasEditAccess && 'Only admins can add users to selections'"
                         @click="onAddUser($event)"
@@ -567,8 +567,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .user-row {
     &.self {
         .title {

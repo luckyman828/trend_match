@@ -16,8 +16,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
-
 .tooltip-list {
     &:not(:last-child) {
         margin-bottom: 12px;

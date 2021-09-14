@@ -103,7 +103,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/_variables.scss';
 .map-fields-table-row {
     &.disabled {
         .input-field {
