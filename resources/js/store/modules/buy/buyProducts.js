@@ -550,11 +550,15 @@ export default {
                                     assortment.name == quantityInput.assortment &&
                                     assortment.variant_ids.includes(quantityInput.variant_id)
                             )
-                            if (assortment)
-                                return assortment.sizes.map(assortmentSize => ({
-                                    size: assortmentSize.size,
-                                    quantity: assortmentSize.quantity * assortment.pcs,
-                                }))
+                            if (assortment) {
+                                return assortment.sizes.map(assortmentSize => {
+                                    const pcs = assortment.box_size ? quantityInput.quantity / assortment.box_size : 0
+                                    return {
+                                        size: assortmentSize.size,
+                                        quantity: assortmentSize.quantity * pcs,
+                                    }
+                                })
+                            }
                         }
                         return []
                     },
