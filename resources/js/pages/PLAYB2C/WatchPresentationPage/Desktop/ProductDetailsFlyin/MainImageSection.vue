@@ -31,7 +31,7 @@ export default {
     methods: {
         onShowLightbox(index) {
             this.$store.commit('lightbox/SET_LIGHTBOX_VISIBLE', true)
-            const images = this.variant.pictures.map(picture => picture.url)
+            const images = this.variant.pictures.map((picture) => picture.url)
             this.$store.commit('lightbox/SET_LIGHTBOX_IMAGES', images)
             const lightboxIndex = index != null ? index : 0
             this.$store.commit('lightbox/SET_LIGHTBOX_IMAGE_INDEX', lightboxIndex)
@@ -42,6 +42,6 @@ export default {
 
 <style lang="scss" scoped>
 .main-image-section {
-    height: 320px;
+    height: 360px;
 }
 </style>
