@@ -37,6 +37,7 @@ export default {
         margin-right: -4px;
         padding-right: 8px;
         .img-wrapper {
+            flex-shrink: 0;
             position: relative;
             width: 64px;
             min-width: 64px;
