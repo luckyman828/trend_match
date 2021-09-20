@@ -3,7 +3,7 @@ import { parse, v4 as uuidv4 } from 'uuid'
 import variantImage from '../mixins/variantImage'
 import store from '../store/'
 export function cleanUpDKCObj(srcObj, newObj) {
-    Object.keys(srcObj).map(key => {
+    Object.keys(srcObj).map((key) => {
         let theKey = key
         let keyVal = srcObj[key]
         if (keyVal == null) return
@@ -16,6 +16,10 @@ export function cleanUpDKCObj(srcObj, newObj) {
         }
         if (key == 'delivery_windows' && !Array.isArray(keyVal.delivery_window)) {
             keyVal = [keyVal.delivery_window]
+        }
+        if (key == 'ean' && !srcObj.ea_ns) {
+            theKey = 'ea_ns'
+            keyVal = `:${keyVal}`
         }
         if (key == 'prices' && !Array.isArray(keyVal.prices)) {
             if (keyVal.price && Array.isArray(keyVal.price)) {
@@ -43,12 +47,12 @@ export function cleanUpDKCObj(srcObj, newObj) {
 
         if (Array.isArray(keyVal) && keyVal.length > 0) {
             if (keyVal.length > 1 && keyVal[0].language) {
-                keyVal = keyVal.find(x => x.language == 'ENU').value
+                keyVal = keyVal.find((x) => x.language == 'ENU').value
             }
 
             // If the Array is still an array loop through the array items and parse them as well
             if (Array.isArray(keyVal)) {
-                keyVal = keyVal.map(arrayObj => {
+                keyVal = keyVal.map((arrayObj) => {
                     const newArrayObj = {}
                     cleanUpDKCObj(arrayObj, newArrayObj)
                     return newArrayObj
@@ -66,7 +70,7 @@ async function instantiateSelectProducts(products) {
     const baseProduct = await store.dispatch('products/instantiateNewProduct')
     const baseVariant = await store.dispatch('products/instantiateNewProductVariant')
 
-    return products.map(product => {
+    return products.map((product) => {
         const newProduct = JSON.parse(JSON.stringify(baseProduct))
         newProduct.extra_data.blocked = product.blocked
         newProduct.brand = product.product_group_code
@@ -82,8 +86,8 @@ async function instantiateSelectProducts(products) {
         newProduct.extra_data.topBottom = product.top_bottom
         // PRICES
         if (product.variants && product.variants.length > 0 && product.variants[0].prices) {
-            product.variants[0].prices.map(price => {
-                if (!!newProduct.prices.find(x => x.currency == price.currency)) return
+            product.variants[0].prices.map((price) => {
+                if (!!newProduct.prices.find((x) => x.currency == price.currency)) return
                 const wholesale_price = price.value_whl ? parseFloat(price.value_whl.replace(/,/g, '')) : null
                 const recommended_retail_price = price.value ? parseFloat(price.value.replace(/,/g, '')) : null
                 const newPrice = {
@@ -102,19 +106,18 @@ async function instantiateSelectProducts(products) {
         // VARIANTS
         newProduct.variants = !product.variants
             ? []
-            : product.variants.map(variant => {
+            : product.variants.map((variant) => {
                   const newVariant = JSON.parse(JSON.stringify(baseVariant))
                   newVariant.id = uuidv4()
                   newVariant.variant = variant.color
                   newVariant.color = variant.variant_color_name
                   if (variant.length) newVariant.color = `L: ${variant.length} ${newVariant.color}`
                   newVariant.extra_data.colorRGB = variant.color_rgb
-                  newVariant.ean_sizes = variant.ea_ns.split(';').map(sizeEan => {
+                  newVariant.ean_sizes = variant.ea_ns.split(';').map((sizeEan) => {
                       const sizeComponents = sizeEan.split(':')
                       return {
                           size: sizeComponents[0].trim(),
                           ean: sizeComponents[1].trim(),
-                          ref_id: sizeComponents[1].trim(),
                       }
                   })
                   // Pictures
@@ -129,7 +132,7 @@ async function instantiateSelectProducts(products) {
 
                   // DELIVERY
                   if (variant.delivery_windows) {
-                      variant.delivery_windows.map(deliveryWindow => {
+                      variant.delivery_windows.map((deliveryWindow) => {
                           const fromDate = DateTime.fromISO(deliveryWindow.shipment_from).startOf('month')
                           const toDate = DateTime.fromISO(deliveryWindow.shipment_to).endOf('month')
                           let dateInterval = Interval.fromDateTimes(fromDate, toDate)
@@ -149,7 +152,7 @@ async function instantiateSelectProducts(products) {
 
                   // ASSORTMENTS
                   variant.assortments &&
-                      variant.assortments.map(assortment => {
+                      variant.assortments.map((assortment) => {
                           // Sort assortment sizes in a logical order
                           const assortmentSizes = !assortment.assortment_variants
                               ? []
@@ -179,7 +182,7 @@ async function instantiateSelectProducts(products) {
                               name: `${assortment.code}${
                                   assortmentSizes.length <= 0
                                       ? ';'
-                                      : assortmentSizes.map(x => `;${x.size_code}:${x.quantity}`).join('')
+                                      : assortmentSizes.map((x) => `;${x.size_code}:${x.quantity}`).join('')
                               }`,
                           }
                           newProduct.assortments.push(newAssortment)
@@ -202,7 +205,7 @@ async function instantiateBuyProducts(products) {
     const baseProduct = await store.dispatch('products/instantiateNewProduct')
     const baseVariant = await store.dispatch('products/instantiateNewProductVariant')
 
-    return products.map(product => {
+    return products.map((product) => {
         const newProduct = JSON.parse(JSON.stringify(baseProduct))
         newProduct.extra_data.blocked = product.blocked
         newProduct.brand = product.product_group_code
@@ -218,8 +221,8 @@ async function instantiateBuyProducts(products) {
         newProduct.extra_data.topBottom = product.top_bottom
         // PRICES
         if (product.variants && product.variants.length > 0 && product.variants[0].prices) {
-            product.variants[0].prices.map(price => {
-                if (!!newProduct.prices.find(x => x.currency == price.currency)) return
+            product.variants[0].prices.map((price) => {
+                if (!!newProduct.prices.find((x) => x.currency == price.currency)) return
                 const wholesale_price = price.value_whl ? parseFloat(price.value_whl.replace(/,/g, '')) : null
                 const recommended_retail_price = price.value ? parseFloat(price.value.replace(/,/g, '')) : null
                 const newPrice = {
@@ -241,19 +244,18 @@ async function instantiateBuyProducts(products) {
         // VARIANTS
         newProduct.variants = !product.variants
             ? []
-            : product.variants.map(variant => {
+            : product.variants.map((variant) => {
                   const newVariant = JSON.parse(JSON.stringify(baseVariant))
                   newVariant.id = uuidv4()
                   newVariant.variant = variant.color
                   newVariant.color = variant.variant_color_name
                   if (variant.length) newVariant.color = `L: ${variant.length} ${newVariant.color}`
                   newVariant.extra_data.colorRGB = variant.color_rgb
-                  newVariant.ean_sizes = variant.ea_ns.split(';').map(sizeEan => {
+                  newVariant.ean_sizes = variant.ea_ns.split(';').map((sizeEan) => {
                       const sizeComponents = sizeEan.split(':')
                       return {
                           size: sizeComponents[0].trim(),
                           ean: sizeComponents[1].trim(),
-                          ref_id: sizeComponents[1].trim(),
                       }
                   })
                   // Pictures
@@ -268,7 +270,7 @@ async function instantiateBuyProducts(products) {
 
                   // DELIVERY
                   if (variant.delivery_windows) {
-                      variant.delivery_windows.map(deliveryWindow => {
+                      variant.delivery_windows.map((deliveryWindow) => {
                           const fromDate = DateTime.fromISO(deliveryWindow.shipment_from).startOf('month')
                           const toDate = DateTime.fromISO(deliveryWindow.shipment_to).endOf('month')
                           let dateInterval = Interval.fromDateTimes(fromDate, toDate)
@@ -288,7 +290,7 @@ async function instantiateBuyProducts(products) {
 
                   // ASSORTMENTS
                   variant.assortments &&
-                      variant.assortments.map(assortment => {
+                      variant.assortments.map((assortment) => {
                           // Sort assortment sizes in a logical order
                           const assortmentSizes = !assortment.assortment_variants
                               ? []
@@ -318,7 +320,7 @@ async function instantiateBuyProducts(products) {
                               name: `${assortment.code}${
                                   assortmentSizes.length <= 0
                                       ? ';'
-                                      : assortmentSizes.map(x => `;${x.size_code}:${x.quantity}`).join('')
+                                      : assortmentSizes.map((x) => `;${x.size_code}:${x.quantity}`).join('')
                               }`,
                           }
                           newProduct.assortments.push(newAssortment)
@@ -339,7 +341,7 @@ async function instantiateBuyProducts(products) {
 
 export async function instantiateDKCProducts(products, app) {
     console.log('instantiate products from this:', products)
-    const prettyProducts = products.map(product => {
+    const prettyProducts = products.map((product) => {
         const prettyProduct = {}
         cleanUpDKCObj(product, prettyProduct)
         return prettyProduct
@@ -351,12 +353,12 @@ export async function instantiateDKCProducts(products, app) {
 
     //Check if all images exist or not
     const allPictures = []
-    newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
+    newProducts.map((product) => product.variants.map((variant) => allPictures.push(...variant.pictures)))
     const imageAvailabilityMap = await store.dispatch(
         'integrationDkc/testImageAvailability',
-        allPictures.map(picture => picture.url)
+        allPictures.map((picture) => picture.url)
     )
-    allPictures.map(picture => {
+    allPictures.map((picture) => {
         const imageExists = imageAvailabilityMap[picture.url] == true
         if (!imageExists) {
             picture.url = null
@@ -376,7 +378,9 @@ export function getVariantBackgroundStyle(variant) {
     const colorRGB = variant.extra_data.colorRGB
     if (!colorRGB) return
     const rgbComponents = colorRGB.split(';')
-    return { backgroundColor: `rgb(${rgbComponents[0]} ${rgbComponents[1]} ${rgbComponents[2]})` }
+    return {
+        backgroundColor: `rgb(${rgbComponents[0]} ${rgbComponents[1]} ${rgbComponents[2]})`,
+    }
 }
 
 export default instantiateDKCProducts
