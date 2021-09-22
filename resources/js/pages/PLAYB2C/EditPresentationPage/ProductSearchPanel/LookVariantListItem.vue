@@ -40,7 +40,7 @@
                         v-model="variantMap.variant_id"
                         optionNameKey="name"
                         optionValueKey="id"
-                        :disabledOptions="look.variantMaps.map((map) => ({ id: map.variant_id }))"
+                        :disabledOptions="look.variantMaps.map(map => ({ id: map.variant_id }))"
                         @submit="$emit('change-variant')"
                     />
                 </v-popover>
@@ -75,7 +75,7 @@ export default {
             return this.variant.product
         },
         linkedTimings() {
-            return this.timings.filter((timing) => timing.product_group_id == this.look.id)
+            return this.timings.filter(timing => timing.product_group_id == this.look.id)
         },
     },
     methods: {
