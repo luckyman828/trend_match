@@ -3,7 +3,7 @@
         <div class="rail flex-list flex-v space-xs" v-dragscroll>
             <BaseImageSizer
                 class="img-wrapper"
-                fit="cover"
+                fit="contain"
                 v-for="(picture, index) in variant.pictures"
                 :key="index"
                 @mouseenter.native="$emit('update:imgIndex', index)"

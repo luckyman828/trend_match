@@ -1,7 +1,7 @@
 <template>
     <div class="add-to-wishlist-popover-list-item flex-list justify">
         <BaseImageSizer
-            fit="cover"
+            fit="contain"
             class="image clickable"
             @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { variant, product: variant.product })"
         >

@@ -5,7 +5,7 @@
                 <span class="truncate ft-md ft-10">{{ variant.name }}</span>
             </div>
             <div class="body">
-                <BaseImageSizer class="img-wrapper" fit="cover">
+                <BaseImageSizer class="img-wrapper" fit="contain">
                     <BaseVariantImage :variant="variant" :class="{ 'sold-out': soldOut }" />
                 </BaseImageSizer>
                 <div class="icon-list flex-list justify flex-end-v">
@@ -68,6 +68,17 @@ export default {
             border-radius: 0 0 $borderRadiusSm $borderRadiusSm;
             overflow: hidden;
             position: relative;
+            &::after{
+                content: '';
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: solid 1px white;
+                pointer-events: none;
+            }
             .icon-list {
                 position: absolute;
                 bottom: 4px;
@@ -79,15 +90,7 @@ export default {
                 position: relative;
                 border-top: none;
                 &::after {
-                    content: '';
-                    display: block;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
                     border: solid 2px $primary;
-                    pointer-events: none;
                 }
             }
             .header {

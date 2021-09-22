@@ -6,7 +6,7 @@
             tabindex="0"
             @keydown.enter="onAddTiming"
         >
-            <BaseImageSizer fit="cover" class="image">
+            <BaseImageSizer fit="contain" class="image">
                 <BaseVariantImage :variant="variant" size="sm" :key="variant.id" class="bg-shimmer" />
             </BaseImageSizer>
 
@@ -151,7 +151,7 @@ export default {
             return this.product.variants[this.variantIndex]
         },
         inCurrentLook() {
-            return this.currentLook.variantMaps.find(map => {
+            return this.currentLook.variantMaps.find((map) => {
                 return (
                     this.variant.product.datasource_id == map.product.datasource_id &&
                     this.variant.name == map.variant.name
@@ -167,7 +167,7 @@ export default {
         async getKollektProduct() {
             // Check if the product exists on Kollekt
             const existingProduct = this.$store.getters['products/getProducts'].find(
-                product => product.datasource_id == this.product.datasource_id
+                (product) => product.datasource_id == this.product.datasource_id
             )
 
             let product = existingProduct ? existingProduct : this.product
@@ -185,7 +185,7 @@ export default {
         },
         async onAddTiming() {
             const product = await this.getKollektProduct()
-            const variant = product.variants.find(variant => variant.name == this.variant.name)
+            const variant = product.variants.find((variant) => variant.name == this.variant.name)
 
             const newTiming = {
                 id: null,
@@ -197,13 +197,13 @@ export default {
         },
         async onAddToLook() {
             const product = await this.getKollektProduct()
-            const variant = product.variants.find(variant => variant.name == this.variant.name)
+            const variant = product.variants.find((variant) => variant.name == this.variant.name)
 
             this.addVariantMap({ productGroup: this.currentLook, variant })
         },
         async onCreateLook() {
             const product = await this.getKollektProduct()
-            const variant = product.variants.find(variant => variant.name == this.variant.name)
+            const variant = product.variants.find((variant) => variant.name == this.variant.name)
 
             this.$emit('create-look', variant)
         },
