@@ -67,20 +67,11 @@ export default {
             return products
         },
         async fetchProductsBySearch({ dispatch, rootGetters }, searchString) {
-            const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
+            const playShop = rootGetters['workspaces/getWebshop']
             const locale = 'DA_DK'
             const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
-            let baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v1.0/product/search` // TEMP DEFAULT
-            if (enabledFeatures.play_shop_bap_qa) {
-                baseUrl = `https://search-bap-qa.bap-test.com/api/${theLocale}/v1.0/product/search`
-            }
-            if (enabledFeatures.play_shop_bonaparte) {
-                baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v1.0/product/search`
-            }
-            if (enabledFeatures.play_shop_companys) {
-                baseUrl = `https://search.companys.com/api/${theLocale}/v1.0/product/search`
-            }
-            if (!baseUrl) {
+            let baseUrl = `${playShop.product_api_base_url}${theLocale}${playShop.search_product_list_api_url}`
+            if (!playShop.product_api_base_url) {
                 console.error('No PLAY product integration')
                 return
             }
@@ -196,20 +187,10 @@ export default {
             return products
         },
         async fetchProduct({ rootGetters }, { product, locale }) {
-            const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
+            const playShop = rootGetters['workspaces/getWebshop']
             const theLocale = locale ? locale.toLowerCase().replaceAll('_', '-') : 'da-dk'
-            let baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v2.0/Product/GetStyle`
-            if (enabledFeatures.play_shop_bap_qa) {
-                baseUrl = `https://search-bap-qa.bap-test.com/api/${theLocale}/v2.0/Product/GetStyle`
-                // ?style=30306309&includeVariantNo=194023`
-            }
-            if (enabledFeatures.play_shop_bonaparte) {
-                baseUrl = `https://search.bonaparteshop.com/api/${theLocale}/v2.0/Product/GetStyle`
-            }
-            if (enabledFeatures.play_shop_companys) {
-                baseUrl = `https://search.companys.com/api/${theLocale}/v2.0/Product/GetStyle`
-            }
-            if (!baseUrl) {
+            let baseUrl = `${playShop.product_api_base_url}${theLocale}${playShop.search_single_product_api_url}`
+            if (!playShop.product_api_base_url) {
                 console.error('No PLAY product integration')
                 return
             }
@@ -228,9 +209,6 @@ export default {
             return fetchedProduct
         },
         async syncProducts({ dispatch, rootGetters }, { products, locale }) {
-            console.log('sync products', products)
-            // for (const product of products) {
-            // }
             await Promise.all(
                 products.map(async product => {
                     const newProductData = await dispatch('fetchProduct', { product, locale })
