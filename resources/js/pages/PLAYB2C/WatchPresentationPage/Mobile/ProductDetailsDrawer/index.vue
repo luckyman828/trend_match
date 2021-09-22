@@ -23,7 +23,7 @@
                     class="form-element"
                     :product="product"
                     :currentVariant="currentVariant"
-                    @show-variant="$event => (currentVariant = $event)"
+                    @show-variant="setCurrentVariant($event)"
                 />
 
                 <div class="form-element flex-list-item">
@@ -31,9 +31,10 @@
                     <div class="size-list flex-list">
                         <div
                             class="true-square size"
-                            :class="{ 'sold-out': !size.inStock }"
+                            :class="{ 'sold-out': !size.inStock, 'selected': size.size === selectedSize.size }"
                             v-for="size in currentVariant.ean_sizes"
                             :key="size.ean"
+                            @click="onChangeSize(size)"
                         >
                             {{ size.size }}
                         </div>
@@ -66,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            <AddToBasketSelector :item.sync="currentVariant" :show="true" />
+            <AddToBasketSelector :item.sync="currentVariant" :show="true" :size="selectedSize" @submit="selectedSize=$event"/>
         </template>
     </BaseDrawer>
 </template>
@@ -87,6 +88,7 @@ export default {
     data: function() {
         return {
             currentVariant: null,
+            selectedSize: {},
         }
     },
     computed: {
@@ -112,7 +114,11 @@ export default {
     methods: {
         setCurrentVariant(variant) {
             this.currentVariant = variant
+            this.selectedSize = {}
         },
+        onChangeSize(size) {
+            this.selectedSize = size
+        }
     },
 }
 </script>
@@ -148,8 +154,13 @@ export default {
         color: $fontBody;
         font-size: 900;
         position: relative;
+        &.selected {
+            background: $almostBlack;
+            color: $grey300;
+        }
         &.sold-out {
             opacity: 0.5;
+            pointer-events: none;
             &::after {
                 position: absolute;
                 content: '|';

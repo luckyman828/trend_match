@@ -47,10 +47,15 @@ import AddToWishlistButton from '../AddToWishlistButton'
 export default {
     name: 'addToBasketSelector',
     components: { AddToWishlistButton },
-    props: ['item', 'show', 'hideWishlist', 'autoHide'],
+    props: ['item', 'size', 'show', 'hideWishlist', 'autoHide'],
     data() {
         return {
             selectedSizeDetail: null,
+        }
+    },
+    watch: {
+        size(newSize) {
+            this.selectedSizeDetail = newSize
         }
     },
     methods: {
@@ -68,6 +73,7 @@ export default {
             this.onHide()
         },
         onChangeSize(sizeDetail) {
+            this.$emit('submit', sizeDetail)
             this.selectedSizeDetail = sizeDetail
             this.$nextTick(() => {
                 this.$refs.sizePopover.hide()
