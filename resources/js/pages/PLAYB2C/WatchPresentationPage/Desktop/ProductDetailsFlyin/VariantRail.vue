@@ -82,7 +82,7 @@ export default {
             padding-top: 133.3333%;
             background: $grey300;
             .variant-image {
-                object-fit: cover;
+                object-fit: contain;
                 width: 100%;
                 height: 100%;
                 position: absolute;

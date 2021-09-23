@@ -27,7 +27,6 @@ export default {
     cursor: zoom-in;
     .img-wrapper {
         width: 272px;
-        backdrop-filter: blur(10px);
     }
     .labels {
         position: absolute;

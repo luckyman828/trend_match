@@ -1,6 +1,6 @@
 <template>
     <div class="product-preview flex-list flex-v min" @click="SET_PDP_ITEM({ product: variant.product, variant })">
-        <BaseImageSizer class="img-wrapper" fit="cover">
+        <BaseImageSizer class="img-wrapper" fit="contain">
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
                 <SavingPercentagePill :variant="variant" />

@@ -1,6 +1,6 @@
 <template>
     <div class="look-variant-list-item bg-theme-white theme-border interactable flex-list space-sm">
-        <BaseImageSizer fit="cover" class="image">
+        <BaseImageSizer fit="contain" class="image">
             <BaseVariantImage :variant="variant" size="sm" />
         </BaseImageSizer>
         <div class="details right flex-list flex-v justify flex-1">
