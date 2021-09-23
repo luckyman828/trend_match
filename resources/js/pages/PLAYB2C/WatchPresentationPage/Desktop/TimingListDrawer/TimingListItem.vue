@@ -68,6 +68,7 @@ export default {
             border-radius: 0 0 $borderRadiusSm $borderRadiusSm;
             overflow: hidden;
             position: relative;
+            background: white;
             &::after{
                 content: '';
                 display: block;
