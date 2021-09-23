@@ -136,6 +136,9 @@ export default {
                                     if (a.type == 'Pack' && b.type != 'Pack') {
                                         return -1
                                     }
+                                    if (a.type != 'Pack' && b.type == 'Pack') {
+                                        return 1
+                                    }
                                     if (a.perspectiveKey != b.perspectiveKey) {
                                         return parseInt(a.perspectiveKey) - parseInt(b.perspectiveKey)
                                     }
