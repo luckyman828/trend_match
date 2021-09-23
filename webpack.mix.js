@@ -1,6 +1,8 @@
 const mix = require('laravel-mix')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const tailwindcss = require('tailwindcss')
+const globalVars = require('./global.vars')
+const playEmbedScriptPathFull = `public/${globalVars.play.embedScriptPath}/${globalVars.play.embedScriptVersion}`
 
 /*
  |--------------------------------------------------------------------------
@@ -15,10 +17,10 @@ const tailwindcss = require('tailwindcss')
 const chunkFilename = process.env.NODE_ENV == 'production' ? 'js/[name].[hash].js' : 'js/[name].js'
 
 mix.js('resources/js/app.js', 'public/js')
-    .js('resources/js/public-scripts/play.js', 'public/js/public')
-    .js('resources/js/public-scripts/play-dkc.js', 'public/js/public')
-    .js('resources/js/public-scripts/play-shopify.js', 'public/js/public')
-    .js('resources/js/public-scripts/play-ga.js', 'public/js/public')
+    .js('resources/js/public-scripts/play.js', `${playEmbedScriptPathFull}/play.js`)
+    .js('resources/js/public-scripts/play-dkc.js', `${playEmbedScriptPathFull}/dkc.js`)
+    .js('resources/js/public-scripts/play-shopify.js', `${playEmbedScriptPathFull}/play-shopify.js`)
+    .js('resources/js/public-scripts/play-ga.js', `${playEmbedScriptPathFull}/play-ga.js`)
     .sass('resources/sass/app.scss', 'public/css')
     .copy('node_modules/@fortawesome/fontawesome-pro/webfonts', 'public/webfonts')
     .options({
