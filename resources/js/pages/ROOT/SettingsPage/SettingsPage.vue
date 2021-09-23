@@ -108,22 +108,43 @@
                             <BaseDropdownInputField
                                 type="radio"
                                 v-model="workspace.play_shop.type"
-                                innerlabel="Shop type"
+                                innerLabel="Shop type"
                                 :options="['SHOPIFY', 'DKC_BAP']"
                             />
                         </div>
                         <div class="form-element">
                             <BaseInputField
                                 v-model="workspace.play_shop.url"
-                                innerlabel="Shop URL"
+                                innerLabel="Shop URL"
                                 placeholder="https://my-webshop.com"
                             />
                         </div>
                         <div class="form-element">
                             <BaseInputField
                                 v-model="workspace.play_shop.checkout_url"
-                                innerlabel="Shop checkout URL"
+                                innerLabel="Shop checkout URL"
                                 placeholder="https://my-webshop.com/checkout"
+                            />
+                        </div>
+                        <div class="form-element">
+                            <BaseInputField
+                                v-model="workspace.play_shop.product_api_base_url"
+                                innerLabel="Product API base URL"
+                                placeholder="https://my-webshop.com/api/"
+                            />
+                        </div>
+                        <div class="form-element">
+                            <BaseInputField
+                                v-model="workspace.play_shop.search_product_list_api_url"
+                                innerLabel="Product API search list URL"
+                                placeholder="/search-list"
+                            />
+                        </div>
+                        <div class="form-element">
+                            <BaseInputField
+                                v-model="workspace.play_shop.search_single_product_api_url"
+                                innerLabel="Product API search single URL"
+                                placeholder="/search-single"
                             />
                         </div>
                     </template>
