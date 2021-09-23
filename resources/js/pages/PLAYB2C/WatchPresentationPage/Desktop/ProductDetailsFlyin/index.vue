@@ -158,7 +158,7 @@ export default {
         position: relative;
         cursor: pointer;
         &.selected {
-            background: $almostBlack;
+            background: $dark;
             color: $grey300;
         }
         &.sold-out {

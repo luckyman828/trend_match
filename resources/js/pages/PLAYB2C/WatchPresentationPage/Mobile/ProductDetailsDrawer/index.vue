@@ -155,7 +155,7 @@ export default {
         font-size: 900;
         position: relative;
         &.selected {
-            background: $almostBlack;
+            background: $dark;
             color: $grey300;
         }
         &.sold-out {
