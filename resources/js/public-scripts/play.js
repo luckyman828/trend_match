@@ -97,9 +97,8 @@ export function embed({
                 .kollekt-player {
                     min-height: 100vh;
                     min-width: 100vw;
-                    max-height: 100vh;
-                    min-height: -webkit-fill-available;
-                    height: -webkit-fill-available;
+                    /*min-height: -webkit-fill-available;
+                    height: -webkit-fill-available;*/
                     top: 0;
                 }
                 .kollekt-player-frame {
