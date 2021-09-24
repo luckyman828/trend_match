@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import persist from './modules/persist'
 import auth from './modules/auth'
 import workspaces from './modules/workspaces'
-import organizations from './modules/organizations'
 import teams from './modules/teams'
 import users from './modules/users'
 import files from './modules/files'
@@ -66,7 +65,6 @@ export const initialStoreModules = {
     persist,
     auth,
     workspaces,
-    organizations,
     teams,
     users,
     files,

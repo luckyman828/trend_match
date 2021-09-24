@@ -37,16 +37,8 @@ export default {
             this.$emit('close')
         },
         async onNewWorkspace() {
-            // Create a new organization as a wrapper for the workspace first
-            const newOrganization = {
-                title: this.workspaceName.length > 0 ? this.workspaceName : 'New organization',
-            }
-            await this.$store.dispatch('organizations/insertOrganization', newOrganization)
-
-            // Create the workspace
             const newWorkspace = {
                 title: this.workspaceName.length > 0 ? this.workspaceName : 'New workspace',
-                organization_id: newOrganization.id,
             }
             await this.insertWorkspace(newWorkspace)
             this.workspaceName = ''
