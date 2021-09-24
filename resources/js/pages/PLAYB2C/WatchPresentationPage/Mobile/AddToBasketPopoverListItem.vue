@@ -1,6 +1,6 @@
 <template>
     <div class="add-to-basket-popover-list-item flex-list justify">
-        <BaseImageSizer fit="cover" class="image">
+        <BaseImageSizer fit="contain" class="image">
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
                 <SavingPercentagePill :variant="variant" size="xxs" />

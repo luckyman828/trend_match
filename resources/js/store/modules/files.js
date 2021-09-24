@@ -496,6 +496,8 @@ export default {
             return new Promise(async (resolve, reject) => {
                 Vue.set(file, 'productImageSyncStatus', { msg: 'syncing', chunkCount: 0, chunkIndex: 0 })
 
+                console.log('sync images!', file, products)
+
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
 
@@ -503,7 +505,7 @@ export default {
                 products.map(product => {
                     product.variants.map(variant => {
                         variant.pictures.map((picture, index) => {
-                            if (!picture.url || picture.url.search('kollektcdn.com') >= 0 || !picture.urlToUpload)
+                            if ((!picture.url || picture.url.search('kollektcdn.com') >= 0) && !picture.urlToUpload)
                                 return // Don't upload images that don't exists or are already on our cdn
                             imageMaps.push({
                                 mapping_id: variant.id,
@@ -515,6 +517,8 @@ export default {
                         })
                     })
                 })
+
+                console.log('iamge maps to sync', imageMaps)
 
                 // Return if we have no images to sync
                 if (imageMaps.length <= 0) {

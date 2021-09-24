@@ -19,7 +19,7 @@
                     class="form-element"
                     :product="product"
                     :currentVariant="currentVariant"
-                    @show-variant="$event => (currentVariant = $event)"
+                    @show-variant="setCurrentVariant($event)"
                 />
 
                 <div class="price flex-list center-v form-element">
@@ -29,12 +29,13 @@
 
                 <div class="form-element flex-list-item">
                     <label>Sizes</label>
-                    <div class="size-list flex-list">
+                    <div class="size-list flex-list space-y-2">
                         <div
                             class="true-square size"
-                            :class="{ 'sold-out': !size.inStock }"
+                            :class="{ 'sold-out': !size.inStock, 'selected' : size.size === selectedSize.size }"
                             v-for="size in currentVariant.ean_sizes"
                             :key="size.ean"
+                            @click="onChangeSize(size)"
                         >
                             {{ size.size }}
                         </div>
@@ -67,7 +68,7 @@
                     </div>
                 </div>
             </div>
-            <AddToBasketSelector class="add-to-basket-bar" :variant="currentVariant" :show="true" />
+            <AddToBasketSelector class="add-to-basket-bar" :variant="currentVariant" :size="selectedSize" :show="true" @submit="selectedSize=$event"/>
         </template>
     </BaseFlyin>
 </template>
@@ -87,6 +88,7 @@ export default {
     data: function() {
         return {
             currentVariant: null,
+            selectedSize: {}, 
         }
     },
     computed: {
@@ -101,6 +103,10 @@ export default {
     methods: {
         setCurrentVariant(variant) {
             this.currentVariant = variant
+            this.selectedSize = {}
+        },
+        onChangeSize(size) {
+            this.selectedSize = size
         },
     },
     watch: {
@@ -150,8 +156,14 @@ export default {
         color: $fontBody;
         font-size: 900;
         position: relative;
+        cursor: pointer;
+        &.selected {
+            background: $dark;
+            color: $grey300;
+        }
         &.sold-out {
             opacity: 0.5;
+            pointer-events: none;
             &::after {
                 position: absolute;
                 content: '|';
