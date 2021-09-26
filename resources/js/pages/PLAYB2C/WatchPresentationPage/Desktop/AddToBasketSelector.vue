@@ -15,7 +15,7 @@
                     v-model="selectedSizeDetail"
                     :variant="variant"
                     ref="sizeSelector"
-                    @submit="$refs.sizePopover.hide()"
+                    @submit="selectSize"
                 />
             </v-popover>
 
@@ -40,7 +40,7 @@ import ChooseSizePopover from '../ChooseSizePopover'
 export default {
     name: 'addToBasketSelector',
     components: { AddToWishlistButton, ChooseSizePopover, AddToBasketButton },
-    props: ['variant', 'show', 'hideWishlist', 'autoHide'],
+    props: ['variant', 'size', 'show', 'hideWishlist', 'autoHide'],
     data() {
         return {
             selectedSizeDetail: null,
@@ -65,6 +65,9 @@ export default {
                 // this.presetSize()
             }
         },
+        size(newSize) {
+            this.selectedSizeDetail = newSize
+        }
     },
     methods: {
         ...mapActions('wishlist', ['toggleInWishlist']),
@@ -91,6 +94,10 @@ export default {
                 this.$refs.sizeSelector.selectedSizeDetail = itemInBasket.selectedSizeDetail
             }
         },
+        selectSize(size) {
+            this.$emit('submit', size)
+            this.$refs.sizePopover.hide()
+        }
     },
     mounted() {
         this.presetSize()

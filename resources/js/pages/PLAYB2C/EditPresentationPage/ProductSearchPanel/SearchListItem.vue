@@ -6,7 +6,7 @@
             tabindex="0"
             @keydown.enter="onAddTiming"
         >
-            <BaseImageSizer fit="cover" class="image">
+            <BaseImageSizer fit="contain" class="image">
                 <BaseVariantImage :variant="variant" size="sm" :key="variant.id" class="bg-shimmer" />
             </BaseImageSizer>
 

@@ -1,7 +1,7 @@
 <template>
     <div class="wishlist-item flex-list md">
         <BaseImageSizer
-            fit="cover"
+            fit="contain"
             class="image"
             @click.native="$store.commit('playPresentation/SET_PDP_ITEM', { product: variant.product, variant })"
         >

@@ -6,7 +6,7 @@
             tabindex="0"
             @keydown.enter.self="onAddTiming"
         >
-            <BaseImageSizer fit="cover" class="image" @click.native="$emit('edit-look', look)">
+            <BaseImageSizer fit="contain" class="image" @click.native="$emit('edit-look', look)">
                 <div class="resize-target picture-collage" :class="`size-${look.variantMaps.slice(0, 4).length}`">
                     <BaseVariantImage
                         :variant="variantMap.variant"

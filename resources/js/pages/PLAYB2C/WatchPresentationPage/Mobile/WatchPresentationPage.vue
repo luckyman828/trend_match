@@ -8,6 +8,13 @@
             <PresentationTitle :presentation="presentation" />
 
             <template v-if="playerStarted">
+                <div class="flip-screen-overlay" v-if="flipScreen">
+                    <div class="flip-screen-container">
+                        <div class="flip-screen-icon"><i class="fa fa-repeat"></i></div>
+                        <p class="font-bold">Rotate your device.</p>
+                        <p class="leading-snug">This presentation is best viewed in {{ flipOrientation }} mode.</p>
+                    </div>
+                </div>
                 <div class="bottom-aligned flex-list flex-v md">
                     <div class="over-timeline flex-list flex-v md">
                         <PreviewList />
@@ -180,6 +187,8 @@ export default {
     },
     data: function() {
         return {
+            flipScreen: false,
+            flipOrientation: '',
             showSavedProductsDrawer: false,
             savedProductsView: 'wishlist',
             showControls: true,
@@ -191,6 +200,17 @@ export default {
             addToBasketPopoverIsVisible: false,
         }
     },
+    mounted() {
+        window.addEventListener(
+            "resize",
+            this.handleScreenOrientation
+        );
+    },
+    watch: {
+      playerStarted() {
+          this.handleScreenOrientation()
+      }  
+    },
     computed: {
         ...mapGetters('playPresentation', {
             presentation: 'getPresentation',
@@ -201,6 +221,7 @@ export default {
             currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('player', {
+            player: 'getPlayer',            
             isPlaying: 'getIsPlaying',
             videoId: 'getProviderVideoId',
             provider: 'getProvider',
@@ -237,6 +258,18 @@ export default {
         },
         onHideBasketPopover() {
             this.addToBasketPopoverIsVisible = false
+        },
+        handleScreenOrientation() {
+            const orientationIsPortrait = window.matchMedia("(orientation: portrait)").matches
+            const videoWidth = this.player.videoWidth
+            const videoHeight = this.player.videoHeight
+            if ((orientationIsPortrait  && videoWidth > videoHeight) 
+                || (!orientationIsPortrait && videoWidth < videoHeight)) {
+                this.flipOrientation = orientationIsPortrait ? 'landscape' : 'portrait'
+                this.flipScreen = true
+            } else {
+                this.flipScreen = false
+            }
         },
     },
 }
@@ -435,4 +468,116 @@ export default {
         } // End v-deep
     }
 }
+
+/* Flip screen */
+.flip-screen-overlay {
+	display: block;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.flip-screen-container {
+	width: 220px;
+	height: 250px;
+	position: absolute;
+	padding: 8px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	background: $almostBlack;
+	border-radius: $borderRadiusLg;
+	opacity: 0.8;
+	& p {
+		color: white;
+		display: inline-block;
+		width: 100%;
+		text-align: center;
+		margin: 0;
+		font-size: 15px;
+		opacity: 0;
+	}
+}
+
+.flip-screen-icon {
+	position: relative;
+	left: 50%;
+	margin: 10px -40px;
+	width: 0;
+	height: 0;
+	border: 0 solid white;
+	border-radius: 10px;
+	box-sizing: border-box;
+	& i {
+		text-align: center;
+		width: 100%;
+		line-height: 100px;
+		font-size: 30px;
+		color: white;
+		opacity: 0;
+	}
+}
+
+/* Flip screen animations */
+.flip-screen-overlay {
+    animation: displayFlipScreenIcon 4s forwards ease;
+}
+.flip-screen-overlay .flip-screen-icon i {
+	animation: fadeIn 0.5s 0.8s forwards ease;
+}
+.flip-screen-overlay .flip-screen-container p {
+	animation: fadeIn 0.5s 1.3s forwards ease;
+}
+
+@media screen and (orientation:portrait) {
+    .flip-screen-overlay .flip-screen-icon {
+        margin-top: 5px;
+        margin-bottom: 5px;
+	    animation: sizeIncrease 0.5s forwards ease,
+		    borderIncrease 0.5s 0.5s forwards ease, rotateRight 0.7s 1s forwards ease;
+    }
+}
+
+@media screen and (orientation:landscape) { 
+    .flip-screen-overlay .flip-screen-icon {
+        animation: sizeIncrease 0.5s forwards ease,
+		borderIncrease 0.5s 0.5s forwards ease,
+        rotateRight 0s 0.2s forwards ease,
+        rotateLeft 0.7s 1s forwards ease;
+    }
+}
+
+/* Flip screen keyframes */
+/* Display animation */
+@keyframes displayFlipScreenIcon {
+	100% { visibility: hidden; }
+}
+/* Animate width + height */
+@keyframes sizeIncrease {
+	0% { width: 0; height: 10px; }
+	50% { width: 80px; height: 10px; }
+	100% { width: 80px; height: 140px; }
+}
+
+/* Add borders */
+@keyframes borderIncrease {
+	100% { border-width: 17px 7px; }
+}
+
+/* fade-in  */
+@keyframes fadeIn {
+	100% { opacity: 1; }
+}
+
+/* Rotate device */
+@keyframes rotateRight {
+	100% { transform: rotate(90deg); }
+}
+
+/* Rotate device back */
+@keyframes rotateLeft {
+	100% { transform: rotate(0deg); }
+}
+
 </style>

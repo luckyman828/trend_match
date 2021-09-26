@@ -42,6 +42,6 @@ export default {
 
 <style lang="scss" scoped>
 .main-image-section {
-    height: 320px;
+    height: 360px;
 }
 </style>
