@@ -17,13 +17,13 @@
             }"
             :activeState="{
                 text: textStyle == 'short' ? 'Added' : textStyle == 'none' ? '' : 'Added',
-                class: ['primary', activeClass],
+                class: ['primary col-white', activeClass],
                 iconLeft: 'far fa-shopping-bag',
                 nestedIconLeft: 'fas fa-check pos-right pos-bottom',
             }"
             :activeHoverState="{
                 text: textStyle == 'short' ? 'Remove' : textStyle == 'none' ? '' : 'Remove',
-                class: ['primary', activeHoverClass],
+                class: ['primary col-white', activeHoverClass],
                 iconLeft: 'far fa-shopping-bag',
                 nestedIconLeft: 'fas fa-times pos-right pos-bottom',
             }"

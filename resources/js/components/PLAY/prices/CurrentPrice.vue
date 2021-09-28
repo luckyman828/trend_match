@@ -24,4 +24,9 @@ export default {
 .current-price {
     font-size: 11px;
 }
+@media screen and (max-width: $tablet-width) {
+    .current-price {
+        font-size: 10px;
+    }
+}
 </style>

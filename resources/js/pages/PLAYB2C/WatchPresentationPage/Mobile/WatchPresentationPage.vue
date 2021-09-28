@@ -17,7 +17,7 @@
                 </div>
                 <div class="bottom-aligned flex-list flex-v md">
                     <div class="over-timeline flex-list flex-v md">
-                        <PreviewList />
+                        <PreviewList v-if="showPreviewList" />
                         <div class="top flex-list justify flex-end-v">
                             <div class="left">
                                 <!-- <button class="bg-blur sm pill comment-button">
@@ -26,7 +26,7 @@
                             </div>
                             <div class="right flex-list">
                                 <AddToWishlistButton
-                                    class="lg circle"
+                                    class="md circle"
                                     :disabled="!currentTiming"
                                     :variants="currentTiming && currentTiming.variantList"
                                 />
@@ -40,7 +40,7 @@
                                     @hide="onHideBasketPopover"
                                 >
                                     <BaseStateAlternatingButton
-                                        buttonClass="circle lg"
+                                        buttonClass="circle md"
                                         :disabled="!currentTiming"
                                         :active="
                                             addToBasketPopoverIsVisible
@@ -64,6 +64,12 @@
                                         @hide="$refs.addToBasketPopover.hide()"
                                     />
                                 </v-popover>
+                                <BaseButton 
+                                    :buttonClass="['pill md', showPreviewList ? 'dark' : 'white']" 
+                                    @click="showPreviewList = !showPreviewList"
+                                >
+                                    <span><i class="far fa-tshirt"></i> {{ showPreviewList ? 'Hide' : 'Display'}}</span>
+                                </BaseButton>
                                 <!-- <AddToBasketButton
                                     buttonClass="lg circle"
                                     baseClass="white"
@@ -193,6 +199,7 @@ export default {
             savedProductsView: 'wishlist',
             showControls: true,
             showCart: false,
+            showPreviewList: true,
             showChatInput: false,
             recentlyStarted: false,
             showTimingList: false,
