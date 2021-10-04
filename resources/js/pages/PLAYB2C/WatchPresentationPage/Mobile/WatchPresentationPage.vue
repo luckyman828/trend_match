@@ -1,6 +1,6 @@
 <template>
     <div class="watch-video-page" :class="[`desired-${desiredStatus}`, { 'recently-started': recentlyStarted }]">
-        <VideoPlayer :video="video" :autoplay="false">
+        <VideoPlayer :video="video" :autoplay="true" :muted="true">
             <template v-slot:beforeStart>
                 <BeforeStartOverlay />
             </template>
@@ -8,12 +8,20 @@
             <PresentationTitle :presentation="presentation" />
 
             <template v-if="playerStarted">
-                <div class="flip-screen-overlay" v-if="flipScreen">
-                    <div class="flip-screen-container">
-                        <div class="flip-screen-icon"><i class="fa fa-repeat"></i></div>
-                        <p class="font-bold">Rotate your device.</p>
-                        <p class="leading-snug">This presentation is best viewed in {{ flipOrientation }} mode.</p>
+                <div
+                    :class="['volume-screen-container', flipScreen ? 'delay' : 'no-delay']"
+                    @click="togglePlayerMuted(false)"
+                >
+                    <div class="volume-screen-icon">
+                        <i :class="['fas', isMuted ? 'fa-volume-mute' : 'fa-volume']"></i>
                     </div>
+                    <p class="font-bold">Video is muted</p>
+                    <p class="leading-snug">Tap to unmute.</p>
+                </div>
+                <div class="flip-screen-container" v-if="flipScreen">
+                    <div class="flip-screen-icon"><i class="fa fa-repeat"></i></div>
+                    <p class="font-bold">Rotate your device.</p>
+                    <p class="leading-snug">This presentation is best viewed in {{ flipOrientation }} mode.</p>
                 </div>
                 <div class="bottom-aligned flex-list flex-v md">
                     <div class="over-timeline flex-list flex-v md">
@@ -238,6 +246,7 @@ export default {
             duration: 'getDuration',
             timestamp: 'getTimestamp',
             isLive: 'getIsLive',
+            isMuted: 'getIsMuted',
             playerStarted: 'getPlayerStarted',
         }),
         ...mapGetters('wishlist', {
@@ -279,6 +288,12 @@ export default {
             }
         },
     },
+    beforeDestroy() {
+        window.removeEventListener(
+            "resize",
+            this.handleScreenOrientation
+        );
+    }
 }
 </script>
 
@@ -476,69 +491,79 @@ export default {
     }
 }
 
-/* Flip screen */
-.flip-screen-overlay {
-	display: block;
-	position: absolute;
-	top: 0;
-	width: 100%;
-	height: 100%;
+/* Flip screen and volume muted */
+.flip, .volume {
+    &-screen-container {
+        opacity: 0;
+        z-index: 99;
+        width: 220px;
+        height: 250px;
+        position: absolute;
+        padding: 8px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: $almostBlack;
+        border-radius: $borderRadiusLg;
+        & p {
+            color: white;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            font-size: 15px;
+            opacity: 0;
+        }
+    }
+
+    &-screen-icon {
+        position: relative;
+        left: 50%;
+        margin: 10px -40px;
+        width: 0;
+        height: 0;
+        border: 0 solid white;
+        border-radius: 10px;
+        box-sizing: border-box;
+        & i {
+            text-align: center;
+            width: 100%;
+            line-height: 100px;
+            font-size: 30px;
+            color: white;
+            opacity: 0;
+        }
+    }
 }
 
-.flip-screen-container {
-	width: 220px;
-	height: 250px;
-	position: absolute;
-	padding: 8px;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	background: $almostBlack;
-	border-radius: $borderRadiusLg;
-	opacity: 0.8;
-	& p {
-		color: white;
-		display: inline-block;
-		width: 100%;
-		text-align: center;
-		margin: 0;
-		font-size: 15px;
-		opacity: 0;
-	}
+.volume-screen-icon {
+    height: 130px;
+    display: flex;
+    align-items: center;
+    & i { font-size: 100px; }
 }
 
-.flip-screen-icon {
-	position: relative;
-	left: 50%;
-	margin: 10px -40px;
-	width: 0;
-	height: 0;
-	border: 0 solid white;
-	border-radius: 10px;
-	box-sizing: border-box;
-	& i {
-		text-align: center;
-		width: 100%;
-		line-height: 100px;
-		font-size: 30px;
-		color: white;
-		opacity: 0;
-	}
+/* Flip screen and volume muted animations */
+.flip-screen-container, .volume-screen-container.no-delay {
+    animation: toggleAnimation 4s forwards ease;
 }
 
-/* Flip screen animations */
-.flip-screen-overlay {
-    animation: displayFlipScreenIcon 4s forwards ease;
+.volume-screen-container.delay {
+    animation: toggleAnimation 3s 4.5s forwards ease;
 }
-.flip-screen-overlay .flip-screen-icon i {
-	animation: fadeIn 0.5s 0.8s forwards ease;
-}
-.flip-screen-overlay .flip-screen-container p {
-	animation: fadeIn 0.5s 1.3s forwards ease;
+
+.flip, .volume {
+    &-screen-container &-screen-icon i {
+	    animation: fadeIn 0.5s 0.8s forwards ease;
+    }
+
+    &-screen-container p {
+	    animation: fadeIn 0.5s 1.3s forwards ease;
+    }
 }
 
 @media screen and (orientation:portrait) {
-    .flip-screen-overlay .flip-screen-icon {
+    .flip-screen-container .flip-screen-icon {
         margin-top: 5px;
         margin-bottom: 5px;
 	    animation: sizeIncrease 0.5s forwards ease,
@@ -547,7 +572,7 @@ export default {
 }
 
 @media screen and (orientation:landscape) { 
-    .flip-screen-overlay .flip-screen-icon {
+    .flip-screen-container .flip-screen-icon {
         animation: sizeIncrease 0.5s forwards ease,
 		borderIncrease 0.5s 0.5s forwards ease,
         rotateRight 0s 0.2s forwards ease,
@@ -555,10 +580,15 @@ export default {
     }
 }
 
-/* Flip screen keyframes */
+/* Flip screen and volume muted keyframes */
 /* Display animation */
-@keyframes displayFlipScreenIcon {
-	100% { visibility: hidden; }
+@keyframes toggleAnimation {
+	0% { opacity: 0 }
+    30% { opacity: .8 }
+	100% { 
+        opacity: .8;
+        visibility: hidden;
+        }
 }
 /* Animate width + height */
 @keyframes sizeIncrease {
