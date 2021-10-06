@@ -78,12 +78,12 @@
                         :baseState="{
                             class: 'white',
                             iconLeft: 'far fa-shopping-bag',
-                            text: 'Add to basket',
+                            text: $t('play.basket.addLong'),
                         }"
                         :activeState="{
                             class: 'primary',
                             iconLeft: 'far fa-shopping-bag white',
-                            text: 'Added to basket',
+                            text: $t('play.basket.addedLong'),
                             nestedIconLeft: 'fas fa-check pos-bottom pos-right white',
                         }"
                     >
@@ -121,13 +121,13 @@
                             savedProductsView = 'basket'
                         "
                     >
-                        <span>Se kurv</span>
+                        <span>{{ $t('play.basket.view') }}</span>
                     </button>
                     <button
                         class="white pill lg w-lg"
                         @click="$store.dispatch('playEmbed/postMessage', { action: 'closePresentation' })"
                     >
-                        <span>Afslut og shop videre</span>
+                        <span>{{ $t('play.continueShopping') }}</span>
                     </button>
                 </div>
             </template>

@@ -5,8 +5,8 @@
             <v-popover trigger="click" class="size-button" ref="sizePopover" :disabled="!variant.inStock">
                 <button class="white full-width pill" :disabled="!variant.inStock">
                     <i class="far fa-ruler"></i>
-                    <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
-                    <span v-else>Choose size</span>
+                    <span v-if="selectedSizeDetail">{{ $t('play.sizeShort') }}: {{ selectedSizeDetail.size }}</span>
+                    <span v-else>{{ $t('play.chooseSize') }}</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <ChooseSizePopover
@@ -67,7 +67,7 @@ export default {
         },
         size(newSize) {
             this.selectedSizeDetail = newSize
-        }
+        },
     },
     methods: {
         ...mapActions('wishlist', ['toggleInWishlist']),
@@ -97,7 +97,7 @@ export default {
         selectSize(size) {
             this.$emit('submit', size)
             this.$refs.sizePopover.hide()
-        }
+        },
     },
     mounted() {
         this.presetSize()

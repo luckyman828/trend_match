@@ -65,7 +65,7 @@
                 buttonClass="dark full-width checkout-button"
                 @click="onGoToCheckout"
             >
-                <span>Afslut og shop videre</span>
+                <span>{{ $t('play.continueShopping') }}</span>
             </BaseButton>
             <!-- END TEMP  -->
         </div>
@@ -119,7 +119,7 @@ export default {
         segmentedControlOptions() {
             return [
                 { name: 'Wishlist', iconClass: 'far fa-heart', count: this.wishlist.length },
-                { name: 'Basket', iconClass: 'far fa-shopping-bag', count: this.basket.length },
+                { name: this.$t('play.basket.basket'), iconClass: 'far fa-shopping-bag', count: this.basket.length },
             ]
         },
     },

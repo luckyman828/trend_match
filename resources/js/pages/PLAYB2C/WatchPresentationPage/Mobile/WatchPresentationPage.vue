@@ -72,11 +72,13 @@
                                         @hide="$refs.addToBasketPopover.hide()"
                                     />
                                 </v-popover>
-                                <BaseButton 
-                                    :buttonClass="['pill md', showPreviewList ? 'dark' : 'white']" 
+                                <BaseButton
+                                    :buttonClass="['pill md', showPreviewList ? 'dark' : 'white']"
                                     @click="showPreviewList = !showPreviewList"
                                 >
-                                    <span><i class="far fa-tshirt"></i> {{ showPreviewList ? 'Hide' : 'Display'}}</span>
+                                    <span
+                                        ><i class="far fa-tshirt"></i> {{ showPreviewList ? 'Hide' : 'Display' }}</span
+                                    >
                                 </BaseButton>
                                 <!-- <AddToBasketButton
                                     buttonClass="lg circle"
@@ -152,13 +154,13 @@
                             savedProductsView = 'basket'
                         "
                     >
-                        <span>Se kurv</span>
+                        <span>{{ $t('play.basket.view') }}</span>
                     </button>
                     <button
                         class="white pill lg w-lg"
                         @click="$store.dispatch('playEmbed/postMessage', { action: 'closePresentation' })"
                     >
-                        <span>Afslut og shop videre</span>
+                        <span>{{ $t('play.continueShopping') }}</span>
                     </button>
                 </div>
             </template>
@@ -216,15 +218,12 @@ export default {
         }
     },
     mounted() {
-        window.addEventListener(
-            "resize",
-            this.handleScreenOrientation
-        );
+        window.addEventListener('resize', this.handleScreenOrientation)
     },
     watch: {
-      playerStarted() {
-          this.handleScreenOrientation()
-      }  
+        playerStarted() {
+            this.handleScreenOrientation()
+        },
     },
     computed: {
         ...mapGetters('playPresentation', {
@@ -236,7 +235,7 @@ export default {
             currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('player', {
-            player: 'getPlayer',            
+            player: 'getPlayer',
             isPlaying: 'getIsPlaying',
             videoId: 'getProviderVideoId',
             provider: 'getProvider',
@@ -276,11 +275,13 @@ export default {
             this.addToBasketPopoverIsVisible = false
         },
         handleScreenOrientation() {
-            const orientationIsPortrait = window.matchMedia("(orientation: portrait)").matches
+            const orientationIsPortrait = window.matchMedia('(orientation: portrait)').matches
             const videoWidth = this.player.videoWidth
             const videoHeight = this.player.videoHeight
-            if ((orientationIsPortrait  && videoWidth > videoHeight) 
-                || (!orientationIsPortrait && videoWidth < videoHeight)) {
+            if (
+                (orientationIsPortrait && videoWidth > videoHeight) ||
+                (!orientationIsPortrait && videoWidth < videoHeight)
+            ) {
                 this.flipOrientation = orientationIsPortrait ? 'landscape' : 'portrait'
                 this.flipScreen = true
             } else {
@@ -289,11 +290,8 @@ export default {
         },
     },
     beforeDestroy() {
-        window.removeEventListener(
-            "resize",
-            this.handleScreenOrientation
-        );
-    }
+        window.removeEventListener('resize', this.handleScreenOrientation)
+    },
 }
 </script>
 
@@ -492,7 +490,8 @@ export default {
 }
 
 /* Flip screen and volume muted */
-.flip, .volume {
+.flip,
+.volume {
     &-screen-container {
         opacity: 0;
         z-index: 99;
@@ -540,11 +539,14 @@ export default {
     height: 130px;
     display: flex;
     align-items: center;
-    & i { font-size: 100px; }
+    & i {
+        font-size: 100px;
+    }
 }
 
 /* Flip screen and volume muted animations */
-.flip-screen-container, .volume-screen-container.no-delay {
+.flip-screen-container,
+.volume-screen-container.no-delay {
     animation: toggleAnimation 4s forwards ease;
 }
 
@@ -552,69 +554,88 @@ export default {
     animation: toggleAnimation 3s 4.5s forwards ease;
 }
 
-.flip, .volume {
+.flip,
+.volume {
     &-screen-container &-screen-icon i {
-	    animation: fadeIn 0.5s 0.8s forwards ease;
+        animation: fadeIn 0.5s 0.8s forwards ease;
     }
 
     &-screen-container p {
-	    animation: fadeIn 0.5s 1.3s forwards ease;
+        animation: fadeIn 0.5s 1.3s forwards ease;
     }
 }
 
-@media screen and (orientation:portrait) {
+@media screen and (orientation: portrait) {
     .flip-screen-container .flip-screen-icon {
         margin-top: 5px;
         margin-bottom: 5px;
-	    animation: sizeIncrease 0.5s forwards ease,
-		    borderIncrease 0.5s 0.5s forwards ease, rotateRight 0.7s 1s forwards ease;
+        animation: sizeIncrease 0.5s forwards ease, borderIncrease 0.5s 0.5s forwards ease,
+            rotateRight 0.7s 1s forwards ease;
     }
 }
 
-@media screen and (orientation:landscape) { 
+@media screen and (orientation: landscape) {
     .flip-screen-container .flip-screen-icon {
-        animation: sizeIncrease 0.5s forwards ease,
-		borderIncrease 0.5s 0.5s forwards ease,
-        rotateRight 0s 0.2s forwards ease,
-        rotateLeft 0.7s 1s forwards ease;
+        animation: sizeIncrease 0.5s forwards ease, borderIncrease 0.5s 0.5s forwards ease,
+            rotateRight 0s 0.2s forwards ease, rotateLeft 0.7s 1s forwards ease;
     }
 }
 
 /* Flip screen and volume muted keyframes */
 /* Display animation */
 @keyframes toggleAnimation {
-	0% { opacity: 0 }
-    30% { opacity: .8 }
-	100% { 
-        opacity: .8;
+    0% {
+        opacity: 0;
+    }
+    30% {
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 0.8;
         visibility: hidden;
-        }
+    }
 }
 /* Animate width + height */
 @keyframes sizeIncrease {
-	0% { width: 0; height: 10px; }
-	50% { width: 80px; height: 10px; }
-	100% { width: 80px; height: 140px; }
+    0% {
+        width: 0;
+        height: 10px;
+    }
+    50% {
+        width: 80px;
+        height: 10px;
+    }
+    100% {
+        width: 80px;
+        height: 140px;
+    }
 }
 
 /* Add borders */
 @keyframes borderIncrease {
-	100% { border-width: 17px 7px; }
+    100% {
+        border-width: 17px 7px;
+    }
 }
 
 /* fade-in  */
 @keyframes fadeIn {
-	100% { opacity: 1; }
+    100% {
+        opacity: 1;
+    }
 }
 
 /* Rotate device */
 @keyframes rotateRight {
-	100% { transform: rotate(90deg); }
+    100% {
+        transform: rotate(90deg);
+    }
 }
 
 /* Rotate device back */
 @keyframes rotateLeft {
-	100% { transform: rotate(0deg); }
+    100% {
+        transform: rotate(0deg);
+    }
 }
-
 </style>

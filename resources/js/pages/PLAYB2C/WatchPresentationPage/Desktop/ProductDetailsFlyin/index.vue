@@ -28,11 +28,11 @@
                 </div>
 
                 <div class="form-element flex-list-item">
-                    <label>Sizes</label>
+                    <label>{{ $t('play.product.sizes') }}</label>
                     <div class="size-list flex-list space-y-2">
                         <div
                             class="true-square size"
-                            :class="{ 'sold-out': !size.inStock, 'selected' : size.size === selectedSize.size }"
+                            :class="{ 'sold-out': !size.inStock, selected: size.size === selectedSize.size }"
                             v-for="size in currentVariant.ean_sizes"
                             :key="size.ean"
                             @click="onChangeSize(size)"
@@ -46,7 +46,7 @@
                     <div class="form-element flex-list md">
                         <i class="fal fa-info-circle md"></i>
                         <div class="flex-list-item">
-                            <label>Description</label>
+                            <label>{{ $t('play.product.description') }}</label>
                             <span class="value description"> {{ product.sale_description }}</span>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                     <div class="form-element flex-list md">
                         <i class="fal fa-flower md"></i>
                         <div class="flex-list-item">
-                            <label>Composition</label>
+                            <label>{{ $t('play.product.composition') }}</label>
                             <span class="value"> {{ product.composition }}</span>
                         </div>
                     </div>
@@ -62,13 +62,19 @@
                     <div class="form-element flex-list md">
                         <i class="fal fa-tshirt md"></i>
                         <div class="flex-list-item">
-                            <label>Style number</label>
+                            <label>{{ $t('play.product.id') }}</label>
                             <span class="value"> {{ product.datasource_id }}</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <AddToBasketSelector class="add-to-basket-bar" :variant="currentVariant" :size="selectedSize" :show="true" @submit="selectedSize=$event"/>
+            <AddToBasketSelector
+                class="add-to-basket-bar"
+                :variant="currentVariant"
+                :size="selectedSize"
+                :show="true"
+                @submit="selectedSize = $event"
+            />
         </template>
     </BaseFlyin>
 </template>
@@ -88,7 +94,7 @@ export default {
     data: function() {
         return {
             currentVariant: null,
-            selectedSize: {}, 
+            selectedSize: {},
         }
     },
     computed: {
