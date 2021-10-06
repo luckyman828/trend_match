@@ -9,7 +9,7 @@
                 v-if="!variant.inStock"
                 :style="`margin-top: ${labelSize == 'xxs' ? 2 : 4}px`"
             >
-                <span>Sold out</span>
+                <span>{{ $t('play.product.soldOut') }}</span>
             </button>
         </div>
     </div>
