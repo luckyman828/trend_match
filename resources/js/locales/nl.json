@@ -1,0 +1,28 @@
+{
+    "play": {
+        "basket": {
+            "basket": "Mandje",
+            "view": "Ga naar mandje",
+            "addLong": "Leg in mandje",
+            "addShort": "Leg in",
+            "removeLong": "Verwijderen",
+            "removeShort": "Verwijderen",
+            "addedLong": "Toegevoegd",
+            "addedShort": "Toegevoegd"
+        },
+        "chooseSize": "Kies de maat",
+        "sizeShort": "Maat",
+        "continueShopping": "Sluiten en verder winkelen",
+        "video": {
+            "quality": "Afspeelkwaliteit"
+        },
+        "product": {
+            "sizes": "Maten",
+            "description": "Beschrijving",
+            "composition": "Samenstelling",
+            "id": "Style nr.",
+            "detailsSectionLabel": "Style info",
+            "soldOut": "Uitverkocht"
+        }
+    }
+}

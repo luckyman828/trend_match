@@ -1,0 +1,28 @@
+{
+    "play": {
+        "basket": {
+            "basket": "basket",
+            "view": "View basket",
+            "addLong": "Add to basket",
+            "addShort": "Add",
+            "removeLong": "Remove",
+            "removeShort": "Remove",
+            "addedLong": "Added",
+            "addedShort": "Added"
+        },
+        "chooseSize": "Choose size",
+        "sizeShort": "Size",
+        "continueShopping": "Close and continue shopping",
+        "video": {
+            "quality": "Playback quality"
+        },
+        "product": {
+            "sizes": "Sizes",
+            "description": "Description",
+            "composition": "Composition",
+            "id": "Style number",
+            "detailsSectionLabel": "Style info",
+            "soldOut": "Sold out"
+        }
+    }
+}

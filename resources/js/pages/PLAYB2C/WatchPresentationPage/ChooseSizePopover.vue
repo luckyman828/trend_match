@@ -1,7 +1,7 @@
 <template>
     <BaseSelectButtons
         v-if="variant"
-        header="Choose size"
+        :header="$t('play.chooseSize')"
         slot="popover"
         type="radio"
         :submitOnChange="true"
@@ -13,7 +13,7 @@
     >
         <template v-slot:after="slotProps">
             <div class="pill red xs" v-if="slotProps.option.quantity <= 0" style="margin-left: 8px;">
-                <span>Sold out</span>
+                <span>{{ $t('play.product.soldOut') }}</span>
             </div>
         </template>
     </BaseSelectButtons>

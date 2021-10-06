@@ -6,6 +6,7 @@
             class="player"
             tabindex="-1"
             :autoplay="autoplay"
+            :muted="muted"
             :controls="false"
             playsinline
             @canplay="onPlayerReady"
@@ -35,7 +36,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'videoPlayer',
-    props: ['video', 'autoplay'],
+    props: ['video', 'autoplay', 'muted'],
     data: function() {
         return {
             playerReady: false,
@@ -45,6 +46,9 @@ export default {
             videoTimer: null,
             unhandledQualityChange: false,
         }
+    },
+    mounted() {
+        if(this.muted) this.SET_PLAYER_MUTED(true)
     },
     computed: {
         ...mapGetters('player', {
@@ -86,6 +90,7 @@ export default {
             'SET_PLAYER_REFERENCE',
             'SET_CURRENT_PLAYER_TIMESTAMP',
             'SET_PLAYER_DURATION',
+            'SET_PLAYER_MUTED',
             'SET_PLAYER_STATUS',
             'SET_DESIRED_STATUS',
             'SET_PLAYER_STARTED',

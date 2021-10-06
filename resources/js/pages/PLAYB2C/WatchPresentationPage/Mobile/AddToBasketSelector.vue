@@ -10,13 +10,13 @@
             <v-popover trigger="click" ref="sizePopover" class="size-button" :disabled="item && !item.inStock">
                 <button class="pill lg white full-width" :disabled="item && !item.inStock">
                     <i class="far fa-ruler"></i>
-                    <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
-                    <span v-else>Choose size</span>
+                    <span v-if="selectedSizeDetail">{{ $t('play.sizeShort') }}: {{ selectedSizeDetail.size }}</span>
+                    <span v-else>{{ $t('play.chooseSize') }}</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <BaseSelectButtons
                     v-if="item"
-                    header="Choose size"
+                    :header="$t('play.chooseSize')"
                     slot="popover"
                     type="radio"
                     :submitOnChange="true"
@@ -34,7 +34,7 @@
                 @click="onAddToBasket"
             >
                 <i class="far fa-shopping-bag"></i>
-                <span>Add to basket</span>
+                <span>{{ $t('play.basket.addLong') }}</span>
             </BaseButton>
         </div>
     </BaseFloatyBar>
@@ -56,7 +56,7 @@ export default {
     watch: {
         size(newSize) {
             this.selectedSizeDetail = newSize
-        }
+        },
     },
     methods: {
         ...mapActions('basket', ['addToBasket']),

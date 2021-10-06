@@ -12,9 +12,8 @@
                     <div class="pill red xxs" v-if="soldOut">
                         <span>Sold out</span>
                     </div>
-                    <div class="pill yellow xs" v-if="timing.variantList.length > 1">
+                    <div class="pill dark xs" v-if="timing.variantList.length > 1">
                         <i class="far fa-layer-group"></i>
-                        <span>{{ timing.variantList.length }}</span>
                     </div>
                 </div>
             </div>
@@ -69,7 +68,7 @@ export default {
             overflow: hidden;
             position: relative;
             background: white;
-            &::after{
+            &::after {
                 content: '';
                 display: block;
                 position: absolute;

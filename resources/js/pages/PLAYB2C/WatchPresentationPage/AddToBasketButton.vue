@@ -12,18 +12,33 @@
             :class="{ 'sold-out': !variant.inStock }"
             :baseState="{
                 class: baseClass,
-                text: textStyle == 'short' ? 'Add' : textStyle == 'none' ? '' : 'Add to basket',
+                text:
+                    textStyle == 'short'
+                        ? $t('play.basket.addShort')
+                        : textStyle == 'none'
+                        ? ''
+                        : $t('play.basket.addLong'),
                 iconLeft: 'far fa-shopping-bag',
             }"
             :activeState="{
-                text: textStyle == 'short' ? 'Added' : textStyle == 'none' ? '' : 'Added',
-                class: ['primary', activeClass],
+                text:
+                    textStyle == 'short'
+                        ? $t('play.basket.addedShort')
+                        : textStyle == 'none'
+                        ? ''
+                        : $t('play.basket.addedLong'),
+                class: ['primary col-white', activeClass],
                 iconLeft: 'far fa-shopping-bag',
                 nestedIconLeft: 'fas fa-check pos-right pos-bottom',
             }"
             :activeHoverState="{
-                text: textStyle == 'short' ? 'Remove' : textStyle == 'none' ? '' : 'Remove',
-                class: ['primary', activeHoverClass],
+                text:
+                    textStyle == 'short'
+                        ? $t('play.basket.removeShort')
+                        : textStyle == 'none'
+                        ? ''
+                        : $t('play.basket.removeLong'),
+                class: ['primary col-white', activeHoverClass],
                 iconLeft: 'far fa-shopping-bag',
                 nestedIconLeft: 'fas fa-times pos-right pos-bottom',
             }"

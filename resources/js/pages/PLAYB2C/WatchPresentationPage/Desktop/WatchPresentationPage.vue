@@ -17,10 +17,18 @@
             { 'pdp-open': !!pdpItem },
         ]"
     >
-        <VideoPlayer :video="video" :autoplay="false">
+        <VideoPlayer :video="video" :autoplay="true" :muted="true" >
             <template v-slot:beforeStart>
                 <BeforeStartOverlay :video="video" />
             </template>
+            
+            <div class="volume-screen-overlay">
+                <div class="volume-screen-container" @click="togglePlayerMuted(false)">
+                    <div class="volume-screen-icon"><i :class="['fas', isMuted ? 'fa-volume-mute' : 'fa-volume']"></i></div>
+                    <p class="font-bold">Video is muted</p>
+                    <p class="leading-snug">Click to unmute</p>
+                </div>
+            </div>
 
             <PresentationTitle :presentation="presentation" />
             <div class="top-right-items flex-list">
@@ -70,12 +78,12 @@
                         :baseState="{
                             class: 'white',
                             iconLeft: 'far fa-shopping-bag',
-                            text: 'Add to basket',
+                            text: $t('play.basket.addLong'),
                         }"
                         :activeState="{
                             class: 'primary',
                             iconLeft: 'far fa-shopping-bag white',
-                            text: 'Added to basket',
+                            text: $t('play.basket.addedLong'),
                             nestedIconLeft: 'fas fa-check pos-bottom pos-right white',
                         }"
                     >
@@ -113,13 +121,13 @@
                             savedProductsView = 'basket'
                         "
                     >
-                        <span>Se kurv</span>
+                        <span>{{ $t('play.basket.view') }}</span>
                     </button>
                     <button
                         class="white pill lg w-lg"
                         @click="$store.dispatch('playEmbed/postMessage', { action: 'closePresentation' })"
                     >
-                        <span>Afslut og shop videre</span>
+                        <span>{{ $t('play.continueShopping') }}</span>
                     </button>
                 </div>
             </template>
@@ -185,6 +193,7 @@ export default {
             timestamp: 'getTimestamp',
             recentlyStarted: 'getPlayerRecentlyStarted',
             playerStarted: 'getPlayerStarted',
+            isMuted: 'getIsMuted',
         }),
         ...mapGetters('wishlist', {
             wishlist: 'getWishlist',
@@ -204,6 +213,7 @@ export default {
     },
     methods: {
         ...mapMutations('playPresentation', ['SET_PDP_ITEM']),
+        ...mapActions('player', ['togglePlayerMuted']),
         onShowAddToBasketPopover() {
             this.addToBasketPopoverIsVisible = true
             this.addToBasketPopoverVariantList = this.currentTiming ? this.currentTiming.variantList : []
@@ -264,6 +274,89 @@ export default {
             }
         }
     }
+}
+
+/* Volume muted */
+.volume {
+    &-screen-overlay {
+        opacity: 0;
+        display: block;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    &-screen-container {
+        cursor: pointer;
+        width: 220px;
+        height: 220px;
+        position: absolute;
+        padding: 8px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: $almostBlack;
+        border-radius: $borderRadiusLg;
+        opacity: 0.8;
+        & p {
+            color: white;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            font-size: 15px;
+            opacity: 0;
+        }
+    }
+
+    &-screen-icon {
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 130px;
+        display: flex;
+        align-items: center;
+        & i {
+            text-align: center;
+            width: 100%;
+            line-height: 100px;
+            font-size: 100px;
+            color: white;
+            opacity: 0;
+        }
+    }
+}
+
+/* Volume muted animations */
+.volume-screen-overlay {
+    animation: toggleAnimation 4s forwards ease;
+}
+
+.volume {
+    &-screen-overlay &-screen-icon i {
+	    animation: fadeIn 0.5s 0.8s forwards ease;
+    }
+
+    &-screen-overlay &-screen-container p {
+	    animation: fadeIn 0.5s 1.1s forwards ease;
+    }
+}
+
+/* Volume muted keyframes */
+/* Display animation */
+@keyframes toggleAnimation {
+	0% { opacity: 0 }
+    30% { opacity: 1 }
+	100% { 
+        opacity: 1;
+        visibility: hidden;
+    }
+}
+
+/* fade-in  */
+@keyframes fadeIn {
+	100% { opacity: 1; }
 }
 </style>
 

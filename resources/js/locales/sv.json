@@ -1,0 +1,28 @@
+{
+    "play": {
+        "basket": {
+            "basket": "Varukorg",
+            "view": "Se varukorg",
+            "addLong": "Lägg i varukorg",
+            "addShort": "Lägg till",
+            "removeLong": "Ta bort",
+            "removeShort": "Ta bort",
+            "addedLong": "Lägget till",
+            "addedShort": "Lägget till"
+        },
+        "chooseSize": "Välj en storlek",
+        "sizeShort": "Storlek",
+        "continueShopping": "Stäng och fortsätt handla",
+        "video": {
+            "quality": "Uppspelningskvalitet"
+        },
+        "product": {
+            "sizes": "Storlekar",
+            "description": "Beskrivning",
+            "composition": "Kompostion",
+            "id": "Style nr.",
+            "detailsSectionLabel": "Style info",
+            "soldOut": "Utsåld"
+        }
+    }
+}

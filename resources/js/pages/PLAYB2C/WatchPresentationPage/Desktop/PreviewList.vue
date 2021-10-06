@@ -120,6 +120,9 @@ export default {
     &.pdp-open {
         // transform: translateX(384px) scale(0.5);
         transform: translateX(384px);
+        .preview-list {
+            width: 87px;   
+        } 
     }
 }
 .preview-list {
@@ -127,7 +130,7 @@ export default {
     left: 16px;
     padding: 8px;
     border-radius: 16px;
-    width: 128px;
+    width: 100px;
     pointer-events: all;
     transition: transform 0.2s ease-out;
     overflow: hidden;

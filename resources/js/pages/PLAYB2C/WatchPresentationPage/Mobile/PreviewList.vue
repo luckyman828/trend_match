@@ -76,15 +76,15 @@ export default {
 }
 .preview-list {
     margin-left: auto;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 4px;
+    border-radius: $borderRadiusSm;
     transition: transform 0.2s ease-out;
     &.fly-out {
         transform: translateX(calc(100% + 8px));
     }
     .rail {
         overflow-y: auto;
-        max-height: 50vh;
+        max-height: 40vh;
     }
 }
 </style>
