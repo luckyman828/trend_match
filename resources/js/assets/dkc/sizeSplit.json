@@ -472,6 +472,32 @@
                     "name": "44",
                     "weight": 16
                 }
+            ],
+            "footwear": [
+                {
+                    "name": "36",
+                    "weight": 4
+                },
+                {
+                    "name": "37",
+                    "weight": 10
+                },
+                {
+                    "name": "38",
+                    "weight": 21
+                },
+                {
+                    "name": "39",
+                    "weight": 28
+                },
+                {
+                    "name": "40",
+                    "weight": 23
+                },
+                {
+                    "name": "41",
+                    "weight": 14
+                }
             ]
         }
     },

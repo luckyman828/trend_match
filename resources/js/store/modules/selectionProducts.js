@@ -261,18 +261,6 @@ export default {
                             ).action = value
                         },
                     })
-                    // Set the current action for the user
-                    Object.defineProperty(selectionInput, 'action', {
-                        get: function() {
-                            return rawSelectionInput.alignments.find(x => x.selection_id == selectionInput.selection_id)
-                                .action
-                        },
-                        set: function(value) {
-                            rawSelectionInput.alignments.find(
-                                x => x.selection_id == selectionInput.selection_id
-                            ).action = value
-                        },
-                    })
 
                     // Set the current action for the user
                     Object.defineProperty(selectionInput, 'yourSelectionFeedback', {
@@ -300,7 +288,18 @@ export default {
                             Object.assign(rawAction, value)
                         },
                     })
-                    // Set the current action for the user
+
+                    Object.defineProperty(selectionInput, 'action', {
+                        get: function() {
+                            return selectionInput.selectionAction ? selectionInput.selectionAction.action : 'None'
+                        },
+                        set: function(value) {
+                            rawSelectionInput.alignments.find(
+                                x => x.selection_id == selectionInput.selection_id
+                            ).action = value
+                        },
+                    })
+
                     Object.defineProperty(selectionInput, 'action_author', {
                         get: function() {
                             return rawSelectionInput.alignments.find(
