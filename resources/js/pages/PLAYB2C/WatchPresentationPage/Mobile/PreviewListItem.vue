@@ -3,9 +3,9 @@
         <BaseImageSizer class="img-wrapper" fit="contain">
             <BaseVariantImage :variant="variant" size="sm" :class="{ 'sold-out': !variant.inStock }" />
             <div class="labels">
-                <SavingPercentagePill :variant="variant" />
-                <button class="pill red xs" v-if="!variant.inStock">
-                    <span>Sold out</span>
+                <SavingPercentagePill size="xxs" :variant="variant" />
+                <button class="pill red xxs" v-if="!variant.inStock">
+                    <span>{{ $t('play.product.soldOut') }}</span>
                 </button>
             </div>
         </BaseImageSizer>
@@ -33,7 +33,7 @@ export default {
 
 <style lang="scss" scoped>
 .product-preview {
-    width: 80px;
+    width: 65px;
     background: white;
     border-radius: $borderRadiusSm;
     overflow: hidden;
@@ -44,13 +44,14 @@ export default {
         padding: 0 4px;
     }
     .price {
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 500;
     }
     .labels {
         position: absolute;
         bottom: 4px;
         left: 4px;
+        line-height: 15px;
     }
     img.sold-out {
         opacity: 0.5;

@@ -27,11 +27,11 @@
                 />
 
                 <div class="form-element flex-list-item">
-                    <label>Sizes</label>
+                    <label>{{ $t('play.product.sizes') }}</label>
                     <div class="size-list flex-list">
                         <div
                             class="true-square size"
-                            :class="{ 'sold-out': !size.inStock, 'selected': size.size === selectedSize.size }"
+                            :class="{ 'sold-out': !size.inStock, selected: size.size === selectedSize.size }"
                             v-for="size in currentVariant.ean_sizes"
                             :key="size.ean"
                             @click="onChangeSize(size)"
@@ -41,12 +41,12 @@
                     </div>
                 </div>
 
-                <h3>Style info</h3>
+                <h3>{{ $t('play.product.detailsSectionLabel') }}</h3>
 
                 <div class="form-element flex-list md">
                     <i class="fal fa-info-circle md"></i>
                     <div class="flex-list-item">
-                        <label>Description</label>
+                        <label>{{ $t('play.product.description') }}</label>
                         <span class="value description"> {{ product.sale_description }}</span>
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                 <div class="form-element flex-list md">
                     <i class="fal fa-flower md"></i>
                     <div class="flex-list-item">
-                        <label>Composition</label>
+                        <label>{{ $t('play.product.composition') }}</label>
                         <span class="value"> {{ product.composition }}</span>
                     </div>
                 </div>
@@ -62,12 +62,17 @@
                 <div class="form-element flex-list md">
                     <i class="fal fa-tshirt md"></i>
                     <div class="flex-list-item">
-                        <label>Style number</label>
+                        <label>{{ $t('play.product.id') }}</label>
                         <span class="value"> {{ product.datasource_id }}</span>
                     </div>
                 </div>
             </div>
-            <AddToBasketSelector :item.sync="currentVariant" :show="true" :size="selectedSize" @submit="selectedSize=$event"/>
+            <AddToBasketSelector
+                :item.sync="currentVariant"
+                :show="true"
+                :size="selectedSize"
+                @submit="selectedSize = $event"
+            />
         </template>
     </BaseDrawer>
 </template>
@@ -118,7 +123,7 @@ export default {
         },
         onChangeSize(size) {
             this.selectedSize = size
-        }
+        },
     },
 }
 </script>

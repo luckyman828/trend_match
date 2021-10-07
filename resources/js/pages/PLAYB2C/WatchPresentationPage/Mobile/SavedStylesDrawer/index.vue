@@ -96,7 +96,7 @@
                 buttonClass="dark full-width pill lg checkout-button"
                 @click="onGoToCheckout"
             >
-                <span>Afslut og shop videre</span>
+                <span>{{ $t('play.continueShopping') }}</span>
             </BaseButton>
             <!-- END TEMP -->
         </BaseFloatyBar>

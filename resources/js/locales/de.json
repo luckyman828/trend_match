@@ -1,0 +1,28 @@
+{
+    "play": {
+        "basket": {
+            "basket": "Abspielen",
+            "view": "Warenkorb",
+            "addLong": "In den Warenkorb",
+            "addShort": "Hinzufügen",
+            "removeLong": "Entfernen",
+            "removeShort": "Entfernen",
+            "addedLong": "Hinzugefügt",
+            "addedShort": "Hinzugefügt"
+        },
+        "chooseSize": "Grösse auswählen",
+        "sizeShort": "Grösse",
+        "continueShopping": "Schliessen und weiter einkaufen",
+        "video": {
+            "quality": "Wiedergabequalität"
+        },
+        "product": {
+            "sizes": "Grössen",
+            "description": "Beschreibung",
+            "composition": "Zusammensetzung",
+            "id": "Style Nummer",
+            "detailsSectionLabel": "Style info",
+            "soldOut": "Ausverfauft"
+        }
+    }
+}

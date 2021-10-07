@@ -5,7 +5,7 @@
             <div class="labels">
                 <SavingPercentagePill :variant="variant" size="xxs" />
                 <button class="pill red xxs" v-if="!variant.inStock">
-                    <span>Sold out</span>
+                    <span>{{ $t('play.product.soldOut') }}</span>
                 </button>
             </div>
         </BaseImageSizer>
@@ -38,8 +38,8 @@
                 >
                     <button class="dark ghost full-width pill sm" :disabled="!variant.inStock">
                         <i class="far fa-ruler"></i>
-                        <span v-if="selectedSizeDetail">Size: {{ selectedSizeDetail.size }}</span>
-                        <span v-else>Choose size</span>
+                        <span v-if="selectedSizeDetail">{{ $t('play.sizeShort') }}: {{ selectedSizeDetail.size }}</span>
+                        <span v-else>{{ $t('play.chooseSize') }}</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <ChooseSizePopover

@@ -1,5 +1,3 @@
-// require('./bootstrap')
-
 window.Vue = require('vue')
 
 window.axios = require('axios')
@@ -234,7 +232,32 @@ Vue.mixin({
     },
 })
 
+// Translations
+import VueI18n from 'vue-i18n'
+Vue.use(VueI18n)
+
+import en from './locales/en'
+import da from './locales/da'
+import sv from './locales/sv'
+import no from './locales/no'
+import de from './locales/de'
+import nl from './locales/nl'
+const localeMessages = { en, da, sv, no, de, nl }
+
+// Create i18n instance
+const i18n = new VueI18n({
+    locale: navigator.language.split('-')[0], // set locale
+    fallbackLocale: {
+        'nb-NO': ['no'],
+        'nn-NO': ['no'],
+        default: 'en',
+    },
+    messages: localeMessages,
+})
+
+// Create a vue root instance
 const app = new Vue({
+    i18n,
     store,
     router,
     el: '#app',

@@ -87,6 +87,10 @@ export default {
 
             // Get locale
             const presenationLocale = this.$route.query.locale
+            if (presenationLocale) {
+                const locale = presenationLocale.toLowerCase().split('_')[0]
+                this.$i18n.locale = locale
+            }
 
             // Sync products
             // TEMP BAP ONLY SOLUTION

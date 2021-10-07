@@ -9,7 +9,7 @@
             <div class="labels">
                 <SavingPercentagePill :variant="variant" />
                 <button class="pill red xs" v-if="!variant.inStock">
-                    <span>Sold out</span>
+                    <span>{{ $t('play.product.soldOut') }}</span>
                 </button>
             </div>
         </BaseImageSizer>

@@ -39,7 +39,7 @@
                     <i class="far fa-cog"></i>
                 </button>
                 <BaseSelectButtons
-                    header="Quality"
+                    :header="$t('play.video.quality')"
                     slot="popover"
                     type="radio"
                     :submitOnChange="true"

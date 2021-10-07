@@ -1,0 +1,28 @@
+{
+    "play": {
+        "basket": {
+            "basket": "Kurv",
+            "view": "Se Kurv",
+            "addLong": "Læg i kurv",
+            "addShort": "Tilføj",
+            "removeLong": "Fjern",
+            "removeShort": "Fjern",
+            "addedLong": "Tilføjet",
+            "addedShort": "Tilføjet"
+        },
+        "chooseSize": "Vælg størrelse",
+        "sizeShort": "Str.",
+        "continueShopping": "Afslut og shop videre",
+        "video": {
+            "quality": "Videokvalitet"
+        },
+        "product": {
+            "sizes": "Størrelser",
+            "description": "Beskrivelse",
+            "composition": "Sammensætning",
+            "id": "Style nr.",
+            "detailsSectionLabel": "Style info",
+            "soldOut": "Udsolgt"
+        }
+    }
+}

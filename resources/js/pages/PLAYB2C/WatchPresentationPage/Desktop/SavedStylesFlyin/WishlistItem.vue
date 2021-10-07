@@ -5,7 +5,7 @@
             <div class="labels">
                 <SavingPercentagePill :variant="variant" />
                 <button class="pill red xs" v-if="!variant.inStock">
-                    <span>Sold out</span>
+                    <span>{{ $t('play.product.soldOut') }}</span>
                 </button>
             </div>
         </BaseImageSizer>
@@ -43,7 +43,7 @@
         <!-- ACTIONS  -->
         <div class="action-list flex-list center-v">
             <AddToWishlistButton class="circle sm" :variants="[variant]" />
-            <AddToBasketButton buttonClass="circle sm no-bg" :variant="variant" textStyle="none" />
+            <AddToBasketButton buttonClass="pill sm" :variant="variant" />
         </div>
         <!-- END ACTIONS  -->
     </div>
