@@ -304,6 +304,8 @@ export default {
                     size: sku.size,
                 }))
 
+                variant.extra_data.productstylenbr = variantData.productStyleNbr
+
                 // Fetch the images in full resolution
                 variant.pictures.map(picture => {
                     picture.urlToUpload = picture.url.slice(0, picture.url.indexOf('&w='))
