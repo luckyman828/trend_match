@@ -135,6 +135,8 @@ export default {
                           brandWeights[sizeType].bottomsIn &&
                           this.variant.sizes.find(size => parseInt(size.size) % 2)
                         ? 'bottomsIn'
+                        : this.variant.product.category == 'Footwear' && brandWeights[sizeType].footwear
+                        ? 'footwear'
                         : 'standard'
                 const weights = brandWeights[sizeType][sizeSubType]
                 return {
