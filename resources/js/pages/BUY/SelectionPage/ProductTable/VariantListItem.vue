@@ -30,7 +30,11 @@
                 </div>
                 <div class="qty-wrapper">
                     <div class="square white qty" v-if="!hasAssortments">
-                        <span>{{ currentVariantDelivery.quantity ? currentVariantDelivery.quantity : 0 }}</span>
+                        <span>{{
+                            currentVariantDelivery && currentVariantDelivery.quantity
+                                ? currentVariantDelivery.quantity
+                                : 0
+                        }}</span>
                     </div>
                     <BaseInputShape
                         @click.native.stop
@@ -126,14 +130,14 @@ export default {
             return { name: 'no weights found', weights: [] }
         },
         variantQuantity() {
-            return this.currentVariantDelivery.quantity
+            return this.currentVariantDelivery?.quantity || 0
         },
         currentVariantDeliverySizeQuantities() {
             return this.variant.sizes.map(size => {
                 const sizeObj = {
                     size: size.size,
                 }
-                const currentDeliverySizeQuantity = this.currentVariantDelivery.sizeQuantities.find(
+                const currentDeliverySizeQuantity = this.currentVariantDelivery?.sizeQuantities.find(
                     sizeQty => sizeQty.size == sizeObj.size
                 )
                 sizeObj.quantity = currentDeliverySizeQuantity ? currentDeliverySizeQuantity.quantity : 0
@@ -200,7 +204,7 @@ export default {
         },
     },
     created() {
-        this.localQuantity = this.currentVariantDelivery.quantity
+        this.localQuantity = this.variantQuantity
     },
 }
 </script>
