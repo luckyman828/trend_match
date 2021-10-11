@@ -40,8 +40,8 @@ export default {
                 })
                 return qtyDetail ? qtyDetail.quantity : 0
             },
-            set(quantity) {
-                this.updateQuantity({
+            async set(quantity) {
+                await this.updateQuantity({
                     alignment: this.variant.selectionAlignment.productAlignment,
                     variantId: this.variant.id,
                     size: this.sizeObj.size,
