@@ -9,7 +9,7 @@ export default {
                 scope: 'key',
                 name: 'datasource_id',
                 displayName: 'ID',
-                type: 'number',
+                type: 'string',
                 headersToMatch: [
                     'id',
                     'style number',

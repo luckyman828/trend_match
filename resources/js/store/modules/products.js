@@ -1075,8 +1075,8 @@ export default {
             products.map(product => {
                 if (product.isInit) return
                 Vue.set(product, 'isInit', true)
-                // Cast datasource_id to a number
-                product.datasource_id = parseInt(product.datasource_id)
+                // // Cast datasource_id to a number
+                // product.datasource_id = parseInt(product.datasource_id)
 
                 // Find all EANs
                 Object.defineProperty(product, 'getAllEAN', {
